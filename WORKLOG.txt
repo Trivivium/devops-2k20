@@ -1,0 +1,7 @@
+Changes
+
+-compiled flag_tool.c into executable flag_tool
+-ran 2to3 on minitwit.py
+-changed decoding of init_db to utf-8
+-added double quoting and shebang to control.sh
+-added shebang to minitwit.py
