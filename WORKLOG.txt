@@ -1,0 +1,19 @@
+Start investigation on top of the file minitwit.py, followed by function timeline(), the functions before_request() and after_request.
+Timeline shows a users time or if no user is logged in it will redirect to the public timeline. This timeline shows the user's messages as well as all the messages of follwed users. 
+
+Start investigation on top of the file minitwit.py, followed by function timeline(), the functions before_request() and after_request.
+Timeline shows a users time or if no user is logged in it will redirect to the public timeline. This timeline shows the user's messages as well as all the messages of follwed users. 
+
+Before request makes sure that the application is connected to the database each request and look up the current user so that we know the persons there.
+
+After_request: closes the database again at the end of the request.
+
+Before request makes sure that the application is connected to the database each request and look up the current user so that we know the persons there.
+
+After_request: closes the database again at the end of the request.
+
+Then compile flag_tool.c into flag_tool.. remember to include sqlite3 library along with your program, that is -lsqlite3
+Converted  minitwit.py to py3
+Missed decoding init_db -> utf-8
+Quoting in control.sh
+Minor changes to  minitwit.py3
