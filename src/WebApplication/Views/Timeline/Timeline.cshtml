@@ -1,0 +1,24 @@
+@model WebApplication.ViewModels.Timeline.UserTimelineVM
+
+@{
+    Layout = "_Layout";
+}
+
+<h2>@ViewData["title"]</h2>
+
+@{
+    if (User.Identity.IsAuthenticated)
+    {
+        <div class="twitbox">
+            <h3>What's on your mind @User.Identity.Name?</h3>
+            <form action="{{ url_for('add_message') }}" method="post">
+                <p>
+                    <input type="text" name="text" size="60">
+                    <input type="submit" value="Share">
+                </p>
+            </form>
+        </div>
+    }
+}
+
+<partial name="Partials/TimelineMessages" model="@Model.Messages" />

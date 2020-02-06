@@ -1,0 +1,25 @@
+@model WebApplication.ViewModels.Timeline.UserTimelineVM
+                                                          
+@{
+  Layout = "_Layout";
+}
+
+<h2>@ViewData["title"]</h2>
+
+<div class="followstatus">
+  @if (User.GetUserID() == Model.User.ID)
+  {
+    <span>This is you!</span>
+  }
+  else if (Model.IsFollowing)
+  {
+    <span>You are currently following this user.</span>
+    <a class="unfollow" asp-controller="User" asp-action="Unfollow" asp-route-username="@Model.User.Username">Unfollow user</a>
+  }
+  else
+  {
+    <span>You are not yet following this user.</span>
+    <a class="follow" asp-controller="User" asp-action="Follow" asp-route-username="@Model.User.Username">Follow user</a>
+  }
+</div>
+<partial name="Partials/TimelineMessages" model="@Model.Messages" />
