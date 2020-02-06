@@ -1,0 +1,45 @@
+@{
+    var title = ViewData["title"] as string;
+
+    if (string.IsNullOrWhiteSpace(title))
+    {
+        title = "MiniTwit";
+    }
+}
+<!doctype html>
+<title>@title | MiniTwit</title>
+<link rel="stylesheet" type="text/css" href="~/css/style.css">
+<div class="page">
+    <h1>MiniTwit</h1>
+    <div class="navigation">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Timeline" asp-action="UserTimeline">my timeline</a> 
+            <a asp-controller="Timeline" asp-action="Timeline">public timeline</a> 
+            <a asp-controller="Authentication" asp-action="Logout">sign out [@User.Identity.Name]</a>
+        }
+        else
+        {
+            <a asp-controller="Timeline" asp-action="Timeline">public timeline</a> 
+            <a asp-controller="Authentication" asp-action="Register">sign up</a>
+            <a asp-controller="Authentication" asp-action="Login">sign in</a>
+        }
+    </div>
+    @{
+        if (ViewData["messages"] is IEnumerable<string> messages)
+        {
+            <ul class="flashes">
+            @foreach (var message in messages)
+            {
+                <li>@message</li>
+            }
+            </ul>
+        }
+    }
+    <div class="body">
+        @RenderBody()
+    </div>
+    <div class="footer">
+        MiniTwit &mdash; A C# MVC Application
+    </div>
+</div>
