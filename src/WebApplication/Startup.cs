@@ -1,5 +1,8 @@
+using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +21,21 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(opts =>
+                    {
+                        opts.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        opts.RequireAuthenticatedSignIn = false;
+                    })
+                .AddCookie(opts =>
+                {
+                    opts.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    opts.SlidingExpiration = true;
+                    
+                    opts.LoginPath = new PathString("/login");
+                    opts.LogoutPath = new PathString("/logout");
+                    opts.AccessDeniedPath = new PathString("/AccessDenied");
+                });
+
             services.AddControllersWithViews();
         }
 
@@ -34,6 +52,7 @@ namespace WebApplication
             }
             
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {
