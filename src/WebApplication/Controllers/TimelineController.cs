@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using WebApplication.ViewModels;
@@ -8,8 +8,10 @@ using WebApplication.ViewModels.Timeline;
 
 namespace WebApplication.Controllers
 {
+    [Authorize]
     public class TimelineController : Controller
     {
+        [AllowAnonymous]
         [HttpGet("/")]
         [HttpGet("/public")]
         public IActionResult Timeline()
@@ -42,12 +44,20 @@ namespace WebApplication.Controllers
             throw new NotImplementedException();
         }
 
+        [HttpGet("/AccessDenied")]
+        public IActionResult AccessDenied()
+        {
+            ViewData["title"] = "Access denied";
+
+            return View();
+        }
+
         [HttpGet("/Error")]
         public IActionResult Error()
         {
             ViewData["title"] = "Error";
             
-            return View("Error");
+            return View();
         }
     }
 }

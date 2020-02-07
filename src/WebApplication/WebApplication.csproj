@@ -6,7 +6,6 @@
 
     <ItemGroup>
       <Folder Include="ViewModels\Authentication" />
-      <Folder Include="Views\Authentication" />
       <Folder Include="wwwroot\css" />
     </ItemGroup>
 

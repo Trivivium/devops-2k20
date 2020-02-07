@@ -1,0 +1,16 @@
+@{
+    Layout = "_Layout";
+}
+
+<form asp-controller="Authentication" asp-action="Login" autocomplete="off">
+    <label>
+        <span>Username:</span>
+        <input type="text" name="username" value="">
+    </label>
+    <label>
+        <span>Password:</span>
+        <input type="password" name="password" id="login-password" value="">
+    </label>
+    <br>
+    <input type="submit" value="Sign In">
+</form>
