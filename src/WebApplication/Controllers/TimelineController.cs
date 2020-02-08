@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using WebApplication.Entities;
 using WebApplication.ViewModels;
 using WebApplication.ViewModels.Timeline;
 
