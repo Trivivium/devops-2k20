@@ -24,10 +24,10 @@ namespace WebApplication.Controllers
 
             var messages = new List<TimelineMessageVM>
             {
-                new TimelineMessageVM(new UserVM(2, "Foo"), "This is a test... NOTHING ELSE IS WORKING ATM!", DateTimeOffset.UtcNow)
+                new TimelineMessageVM(new UserVM(2, "Foo", "user@example.org"), "This is a test... NOTHING ELSE IS WORKING ATM!", DateTimeOffset.UtcNow)
             };
             
-            var user = new UserVM(1, "Thomas");
+            var user = new UserVM(1, "Thomas", "tb@example.org");
             var vm = new UserTimelineVM(user, false, messages);
             
             return View("Timeline", vm);
