@@ -87,8 +87,40 @@ namespace WebApplication.Controllers
         public IActionResult Register()
         {
             ViewData["title"] = "Register";
+
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("/register")]
+        public async Task<IActionResult> Register(RegisterModel credentials, CancellationToken ct)
+        {
+            var user = new User { Email = credentials.Email, PasswordHash = PasswordUtils.Hash(credentials.Password), Username = credentials.Username};
+
+            var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == credentials.Username, ct);
+
+            var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == credentials.Email, ct);
+
+
+            if (!usernameExists && !emailExists)
+            {
+                _databaseContext.Add<User>(user);
+                _databaseContext.SaveChanges();
+                ViewData["messages"] = new List<string>
+            {
+                "User registered successfully"
+            };
+            }
+            else
+            {
+                ViewData["messages"] = new List<string>
+            {
+                "Username or email already exists"
+            };
+            }
+
             
-            throw new NotImplementedException();
+            return View();
         }
     }
 }
