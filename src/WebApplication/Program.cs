@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Bcr = BCrypt.Net;
 
 using WebApplication.Entities;
 using WebApplication.Helpers;
@@ -34,7 +35,7 @@ namespace WebApplication
                         {
                             Username = "admin",
                             Email = "admin@minitwit.com",
-                            PasswordHash = PasswordUtils.Hash("admin")
+                            Password = Bcr.BCrypt.HashPassword("admin")
                         });
 
                         context.SaveChanges();
