@@ -14,13 +14,13 @@
     <div class="navigation">
         @if (User.Identity.IsAuthenticated)
         {
-            <a asp-controller="Timeline" asp-action="UserTimeline">my timeline</a> 
-            <a asp-controller="Timeline" asp-action="Timeline">public timeline</a> 
+            <a asp-controller="Timeline" asp-action="Timeline">my timeline</a> 
+            <a asp-controller="Timeline" asp-action="PublicTimeline">public timeline</a> 
             <a asp-controller="Authentication" asp-action="Logout">sign out [@User.Identity.Name]</a>
         }
         else
         {
-            <a asp-controller="Timeline" asp-action="Timeline">public timeline</a> 
+            <a asp-controller="Timeline" asp-action="PublicTimeline">public timeline</a> 
             <a asp-controller="Authentication" asp-action="Register">sign up</a>
             <a asp-controller="Authentication" asp-action="Login">sign in</a>
         }

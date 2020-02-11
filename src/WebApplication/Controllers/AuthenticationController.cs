@@ -48,7 +48,8 @@ namespace WebApplication.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.ID.ToString(), ClaimValueTypes.Integer, issuer),
-                    new Claim(ClaimTypes.Name, user.Username, ClaimValueTypes.String, issuer)
+                    new Claim(ClaimTypes.Name, user.Username, ClaimValueTypes.String, issuer),
+                    new Claim(ClaimTypes.Email, user.Email, ClaimValueTypes.Email)
                 };
             
                 var properties = new AuthenticationProperties
