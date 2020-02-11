@@ -30,7 +30,6 @@ namespace WebApplication.Entities
             users.Property(user => user.ID).HasColumnName("user_id").ValueGeneratedOnAdd();
             users.Property(user => user.Username).HasColumnName("username");
             users.Property(user => user.Email).HasColumnName("email");
-            users.Property(user => user.PasswordHash).HasColumnName("pw_hash");
             users.HasMany(user => user.Followers);
             users.HasMany(user => user.Messages);
 

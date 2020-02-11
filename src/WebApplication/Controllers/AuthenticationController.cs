@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Bcr = BCrypt.Net;
 
 using WebApplication.Entities;
 using WebApplication.Helpers;
@@ -41,7 +42,7 @@ namespace WebApplication.Controllers
         {
             var user = await _databaseContext.Users.FirstOrDefaultAsync(item => item.Username == credentials.Username, ct);
 
-            if (user != null && PasswordUtils.Compare(user.PasswordHash, credentials.Password))
+            if (user != null && Bcr.BCrypt.Verify(credentials.Password,user.Password))
             {
                 const string issuer = "minitwit";
 
@@ -95,8 +96,8 @@ namespace WebApplication.Controllers
         [HttpPost("/register")]
         public async Task<IActionResult> Register(RegisterModel credentials, CancellationToken ct)
         {
-            var user = new User { Email = credentials.Email, PasswordHash = PasswordUtils.Hash(credentials.Password), Username = credentials.Username};
-
+            var user = new User { Email = credentials.Email, Password = Bcr.BCrypt.HashPassword(credentials.Password), Username = credentials.Username};
+      
             var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == credentials.Username, ct);
 
             var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == credentials.Email, ct);
