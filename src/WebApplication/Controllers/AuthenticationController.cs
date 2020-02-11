@@ -120,8 +120,8 @@ namespace WebApplication.Controllers
             };
             }
 
-            
-            return View();
+
+            return RedirectToAction("Login");
         }
     }
 }
