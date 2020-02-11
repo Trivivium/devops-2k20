@@ -1,14 +1,8 @@
 if [ "$1" = "init" ]; then
-
-    if [ -f "/tmp/minitwit.db" ]; then 
-        echo "Database already exists."
-        exit 1
-    fi
-    echo "Putting a database to /tmp/minitwit.db..."
-    python -c"from minitwit import init_db;init_db()"
+    echo "Skipped... Initialization is handles by the application during startup."
 elif [ "$1" = "start" ]; then
     echo "Starting minitwit..."
-    nohup python minitwit.py > /tmp/out.log 2>&1 &
+    nohup dotnet run ./src/WebApplication/WebApplication.csproj > /tmp/out.log 2>&1 &
     echo $! > /tmp/minitwit.pid
 elif [ "$1" = "stop" ]; then
     echo "Stopping minitwit..."
