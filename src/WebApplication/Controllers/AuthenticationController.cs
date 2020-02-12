@@ -102,6 +102,15 @@ namespace WebApplication.Controllers
             var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == credentials.Email, ct);
 
 
+            if (!credentials.RepeatedPassword.Equals(credentials.Password)){
+                ViewData["messages"] = new List<string>
+            {
+                "Repeated password is not the same as the password"
+            };
+                return View();
+
+            }
+
             if (!usernameExists && !emailExists)
             {
                 _databaseContext.Add<User>(user);
@@ -110,6 +119,7 @@ namespace WebApplication.Controllers
             {
                 "User registered successfully"
             };
+                return View("Login");
             }
             else
             {
@@ -117,10 +127,9 @@ namespace WebApplication.Controllers
             {
                 "Username or email already exists"
             };
+                return View();
             }
 
-
-            return RedirectToAction("Login");
         }
     }
 }
