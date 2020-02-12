@@ -21,5 +21,25 @@ namespace WebApplication.Extensions
 
             return int.Parse(claim.Value);
         }
+
+        public static string GetUsername(this ClaimsPrincipal principal)
+        {
+            var claim = principal.Claims.FirstOrDefault(item => item.Type == ClaimTypes.Name);
+            
+            if(claim == null)
+                throw new InvalidOperationException("No claim for the user's username in the current claims.");
+
+            return claim.Value;
+        }
+
+        public static string GetEmail(this ClaimsPrincipal principal)
+        {
+            var claim = principal.Claims.FirstOrDefault(item => item.Type == ClaimTypes.Email);
+            
+            if(claim == null)
+                throw new InvalidOperationException("No claim for the user's email address in the current claims.");
+
+            return claim.Value;
+        }
     }
 }
