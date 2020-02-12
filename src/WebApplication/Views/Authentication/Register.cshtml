@@ -1,4 +1,5 @@
 ﻿@model WebApplication.Models.Authentication.RegisterModel
+@Html.ValidationSummary()
 @{
     Layout = "_Layout";
 }
@@ -20,7 +21,7 @@
     </label>
     <label>
         <span>repeat Password</span>
-        <input type="password" name="password2" id="register-password2" value="">
+        <input type="password" name="repeatedPassword" id="register-password2" value="">
     </label>
     <br>
     <input type="submit" value="Sign Up">

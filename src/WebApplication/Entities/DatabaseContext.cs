@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication.Entities
@@ -43,7 +44,10 @@ namespace WebApplication.Entities
             messages.Property(message => message.ID).HasColumnName("message_id").ValueGeneratedOnAdd();
             messages.Property(message => message.AuthorID).HasColumnName("author_id");
             messages.Property(message => message.Text).HasColumnName("text");
-            messages.Property(message => message.PublishDate).HasColumnName("pub_date");
+            messages.Property(message => message.PublishDate).HasColumnName("pub_date").HasConversion(
+                dateTimeOffset => dateTimeOffset.UtcDateTime,
+                dateTime => new DateTimeOffset(dateTime)
+            );
             messages.Property(message => message.IsFlagged).HasColumnName("flagged");
             messages.HasOne(message => message.Author);
         }
