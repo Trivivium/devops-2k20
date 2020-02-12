@@ -138,6 +138,58 @@ namespace WebApplication.Controllers
             return View("UserTimeline", vm);
         }
 
+        [HttpGet("/{username}/follow")]
+        public async Task<IActionResult> AddFollow(string username, CancellationToken ct)
+        {
+
+            var whom = await _databaseContext.Users
+                .Where(u => u.Username == username)    // TODO: Add case insensitive string comparison here if SQLite supports it.
+                .FirstOrDefaultAsync(ct);
+
+            if (whom == null)
+            {
+                return NotFound();
+            }
+            _databaseContext.Followers.Add(new Follower
+            {
+                WhomID = User.GetUserID(),
+                WhoID = whom.ID
+            });
+
+            await _databaseContext.SaveChangesAsync(ct);
+
+            ViewData["messages"] = new List<string>
+            {
+                $"You are now following {username}"
+            };
+
+            return RedirectToAction(nameof(Timeline));
+        }
+        [HttpGet("/{username}/unfollow")]
+        public async Task<IActionResult> AddUnfollow(string username, CancellationToken ct)
+        {
+            var whom = await _databaseContext.Users
+                .Where(u => u.Username == username)    // TODO: Add case insensitive string comparison here if SQLite supports it.
+                .FirstOrDefaultAsync(ct);
+
+            if (whom == null)
+            {
+                return NotFound();
+            }
+            Follower follower = new Follower () { WhomID = User.GetUserID(), WhoID=whom.ID };
+            _databaseContext.Followers.Attach(follower);
+            _databaseContext.Followers.Remove(follower);
+            _databaseContext.SaveChanges();
+            await _databaseContext.SaveChangesAsync(ct);
+
+            ViewData["messages"] = new List<string>
+            {
+                $"You are now unfollowing {username}"
+            };
+
+            return RedirectToAction(nameof(Timeline));
+        }
+
         [ValidateAntiForgeryToken]
         [HttpPost("/add_message")]
         public async Task<IActionResult> AddMessage(CreateMessageModel model, CancellationToken ct)
