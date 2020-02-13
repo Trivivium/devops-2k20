@@ -4,7 +4,7 @@ def main():
 
     docString = "ITU-Minitwit Tweet Flagging Tool\n\n Usage:\n flag_tool <tweet_id>...\n flag_tool -i\n flag_tool -h\n Options:\n -h Show this screen.\n -i Dump all tweets and authors to STDOUT.\n";
     
-    rc = sqlite3.connect("tmp/minitwit.db")
+    rc = sqlite3.connect("/tmp/minitwit.db")
     if (rc):
         print("Can't open database")
     elif (len(sys.argv) == 2 and sys.argv[1] == "-h"):
