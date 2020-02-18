@@ -20,3 +20,16 @@ create table message (
   pub_date integer,
   flagged integer
 );
+
+/*
+ * The API tester wants to set a `latest` value,
+ * that can then be queried to see that requests
+ * are actually handled. This row is used for that -
+ * it is essentially a singleton. I'm sorry -
+ * it is part of the requirements.
+*/
+drop table if exists latest;
+create table latest (
+  id integer primary key,
+  latest integer
+);

@@ -8,6 +8,7 @@ namespace WebApplication.Entities
         public DbSet<User> Users { get; set; }
         public DbSet<Follower> Followers { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Latest> Latests { get; set; }
 
         public DatabaseContext(DbContextOptions options) : base(options)
         {}
@@ -26,6 +27,7 @@ namespace WebApplication.Entities
             var users = builder.Entity<User>().ToTable("user");
             var followers = builder.Entity<Follower>().ToTable("follower");
             var messages = builder.Entity<Message>().ToTable("message");
+            var latests = builder.Entity<Latest>().ToTable("latest");
 
             users.HasKey(user => user.ID);
             users.Property(user => user.ID).HasColumnName("user_id").ValueGeneratedOnAdd();
@@ -50,6 +52,9 @@ namespace WebApplication.Entities
             );
             messages.Property(message => message.IsFlagged).HasColumnName("flagged");
             messages.HasOne(message => message.Author);
+            
+            latests.Property(latest => latest.id).HasColumnName("id");
+            latests.Property(latest => latest.latest).HasColumnName("latest");
         }
     }
 }

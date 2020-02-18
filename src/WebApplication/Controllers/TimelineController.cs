@@ -11,6 +11,7 @@ using WebApplication.Extensions;
 using WebApplication.Models.Timeline;
 using WebApplication.ViewModels;
 using WebApplication.ViewModels.Timeline;
+using WebApplication.Helpers;
 
 namespace WebApplication.Controllers
 {
@@ -213,6 +214,12 @@ namespace WebApplication.Controllers
             }
 
             return RedirectToAction(nameof(Timeline));
+        }
+        [HttpPost("/latest")]
+        public async Task<IActionResult> GetLatest(CancellationToken ct)
+        {
+            return Ok(TestingUtils.GetLatest(_databaseContext));
+
         }
 
         [HttpGet("/AccessDenied")]

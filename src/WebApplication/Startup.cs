@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using WebApplication.Entities;
+using WebApplication.Helpers;
 
 namespace WebApplication
 {
@@ -55,6 +56,15 @@ namespace WebApplication
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.Use(async (context, next) =>
+            {
+                // Do work that doesn't write to the Response.
+                if(context.Request.Query.TryGetValue("latest", out string latestString) && int.TryParse(latestString, out int latest)) {
+                    TestingUtils.SetLatest(latest);
+                }
+                await next.Invoke();
+                // Do logging or other work that doesn't write to the Response.
+            });
             
             app.UseStaticFiles();
             app.UseAuthentication();
