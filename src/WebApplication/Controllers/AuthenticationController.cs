@@ -11,8 +11,10 @@ using Microsoft.EntityFrameworkCore;
 using Bcr = BCrypt.Net;
 
 using WebApplication.Entities;
+using WebApplication.Exceptions;
 using WebApplication.Helpers;
 using WebApplication.Models.Authentication;
+using WebApplication.Services;
 
 namespace WebApplication.Controllers
 {
@@ -20,10 +22,12 @@ namespace WebApplication.Controllers
     public class AuthenticationController : Controller
     {
         private readonly DatabaseContext _databaseContext;
+        private readonly UserService _service;
 
-        public AuthenticationController(DatabaseContext databaseContext)
+        public AuthenticationController(DatabaseContext databaseContext, UserService service)
         {
             _databaseContext = databaseContext ?? throw new ArgumentNullException(nameof(databaseContext));
+            _service = service;
         }
 
         [AllowAnonymous]
@@ -97,41 +101,26 @@ namespace WebApplication.Controllers
         [HttpPost("/register")]
         public async Task<IActionResult> Register(RegisterModel credentials, CancellationToken ct)
         {
-            var user = new User { Email = credentials.Email, Password = Bcr.BCrypt.HashPassword(credentials.Password), Username = credentials.Username};
-      
-            var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == credentials.Username, ct);
-
-            var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == credentials.Email, ct);
-
-
-            if (!credentials.RepeatedPassword.Equals(credentials.Password)){
-                ViewData["messages"] = new List<string>
+            try
             {
-                "Repeated password is not the same as the password"
-            };
-                return View();
-
+                await _service.CreateUser(credentials, ct);
             }
-
-            if (!usernameExists && !emailExists)
+            catch (CreateUserException exception)
             {
-                _databaseContext.Add<User>(user);
-                _databaseContext.SaveChanges();
                 ViewData["messages"] = new List<string>
+                {
+                    exception.Message
+                };
+                
+                return View();
+            }
+            
+            ViewData["messages"] = new List<string>
             {
                 "User registered successfully"
             };
-                return View("Login");
-            }
-            else
-            {
-                ViewData["messages"] = new List<string>
-            {
-                "Username or email already exists"
-            };
-                return View();
-            }
-
+                
+            return View("Login");
         }
     }
 }

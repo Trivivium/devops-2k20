@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using WebApplication.Entities;
+using WebApplication.Helpers;
+using WebApplication.Services;
 
 namespace WebApplication
 {
@@ -25,6 +27,8 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>();
+
+            services.AddTransient<TimelineService>();
             
             services.AddAuthentication(opts =>
                     {
@@ -58,6 +62,19 @@ namespace WebApplication
             
             app.UseStaticFiles();
             app.UseAuthentication();
+            
+            app.Use(async (context, next) => 
+            {
+                var dbContext = context.Request.HttpContext.RequestServices.GetRequiredService<DatabaseContext>();
+                
+                if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest)) 
+                {
+                    await TestingUtils.SetLatest(dbContext, latest, context.RequestAborted);
+                }
+                
+                await next.Invoke();
+            });
+            
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {

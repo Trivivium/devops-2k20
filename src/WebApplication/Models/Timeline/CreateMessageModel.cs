@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace WebApplication.Models.Timeline
 {
     public class CreateMessageModel
     {
-        public string Text { get; set; }
+        [Required]
+        public string Content { get; set; }
     }
 }
