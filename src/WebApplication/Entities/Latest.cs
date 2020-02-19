@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace WebApplication.Entities
 {
@@ -12,6 +12,7 @@ namespace WebApplication.Entities
 
     public class Latest
     {
+        [JsonIgnore]
         public int id { get; set; }
         public int latest { get; set; }
     }

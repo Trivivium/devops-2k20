@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Entities;
 using System.Threading;
@@ -14,33 +12,30 @@ namespace WebApplication.Helpers
     public  static class TestingUtils
     {
 
-        public static async void SetLatest(DatabaseContext databaseContext, int val)
+        public static async Task SetLatest(DatabaseContext databaseContext, int val, CancellationToken ct)
         {
-            var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1);
+            var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);
 
-            if (result == null) {
-                databaseContext.Latests.Add(
-                                           new Latest{
-                                               id=1,
-                                               latest=val
-                                           }
-                                           );
+            if (result == null)
+            { 
+                databaseContext.Latests.Add(new Latest
+                {
+                   id = 1,
+                   latest = val
+                });
             }
-            else {
+            else 
+            {
                 result.latest = val;
-                databaseContext.SaveChanges();
             }
+            
+            databaseContext.SaveChanges();
         }
-        public static async Task<Latest> GetLatest(DatabaseContext databaseContext)
+        public static async Task<Latest> GetLatest(DatabaseContext databaseContext, CancellationToken ct)
         {
-            var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1);
+            var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);
 
-            if (result == null) {
-                return null;
-            }
-            else {
-                return result;
-            }
+            return result;
         }
     }
 }

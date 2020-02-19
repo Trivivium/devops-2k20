@@ -215,11 +215,13 @@ namespace WebApplication.Controllers
 
             return RedirectToAction(nameof(Timeline));
         }
-        [HttpPost("/latest")]
+        
+        [HttpGet("/latest")]
         public async Task<IActionResult> GetLatest(CancellationToken ct)
         {
-            return Ok(TestingUtils.GetLatest(_databaseContext));
-
+            var latest = await TestingUtils.GetLatest(_databaseContext, ct);
+            
+            return Ok(latest);
         }
 
         [HttpGet("/AccessDenied")]
