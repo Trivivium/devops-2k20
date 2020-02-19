@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using WebApplication.Entities;
 using WebApplication.Helpers;
+using WebApplication.Services;
 
 namespace WebApplication
 {
@@ -26,6 +27,8 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>();
+
+            services.AddTransient<TimelineService>();
             
             services.AddAuthentication(opts =>
                     {

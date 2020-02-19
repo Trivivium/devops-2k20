@@ -1,17 +1,16 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Entities;
+using Microsoft.AspNetCore.Authorization;
+
+using WebApplication.Services;
 using WebApplication.Extensions;
 using WebApplication.Models.Timeline;
 using WebApplication.ViewModels;
 using WebApplication.ViewModels.Timeline;
-using WebApplication.Helpers;
 
 namespace WebApplication.Controllers
 {
@@ -19,28 +18,21 @@ namespace WebApplication.Controllers
     public class TimelineController : Controller
     {
         private const int ResultsPerPage = 30;
-        private readonly DatabaseContext _databaseContext;
+        private readonly TimelineService _timelineService;
+        private readonly UserService _userService;
 
-        public TimelineController(DatabaseContext databaseContext)
+        public TimelineController(TimelineService timelineService, UserService userService)
         {
-            _databaseContext = databaseContext ?? throw new ArgumentNullException(nameof(databaseContext));
+            _timelineService = timelineService;
+            _userService = userService;
         }
 
         [HttpGet("/")]
         public async Task<IActionResult> Timeline(CancellationToken ct)
         {
             ViewData["title"] = "Timeline";
-                
-            var messages = await _databaseContext.Messages
-                .Include(message => message.Author)
-                .Where(message => !message.IsFlagged)
-                .Where(message => _databaseContext.Followers
-                    .Where(f => f.WhoID == User.GetUserID())
-                    .Select(f => f.WhomID)
-                    .Contains(message.AuthorID))
-                .OrderByDescending(message => message.PublishDate)
-                .Take(ResultsPerPage)
-                .ToListAsync(ct);
+
+            var messages = await _timelineService.GetFollowerMessagesForUser(User.GetUserID(), ResultsPerPage, ct);
             
             var mapped = messages.Select(message => new TimelineMessageVM(
                 new UserVM(
@@ -70,14 +62,7 @@ namespace WebApplication.Controllers
         {
             ViewData["title"] = "Public Timeline";
 
-            var all = await _databaseContext.Messages.ToListAsync(ct);
-            
-            var messages = await  _databaseContext.Messages
-                .Include(message => message.Author)
-                .Where(message => !message.IsFlagged)
-                .OrderByDescending(message => message.PublishDate)
-                .Take(ResultsPerPage)
-                .ToListAsync(ct);
+            var messages = await _timelineService.GetMessagesForAnonymousUser(ResultsPerPage, ct);
 
             var mapped = messages.Select(message => new TimelineMessageVM(
                 new UserVM(
@@ -96,24 +81,15 @@ namespace WebApplication.Controllers
         [HttpGet("/{username}")]
         public async Task<IActionResult> UserTimeline(string username, CancellationToken ct)
         {
-            var author = await _databaseContext.Users
-                .Where(u => u.Username == username)    // TODO: Add case insensitive string comparison here if SQLite supports it.
-                .FirstOrDefaultAsync(ct);
+            var author = await _userService.GetUserFromUsername(username, ct);
 
             if (author == null)
             {
                 return NotFound();
             }
-
-            var isUserFollowing =await _databaseContext.Followers
-                .AnyAsync(f => f.WhoID == author.ID && f.WhomID == User.GetUserID(), ct);
-
-            var messages = await _databaseContext.Messages
-                .Include(message => message.Author)
-                .Where(message => message.AuthorID == author.ID)
-                .OrderByDescending(message => message.PublishDate)
-                .Take(ResultsPerPage)
-                .ToListAsync(ct);
+            
+            var messages = await _timelineService.GetMessagesForUser(author, ResultsPerPage, ct);
+            var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username, ct);
             
             var mapped = messages.Select(message => new TimelineMessageVM(
                 new UserVM(
@@ -142,22 +118,7 @@ namespace WebApplication.Controllers
         [HttpGet("/{username}/follow")]
         public async Task<IActionResult> AddFollow(string username, CancellationToken ct)
         {
-
-            var whom = await _databaseContext.Users
-                .Where(u => u.Username == username)    // TODO: Add case insensitive string comparison here if SQLite supports it.
-                .FirstOrDefaultAsync(ct);
-
-            if (whom == null)
-            {
-                return NotFound();
-            }
-            _databaseContext.Followers.Add(new Follower
-            {
-                WhomID = User.GetUserID(),
-                WhoID = whom.ID
-            });
-
-            await _databaseContext.SaveChangesAsync(ct);
+            await _userService.AddFollower(User.GetUserID(), username, ct);
 
             ViewData["messages"] = new List<string>
             {
@@ -169,19 +130,7 @@ namespace WebApplication.Controllers
         [HttpGet("/{username}/unfollow")]
         public async Task<IActionResult> AddUnfollow(string username, CancellationToken ct)
         {
-            var whom = await _databaseContext.Users
-                .Where(u => u.Username == username)    // TODO: Add case insensitive string comparison here if SQLite supports it.
-                .FirstOrDefaultAsync(ct);
-
-            if (whom == null)
-            {
-                return NotFound();
-            }
-            Follower follower = new Follower () { WhomID = User.GetUserID(), WhoID=whom.ID };
-            _databaseContext.Followers.Attach(follower);
-            _databaseContext.Followers.Remove(follower);
-            _databaseContext.SaveChanges();
-            await _databaseContext.SaveChangesAsync(ct);
+            await _userService.RemoveFollower(User.GetUserID(), username, ct);
 
             ViewData["messages"] = new List<string>
             {
@@ -195,23 +144,12 @@ namespace WebApplication.Controllers
         [HttpPost("/add_message")]
         public async Task<IActionResult> AddMessage(CreateMessageModel model, CancellationToken ct)
         {
-            if (!string.IsNullOrWhiteSpace(model.Text))
-            {
-                _databaseContext.Messages.Add(new Message
-                {
-                    AuthorID = User.GetUserID(),
-                    Text = model.Text.Trim(),
-                    PublishDate = DateTimeOffset.Now,
-                    IsFlagged = false
-                });
-
-                await _databaseContext.SaveChangesAsync(ct);
+            await _timelineService.CreateMessage(model, User.GetUserID(), ct);
                 
-                ViewData["messages"] = new List<string>
-                {
-                    "Your message was recorded"
-                };
-            }
+            ViewData["messages"] = new List<string>
+            {
+                "Your message was recorded"
+            };
 
             return RedirectToAction(nameof(Timeline));
         }
