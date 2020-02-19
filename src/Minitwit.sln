@@ -1,6 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{A15B9991-E37A-45FF-860A-BFF25D39E308}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +15,9 @@ Global
 		{A15B9991-E37A-45FF-860A-BFF25D39E308}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A15B9991-E37A-45FF-860A-BFF25D39E308}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A15B9991-E37A-45FF-860A-BFF25D39E308}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

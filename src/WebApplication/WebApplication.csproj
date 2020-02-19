@@ -1,7 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
+        <UserSecretsId>1d711674-8f55-4575-93ad-c8cf6477ada4</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,7 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="BCrypt.Net-Next" Version="3.2.1" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
     </ItemGroup>
 
 

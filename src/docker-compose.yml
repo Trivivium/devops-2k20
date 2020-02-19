@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  webapplication:
+    image: ${DOCKER_REGISTRY-}webapplication
+    build:
+      context: .
+      dockerfile: WebApplication/Dockerfile
+
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+       SA_PASSWORD: "ULA2V9sPbG"
+       ACCEPT_EULA: "Y"

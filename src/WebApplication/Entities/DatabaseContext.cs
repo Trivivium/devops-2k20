@@ -17,7 +17,7 @@ namespace WebApplication.Entities
         {
             base.OnConfiguring(options);
 
-            options.UseSqlite("Data Source=minitwit.db");
+            //options.UseSqlite("Data Source=minitwit.db");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

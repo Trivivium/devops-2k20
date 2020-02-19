@@ -9,8 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using WebApplication.Entities;
-using WebApplication.Helpers;
-using WebApplication.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication
 {
@@ -26,10 +25,14 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DatabaseContext>();
-
-            services.AddTransient<TimelineService>();
+            var connection = @"Server=db;Database=master;User=sa;Password=ULA2V9sPbG;";
+            services.AddDbContext<DatabaseContext>(options =>
+            {
+                options.UseSqlServer(connection);
+            });
             
+
+
             services.AddAuthentication(opts =>
                     {
                         opts.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -62,19 +65,6 @@ namespace WebApplication
             
             app.UseStaticFiles();
             app.UseAuthentication();
-            
-            app.Use(async (context, next) => 
-            {
-                var dbContext = context.Request.HttpContext.RequestServices.GetRequiredService<DatabaseContext>();
-                
-                if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest)) 
-                {
-                    await TestingUtils.SetLatest(dbContext, latest, context.RequestAborted);
-                }
-                
-                await next.Invoke();
-            });
-            
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {
