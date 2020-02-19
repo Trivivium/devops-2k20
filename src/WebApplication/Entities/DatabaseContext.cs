@@ -33,7 +33,6 @@ namespace WebApplication.Entities
             users.Property(user => user.ID).HasColumnName("user_id").ValueGeneratedOnAdd();
             users.Property(user => user.Username).HasColumnName("username");
             users.Property(user => user.Email).HasColumnName("email");
-            users.HasMany(user => user.Followers);
             users.HasMany(user => user.Messages);
 
             followers.HasKey(follower => new
@@ -41,6 +40,7 @@ namespace WebApplication.Entities
                 follower.WhoID,
                 follower.WhomID
             });
+            followers.HasOne(f => f.Who).WithMany(u => u.Followers).HasForeignKey(f => f.WhoID).OnDelete(DeleteBehavior.Restrict);
             
             messages.HasKey(message => message.ID);
             messages.Property(message => message.ID).HasColumnName("message_id").ValueGeneratedOnAdd();

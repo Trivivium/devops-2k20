@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using WebApplication.Entities;
-using Microsoft.EntityFrameworkCore;
+using WebApplication.Helpers;
+using WebApplication.Services;
 
 namespace WebApplication
 {
@@ -25,14 +27,13 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = @"Server=db;Database=master;User=sa;Password=ULA2V9sPbG;";
-            services.AddDbContext<DatabaseContext>(options =>
-            {
-                options.UseSqlServer(connection);
+            services.AddDbContext<DatabaseContext>(opts => {
+                opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
             });
+
+            services.AddTransient<TimelineService>();
+            services.AddTransient<UserService>();
             
-
-
             services.AddAuthentication(opts =>
                     {
                         opts.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -65,6 +66,19 @@ namespace WebApplication
             
             app.UseStaticFiles();
             app.UseAuthentication();
+            
+            app.Use(async (context, next) => 
+            {
+                var dbContext = context.Request.HttpContext.RequestServices.GetRequiredService<DatabaseContext>();
+                
+                if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest)) 
+                {
+                    await TestingUtils.SetLatest(dbContext, latest, context.RequestAborted);
+                }
+                
+                await next.Invoke();
+            });
+            
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {

@@ -51,7 +51,7 @@ namespace WebApplication.Services
         
         public async Task<User> GetUserFromUsername(string username, CancellationToken ct)
         {
-            var user = await _databaseContext.Users.FirstOrDefaultAsync(p => string.Equals(p.Username, username, StringComparison.InvariantCultureIgnoreCase), ct);
+            var user = await _databaseContext.Users.FirstOrDefaultAsync(p => p.Username == username, ct);
 
             if (user == null)
             {
@@ -72,7 +72,7 @@ namespace WebApplication.Services
             var user = await _databaseContext.Users
                 .Include(u => u.Followers)
                 .ThenInclude(f => f.Whom)
-                .Where(u => string.Equals(u.Username, username, StringComparison.CurrentCultureIgnoreCase))
+                .Where(u => u.Username == username)
                 .Take(resultsPerPage)
                 .FirstOrDefaultAsync(ct);
 
@@ -81,14 +81,14 @@ namespace WebApplication.Services
         
         public async Task AddFollower(string whoUsername, string whomUsername, CancellationToken ct)
         {
-            var who = await _databaseContext.Users.FirstOrDefaultAsync(u => string.Equals(u.Username, whoUsername, StringComparison.CurrentCultureIgnoreCase), ct);
+            var who = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whoUsername, ct);
 
             await AddFollower(who.ID, whomUsername, ct);
         }
 
         public async Task AddFollower(int whoID, string whomUsername, CancellationToken ct)
         {
-            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => string.Equals(u.Username, whomUsername, StringComparison.CurrentCultureIgnoreCase), ct);
+            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername, ct);
             
             _databaseContext.Followers.Add(new Follower
             {
@@ -101,8 +101,8 @@ namespace WebApplication.Services
         
         public async Task RemoveFollower(string usernameToUnfollow, string unfollowerUsername, CancellationToken ct)
         {
-            var userIdToUnfollow = await _databaseContext.Users.FirstOrDefaultAsync(u => string.Equals(u.Username, usernameToUnfollow, StringComparison.CurrentCultureIgnoreCase), ct);
-            var userIdOfFollowerToRemove = await _databaseContext.Users.FirstOrDefaultAsync(u => string.Equals(u.Username, unfollowerUsername, StringComparison.CurrentCultureIgnoreCase), ct);
+            var userIdToUnfollow = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == usernameToUnfollow, ct);
+            var userIdOfFollowerToRemove = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == unfollowerUsername, ct);
 
             var existingFollowerEntry = await _databaseContext.Followers.FirstOrDefaultAsync(p => p.WhoID == userIdToUnfollow.ID && p.WhomID == userIdOfFollowerToRemove.ID, ct);
 
@@ -113,7 +113,7 @@ namespace WebApplication.Services
 
         public async Task RemoveFollower(int whoID, string whomUsername, CancellationToken ct)
         {
-            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => string.Equals(u.Username, whomUsername, StringComparison.CurrentCultureIgnoreCase), ct);
+            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername, ct);
             
             var follower = new Follower
             {
