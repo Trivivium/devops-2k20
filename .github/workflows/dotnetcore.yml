@@ -6,8 +6,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./src/WebApplication
 
     steps:
     - uses: actions/checkout@v2
@@ -17,3 +15,4 @@ jobs:
         dotnet-version: 3.1.100
     - name: Build with dotnet
       run: dotnet build --configuration Release
+      working-directory: ./src/WebApplication
