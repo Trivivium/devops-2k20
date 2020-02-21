@@ -9,8 +9,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: clang-tidy check
-      uses: muxee/clang-tidy-action@0.0.1-rc1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
