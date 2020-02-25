@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{A15B9991-E37A-45FF-860A-BFF25D39E308}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "WebApplication\WebApplication.csproj", "{A15B9991-E37A-45FF-860A-BFF25D39E308}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniTwit.Tests", "..\MiniTwit.Tests\MiniTwit.Tests.csproj", "{BE0EEBFE-95CD-426E-A229-ED81467B5E24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,5 +23,15 @@ Global
 		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE0EEBFE-95CD-426E-A229-ED81467B5E24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE0EEBFE-95CD-426E-A229-ED81467B5E24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE0EEBFE-95CD-426E-A229-ED81467B5E24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE0EEBFE-95CD-426E-A229-ED81467B5E24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F86A7EC5-1238-4D8A-9785-71DA475EAE09}
 	EndGlobalSection
 EndGlobal
