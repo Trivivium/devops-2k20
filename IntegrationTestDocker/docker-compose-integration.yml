@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  integration:
+    build: 
+      context: .
+      dockerfile: Dockerfile.integration    
+    entrypoint: dotnet test
+    depends_on:
+      - webapplication
+      - db
+  
+  webapplication:
+    image: webapplication
+    build:
+      context: .
+      dockerfile: WebApplication/Dockerfile
+    depends_on:
+      - db
+
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+       SA_PASSWORD: "ULA2V9sPbG"
+       ACCEPT_EULA: "Y"

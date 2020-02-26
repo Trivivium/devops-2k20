@@ -41,7 +41,7 @@ namespace WebApplication.Controllers
             return Ok(latest);
         }
         
-        [HttpGet("/register")]
+        [HttpPost("/register")]
         public async Task<IActionResult> AddUser(RegisterModel model, CancellationToken ct)    // TODO Add request model
         {
             try
