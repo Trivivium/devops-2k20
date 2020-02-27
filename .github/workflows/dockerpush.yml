@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build image
-        run: docker build .
+        run: docker build . --file Dockerfile --tag image
         working-directory: ./src
 
       - name: Log into registry
@@ -70,5 +70,5 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag webapplication $IMAGE_ID:$VERSION
+          docker tag image $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
