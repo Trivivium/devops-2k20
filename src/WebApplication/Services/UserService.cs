@@ -28,11 +28,6 @@ namespace WebApplication.Services
             var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == model.Username, ct);
             var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == model.Email, ct);
             
-            if (model.RepeatedPassword != model.Password)
-            {
-                throw new CreateUserException("Repeated password is not the same as the password");
-            }
-
             if (usernameExists) 
             {
                 throw new CreateUserException("The provided username is already in use");
