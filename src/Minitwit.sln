@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "WebApplic
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniTwit.Tests", "MiniTwit.Tests\MiniTwit.Tests.csproj", "{3940A585-9026-456B-9C67-A23CA21CAE08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniTwit.Tests", "MiniTwit.Tests\MiniTwit.Tests.csproj", "{8A052E18-146C-49EC-B31E-247CFE9DC805}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +27,10 @@ Global
 		{6E5824A3-DE01-4C43-80DE-BA1D216B9BC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E5824A3-DE01-4C43-80DE-BA1D216B9BC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E5824A3-DE01-4C43-80DE-BA1D216B9BC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3940A585-9026-456B-9C67-A23CA21CAE08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3940A585-9026-456B-9C67-A23CA21CAE08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3940A585-9026-456B-9C67-A23CA21CAE08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3940A585-9026-456B-9C67-A23CA21CAE08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A052E18-146C-49EC-B31E-247CFE9DC805}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A052E18-146C-49EC-B31E-247CFE9DC805}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A052E18-146C-49EC-B31E-247CFE9DC805}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A052E18-146C-49EC-B31E-247CFE9DC805}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
