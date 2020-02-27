@@ -19,7 +19,7 @@ namespace MiniTwit.Tests
      *This factory gets hooked into xUnit as a fixture, and that link is the small bit of magic that allows our test code to talk to a running instance of our web API - powerful stuff! 
      *
      */
-    public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
+    public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup> where TStartup : class
     {
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -48,7 +48,8 @@ namespace MiniTwit.Tests
 
                     var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
-                    // Ensure the database is created.
+                    // Ensure the database is deleted and created each time.
+                    appDb.Database.EnsureDeleted();
                     appDb.Database.EnsureCreated();
 
                     try
