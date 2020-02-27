@@ -13,7 +13,5 @@ namespace WebApplication.Models.Authentication
 
         [Required]
         public string Password { get; set; }
-
-	    public string RepeatedPassword {get; set;}
     }
 }
