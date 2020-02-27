@@ -1,28 +1,23 @@
 ![Build Solution](https://github.com/trivivium/devops-2k20/workflows/Build%20Solution/badge.svg)
 
 
-                        / MiniTwit /
+# MiniTwit
+Twitter clone created by the best people in the world
+Build with .NET core, and ASP.NET
 
-           because writing todo lists is not fun
+## requirements
+docker, docker-compose.
 
+## How do I use it (in development)?
+    
+1. cd into `src/`
 
-    ~ What is MiniTwit?
+2. run `docker-compose up -d`
 
-      A SQLite and Flask powered twitter clone
+## How do I use it (In production)?
+1. cd into `src/`
 
-    ~ How do I use it?
+2. run `docker-compose -f docker-compose.yml -f production.yml up -d`
 
-      1. edit the configuration in the minitwit.py file
-
-      2. fire up a python shell and run this:
-
-         >>> from minitwit import init_db; init_db()
-
-      3. now you can run the minitwit.py file with your
-         python interpreter and the application will
-         greet you on http://localhost:5000/
-	
-    ~ Is it tested?
-
-      You betcha.  Run the `minitwit_tests.py` file to
-      see the tests pass.
+# Is it testable?
+lol no. (not yet)

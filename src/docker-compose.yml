@@ -5,7 +5,7 @@ services:
     image: webapplication
     build:
       context: .
-      dockerfile: WebApplication/Dockerfile
+      dockerfile: Dockerfile
     depends_on:
       - db
 
