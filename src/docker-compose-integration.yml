@@ -22,4 +22,5 @@ services:
       dockerfile: Dockerfile.integration
     depends_on:
       - webapplication
-      - db         
+      - db
+    entrypoint: dotnet test       
