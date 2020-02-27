@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  webapplication:
+    image: "docker.pkg.github.com/trivivium/devops-2k20/minitwit-group-b:latest"
+    tty: true
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "11501:80"
+  watchtower:
+    image: v2tec/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --interval 300
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+       SA_PASSWORD: "ULA2V9sPbG"
+       ACCEPT_EULA: "Y"

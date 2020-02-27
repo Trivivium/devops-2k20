@@ -20,7 +20,6 @@ namespace WebApplication.Helpers
             { 
                 databaseContext.Latests.Add(new Latest
                 {
-                   id = 1,
                    latest = val
                 });
             }

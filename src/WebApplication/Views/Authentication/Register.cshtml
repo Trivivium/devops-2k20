@@ -9,19 +9,15 @@
 <form asp-controller="Authentication" asp-action="Register" autocomplete="off">
     <label>
         <span>Username:</span>
-        <input type="text" name="username" value="">
+        <input type="text" name="username" value="" required>
     </label>
     <label>
         <span>Email:</span>
-        <input type="text" name="email" value="">
+        <input type="text" name="email" value="" required>
     </label>
     <label>
         <span>Password:</span>
-        <input type="password" name="password" id="register-password" value="">
-    </label>
-    <label>
-        <span>repeat Password</span>
-        <input type="password" name="repeatedPassword" id="register-password2" value="">
+        <input type="password" name="password" id="register-password" value="" required>
     </label>
     <br>
     <input type="submit" value="Sign Up">

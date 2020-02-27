@@ -3,9 +3,10 @@ version: '3.4'
 services:
   webapplication:
     image: webapplication
+    tty: true
     build:
       context: .
-      dockerfile: WebApplication/Dockerfile
+      dockerfile: Dockerfile
     depends_on:
       - db
 

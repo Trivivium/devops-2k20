@@ -52,8 +52,9 @@ namespace WebApplication.Entities
             );
             messages.Property(message => message.IsFlagged).HasColumnName("flagged");
             messages.HasOne(message => message.Author);
-            
-            latests.Property(latest => latest.id).HasColumnName("id");
+
+            latests.HasKey(latest => latest.id);
+            latests.Property(latest => latest.id).HasColumnName("id").ValueGeneratedOnAdd();
             latests.Property(latest => latest.latest).HasColumnName("latest");
         }
     }
