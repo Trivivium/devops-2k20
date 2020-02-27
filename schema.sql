@@ -30,6 +30,6 @@ create table message (
 */
 drop table if exists latest;
 create table latest (
-  id integer primary key,
+  id integer primary key autoincrement,
   latest integer
 );

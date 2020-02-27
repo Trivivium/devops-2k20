@@ -2,8 +2,8 @@ version: '3.4'
 
 services:
   webapplication:
-    tty: true
     image: webapplication
+    tty: true
     build:
       context: .
       dockerfile: Dockerfile
