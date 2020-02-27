@@ -1,4 +1,4 @@
-name: Docker
+name: Test & Push to Registry
 
 on:
   push:
