@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
 using WebApplication.Entities;
 using WebApplication.Helpers;
 using WebApplication.Services;
@@ -17,8 +16,13 @@ namespace WebApplication
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        private readonly IWebHostEnvironment _env; 
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+
+            _env = env;
             Configuration = configuration;
         }
 
@@ -27,9 +31,21 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DatabaseContext>(opts => {
-                opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
-            });
+
+
+            if (_env.IsDevelopment())
+            {
+                services.AddDbContext<DatabaseContext>(opts => {
+                    opts.UseSqlite("Data Source=minitwit.db");
+                });
+
+            }
+            else
+            { 
+                services.AddDbContext<DatabaseContext>(opts => {
+                    opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
+                });
+            }
 
             services.AddTransient<TimelineService>();
             services.AddTransient<UserService>();
@@ -50,6 +66,7 @@ namespace WebApplication
                 });
 
             services.AddControllersWithViews();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +75,8 @@ namespace WebApplication
             if (environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                
+
             }
             else
             {
