@@ -50,6 +50,11 @@ namespace WebApplication.Services
         {
             var user = await _userService.GetUserFromUsername(username, ct);
 
+            if (user == null)
+            {
+                return new List<Message>();
+            }
+            
             return await GetFollowerMessagesForUser(user.ID, resultsPerPage, ct);
         }
 
@@ -59,8 +64,8 @@ namespace WebApplication.Services
                 .Include(message => message.Author)
                 .Where(message => !message.IsFlagged)
                 .Where(message => _databaseContext.Followers
-                    .Where(f => f.WhoID == userID)
-                    .Select(f => f.WhomID)
+                    .Where(f => f.WhomID == userID)
+                    .Select(f => f.WhoID)
                     .Contains(message.AuthorID))
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)

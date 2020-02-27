@@ -17,7 +17,6 @@ using WebApplication.Services;
 
 namespace WebApplication.Controllers
 {
-    [Authorize]
     [Route("api")]
     [ApiController]
     public class ApiController : ControllerBase
@@ -33,7 +32,7 @@ namespace WebApplication.Controllers
             _userService = userService;
         }
 
-        [HttpGet("/latest")]
+        [HttpGet("latest")]
         public async Task<IActionResult> GetLatest(CancellationToken ct)
         {
             var latest = await TestingUtils.GetLatest(_databaseContext, ct);
@@ -41,7 +40,7 @@ namespace WebApplication.Controllers
             return Ok(latest);
         }
         
-        [HttpGet("/register")]
+        [HttpPost("register")]
         public async Task<IActionResult> AddUser(RegisterModel model, CancellationToken ct)    // TODO Add request model
         {
             try
@@ -60,7 +59,7 @@ namespace WebApplication.Controllers
             return NoContent();
         }
         
-        [HttpGet("/msgs")]
+        [HttpGet("msgs")]
         public async Task<IActionResult> GetMessages([FromQuery] int no = 20, CancellationToken ct = default)
         {
             var messages = await _timelineService.GetMessagesForAnonymousUser(no, ct);
@@ -73,7 +72,7 @@ namespace WebApplication.Controllers
             }));
         }
         
-        [HttpGet("/msgs/:username")]
+        [HttpGet("msgs/{username}")]
         public async Task<IActionResult> GetMessagesFromUser(string username, [FromQuery] int no = 20, CancellationToken ct = default)
         {
             var messages = await _timelineService.GetFollowerMessagesForUser(username, no, ct);
@@ -86,7 +85,7 @@ namespace WebApplication.Controllers
             }));
         }
         
-        [HttpPost("/msgs/:username")]
+        [HttpPost("msgs/{username}")]
         public async Task<IActionResult> AddMessageToUser(string username, CreateMessageModel model, CancellationToken ct)
         {
             await _timelineService.CreateMessage(model, username, ct);
@@ -94,18 +93,18 @@ namespace WebApplication.Controllers
             return NoContent();
         }
         
-        [HttpGet("/fllws/:username")]
+        [HttpGet("fllws/{username}")]
         public async Task<IActionResult> GetFollowersFromUser(string username, [FromQuery] int no = 20, CancellationToken ct = default)
         {
             var followers = await _userService.GetUserFollowers(username, no, ct);
 
             return Ok(new
             {
-                follows = followers.Select(f => f.Whom.Username)
+                follows = followers.Select(f => f.Who.Username)
             });
         }
         
-        [HttpPost("/fllws/:username")]
+        [HttpPost("fllws/{username}")]
         public async Task<IActionResult> AddOrRemoveFollowerFromUser(string username, ChangeUserFollowerModel model,  CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(model.Follow) && string.IsNullOrWhiteSpace(model.Unfollow))
@@ -119,7 +118,7 @@ namespace WebApplication.Controllers
             }
             else
             {
-                await _userService.RemoveFollower(username, model.Follow, ct);
+                await _userService.RemoveFollower(username, model.Unfollow, ct);
             }
 
             return NoContent();

@@ -25,27 +25,31 @@ namespace WebApplication.Services
 
         public async Task CreateUser(RegisterModel model, CancellationToken ct)
         {
-            var user = new User
-            {
-                Email = model.Email, 
-                Password = Bcr.BCrypt.HashPassword(model.Password), 
-                Username = model.Username
-            };
-      
-            var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == user.Username, ct);
-            var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == user.Email, ct);
+            var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == model.Username, ct);
+            var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == model.Email, ct);
             
-            if (!model.RepeatedPassword.Equals(user.Password))
+            if (model.RepeatedPassword != model.Password)
             {
                 throw new CreateUserException("Repeated password is not the same as the password");
             }
 
-            if (usernameExists || emailExists) 
+            if (usernameExists) 
             {
-                throw new CreateUserException("Repeated password is not the same as the password");
+                throw new CreateUserException("The provided username is already in use");
+            }
+
+            if (emailExists)
+            {
+                throw new CreateUserException("The provided email is already in use");
             }
             
-            _databaseContext.Add(user);
+            _databaseContext.Add(new User
+            {
+                Email = model.Email, 
+                Password = Bcr.BCrypt.HashPassword(model.Password), 
+                Username = model.Username
+            });
+            
             await _databaseContext.SaveChangesAsync(ct);
         }
         
@@ -55,7 +59,7 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                throw new InvalidOperationException("Unknown user");
+                return null;
             }
 
             return user;
@@ -70,13 +74,21 @@ namespace WebApplication.Services
         public async Task<List<Follower>> GetUserFollowers(string username, int resultsPerPage, CancellationToken ct)
         {
             var user = await _databaseContext.Users
-                .Include(u => u.Followers)
-                .ThenInclude(f => f.Whom)
                 .Where(u => u.Username == username)
-                .Take(resultsPerPage)
                 .FirstOrDefaultAsync(ct);
 
-            return user?.Followers ?? throw new InvalidOperationException($"Unknown user with username: {username}");
+            if (user == null)
+            {
+                throw new InvalidOperationException($"Unknown user with username: {username}");
+            }
+            
+            var followers = await _databaseContext.Followers
+                .Include(f => f.Who)
+                .Where(f => f.WhomID == user.ID)
+                .Take(resultsPerPage)
+                .ToListAsync(ct);
+
+            return followers;
         }
         
         public async Task AddFollower(string whoUsername, string whomUsername, CancellationToken ct)
@@ -101,10 +113,16 @@ namespace WebApplication.Services
         
         public async Task RemoveFollower(string usernameToUnfollow, string unfollowerUsername, CancellationToken ct)
         {
-            var userIdToUnfollow = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == usernameToUnfollow, ct);
-            var userIdOfFollowerToRemove = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == unfollowerUsername, ct);
+            var user = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == usernameToUnfollow, ct);
+            var userToRemove = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == unfollowerUsername, ct);
 
-            var existingFollowerEntry = await _databaseContext.Followers.FirstOrDefaultAsync(p => p.WhoID == userIdToUnfollow.ID && p.WhomID == userIdOfFollowerToRemove.ID, ct);
+            if (user == null || userToRemove == null)
+            {
+                return;
+            }
+            
+            var existingFollowerEntry = await _databaseContext.Followers
+                .FirstOrDefaultAsync(p => p.WhoID == userToRemove.ID && p.WhomID == user.ID, ct);
 
             _databaseContext.Followers.Remove(existingFollowerEntry);
             
