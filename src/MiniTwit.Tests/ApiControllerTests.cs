@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -9,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using WebApplication;
 using WebApplication.Entities;
 using WebApplication.Models.Authentication;
+using WebApplication.Models.Timeline;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,13 +19,8 @@ namespace MiniTwit.Tests
     public class ApiControllerTests : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
 
-        //http://*:5000
-
-        //private string _url = "http://localhost:11501";
 
         private readonly CustomWebApplicationFactory<Startup> _factory;
-
-        private readonly ITestOutputHelper _output;
 
         private  HttpClient _client;
 
@@ -34,15 +31,12 @@ namespace MiniTwit.Tests
             {
                 AllowAutoRedirect = false
             });
-            _output = output;
-
-
         }
 
 
-        [Theory]
-        [InlineData("/")]
-        [InlineData("/login")]
+        //[Theory]
+        //[InlineData("/")]
+        //[InlineData("/login")]
         public async Task Get_Endpoints(string url)
         {
             _client = _factory.CreateClient();
@@ -54,26 +48,6 @@ namespace MiniTwit.Tests
             response.Content.Headers.ContentType.ToString());
         }
 
-        
-       // [Fact]
-        public async Task TestLatest()
-        {
-            
-
-            var data = new { Email = "test@test",Password = "foo", Username = "test"};
-
-            var jsonContent = JsonConvert.SerializeObject(data);
-
-            var httpResponse = await _client.PostAsync("/api/register", new StringContent(jsonContent, UnicodeEncoding.UTF8, "application/json"));
-
-
-            Assert.True(httpResponse.StatusCode  == HttpStatusCode.NoContent);
-
-            //get latest here
-
-
-        }
-
 
         [Fact]
         public async Task Test_Register()
@@ -82,18 +56,42 @@ namespace MiniTwit.Tests
 
             var jsonContent = JsonConvert.SerializeObject(data);
 
-            var httpResponse = await _client.PostAsync("/api/register", new StringContent(jsonContent, UnicodeEncoding.UTF8, "application/json"));
-
-            var httpResponseLatest = await _client.GetAsync("/api/latest");
-
-
-            _output.WriteLine(httpResponseLatest.StatusCode.ToString());
+            var httpResponse = await _client.PostAsync("/api/register", new StringContent(jsonContent, Encoding.UTF8, "application/json"));
 
             //get latest here
 
+            Assert.True(httpResponse.IsSuccessStatusCode);
 
-            Assert.True(httpResponse.StatusCode == HttpStatusCode.NoContent);
+            //TODO: verify that latest was updated
 
+
+        }
+        [Fact]
+        public async Task TestLatest()
+        {
+            var httpResponse = await _client.GetAsync("/api/latest");
+            
+            Assert.True(httpResponse.IsSuccessStatusCode);
+
+            //get latest here
+            //TODO: verify that latest was updated
+
+        }
+
+        [Fact]
+        public async Task Test_Create_Msg()
+        {
+            var username = "a";
+
+            var myObject = (dynamic)new JObject();
+            myObject.Content = "Blub!";
+            myObject.Username = username;
+            myObject.Latest = 2;
+
+
+            var content = new StringContent(myObject.ToString(), Encoding.UTF8, "application/json");
+
+         
         }
 
 
