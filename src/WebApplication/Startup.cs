@@ -31,19 +31,11 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (_env.IsDevelopment())
-            {
-                services.AddDbContext<DatabaseContext>(opts => {
-                    opts.UseSqlite("Data Source=minitwit.db");
-                });
-
-            }
-            else
-            { 
-                services.AddDbContext<DatabaseContext>(opts => {
+            
+             services.AddDbContext<DatabaseContext>(opts => {
                     opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
                 });
-            }
+           
 
             services.AddTransient<TimelineService>();
             services.AddTransient<UserService>();
