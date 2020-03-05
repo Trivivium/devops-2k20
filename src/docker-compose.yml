@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
+    restart: on-failure
 
   db:
     image: "mcr.microsoft.com/mssql/server"
