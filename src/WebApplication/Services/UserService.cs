@@ -41,7 +41,7 @@ namespace WebApplication.Services
             _databaseContext.Add(new User
             {
                 Email = model.Email, 
-                Password = Bcr.BCrypt.HashPassword(model.Password), 
+                Password = Bcr.BCrypt.HashPassword(model.Pwd), 
                 Username = model.Username
             });
             
