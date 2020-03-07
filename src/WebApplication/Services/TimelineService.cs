@@ -33,7 +33,7 @@ namespace WebApplication.Services
 
             return messages;
         }
-
+// TODO This should probably use a string as the others.. or at least this class should have uniform standards
         public async Task<List<Message>> GetMessagesForUser(User author, int resultsPerPage, CancellationToken ct)
         {
             var messages = await _databaseContext.Messages

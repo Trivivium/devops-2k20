@@ -93,6 +93,7 @@ namespace WebApplication.Services
             await AddFollower(who.ID, whomUsername, ct);
         }
 
+        // TODO handle if whomusername doesn't exist in db, and create graceful error
         public async Task AddFollower(int whoID, string whomUsername, CancellationToken ct)
         {
             var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername, ct);

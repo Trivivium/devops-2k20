@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  webapplication:
+    image: webapplication
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "11501:80"
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+       SA_PASSWORD: "ULA2V9sPbG"
+       ACCEPT_EULA: "Y"
+  tester:
+    image: simtest
+    build:
+      context: ./tester/
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - webapplication
+

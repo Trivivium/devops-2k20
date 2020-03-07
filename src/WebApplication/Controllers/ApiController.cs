@@ -75,7 +75,8 @@ namespace WebApplication.Controllers
         [HttpGet("msgs/{username}")]
         public async Task<IActionResult> GetMessagesFromUser(string username, [FromQuery] int no = 20, CancellationToken ct = default)
         {
-            var messages = await _timelineService.GetFollowerMessagesForUser(username, no, ct);
+            var user = await _userService.GetUserFromUsername(username, ct);
+            var messages = await _timelineService.GetMessagesForUser(user, no, ct);
 
             return Ok(messages.Select(msg => new
             {
