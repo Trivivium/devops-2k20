@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApplication.Auth;
 using Bcr = BCrypt.Net;
 
 using WebApplication.Entities;
@@ -18,7 +19,7 @@ using WebApplication.Services;
 
 namespace WebApplication.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = AuthPolicies.Registered)]
     public class AuthenticationController : Controller
     {
         private readonly DatabaseContext _databaseContext;
@@ -54,8 +55,14 @@ namespace WebApplication.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.ID.ToString(), ClaimValueTypes.Integer, issuer),
                     new Claim(ClaimTypes.Name, user.Username, ClaimValueTypes.String, issuer),
-                    new Claim(ClaimTypes.Email, user.Email, ClaimValueTypes.Email)
+                    new Claim(ClaimTypes.Email, user.Email, ClaimValueTypes.Email, issuer),
+                    new Claim(ClaimTypes.Role, AuthRoles.Registered, ClaimValueTypes.String, issuer)
                 };
+
+                if (user.Username.Equals("admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, AuthRoles.Administrator, ClaimValueTypes.String, issuer));
+                }
             
                 var properties = new AuthenticationProperties
                 {

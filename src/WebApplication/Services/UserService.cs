@@ -134,8 +134,7 @@ namespace WebApplication.Services
                 WhoID = whoID
             };
             
-            _databaseContext.Followers.Attach(follower);
-            _databaseContext.Followers.Remove(follower);
+            _databaseContext.Followers.Attach(follower).State = EntityState.Deleted;
             _databaseContext.SaveChanges();
             
             await _databaseContext.SaveChangesAsync(ct);

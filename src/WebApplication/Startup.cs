@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using WebApplication.Auth;
 using WebApplication.Entities;
 using WebApplication.Helpers;
 using WebApplication.Services;
@@ -41,19 +43,25 @@ namespace WebApplication
             services.AddTransient<UserService>();
             
             services.AddAuthentication(opts =>
-                    {
-                        opts.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                        opts.RequireAuthenticatedSignIn = false;
-                    })
-                .AddCookie(opts =>
-                {
-                    opts.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-                    opts.SlidingExpiration = true;
-                    
-                    opts.LoginPath = new PathString("/login");
-                    opts.LogoutPath = new PathString("/logout");
-                    opts.AccessDeniedPath = new PathString("/AccessDenied");
-                });
+            {
+                opts.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                opts.RequireAuthenticatedSignIn = false;
+            })
+            .AddCookie(opts =>
+            {
+                opts.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                opts.SlidingExpiration = true;
+                
+                opts.LoginPath = new PathString("/login");
+                opts.LogoutPath = new PathString("/logout");
+                opts.AccessDeniedPath = new PathString("/AccessDenied");
+            });
+
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy(AuthPolicies.Registered, policy => policy.RequireRole(AuthRoles.Registered));
+                opts.AddPolicy(AuthPolicies.Administrator, policy => policy.RequireRole(AuthRoles.Administrator));
+            });
 
             services.AddControllersWithViews();
             

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
+using WebApplication.Auth;
 using WebApplication.Services;
 using WebApplication.Extensions;
 using WebApplication.Models.Timeline;
@@ -14,7 +14,7 @@ using WebApplication.ViewModels.Timeline;
 
 namespace WebApplication.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = AuthPolicies.Registered)]
     public class TimelineController : Controller
     {
         private const int ResultsPerPage = 30;
