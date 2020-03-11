@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Prometheus;
 using WebApplication.Auth;
 using WebApplication.Entities;
 using WebApplication.Helpers;
@@ -51,7 +53,6 @@ namespace WebApplication
             {
                 opts.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 opts.SlidingExpiration = true;
-                
                 opts.LoginPath = new PathString("/login");
                 opts.LogoutPath = new PathString("/logout");
                 opts.AccessDeniedPath = new PathString("/AccessDenied");
@@ -81,8 +82,23 @@ namespace WebApplication
                 app.UseExceptionHandler("/Home/Error");
             }
             
+            // Count requests for each endpoint including the method
+            var counter = Metrics.CreateCounter("api_path_counter", "Counts request to the API endpoints",
+                new CounterConfiguration()
+                {
+                    LabelNames = new[] {"method", "endpoint"}
+                });
+            app.Use((context, next) =>
+            {
+                counter.WithLabels(context.Request.Method, context.Request.Path).Inc();
+                return next();
+            });
+            
+            app.UseHttpMetrics();
             app.UseStaticFiles();
             app.UseAuthentication();
+            app.UseRouting();
+           
             
             app.Use(async (context, next) => 
             {
@@ -96,13 +112,17 @@ namespace WebApplication
                 await next.Invoke();
             });
             
-            app.UseRouting();
+            
+            
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {
+                //because ASP.NET Core 3
+                endpoints.MapMetrics();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Timeline}/{action=Timeline}/{id?}");
             });
+
         }
     }
 }

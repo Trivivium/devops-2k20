@@ -10,9 +10,11 @@ services:
     depends_on:
       - db
     restart: on-failure
-
+    
   db:
     image: "mcr.microsoft.com/mssql/server"
     environment:
        SA_PASSWORD: "ULA2V9sPbG"
        ACCEPT_EULA: "Y"
+
+      
