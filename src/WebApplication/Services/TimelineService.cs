@@ -38,6 +38,7 @@ namespace WebApplication.Services
         {
             var messages = await _databaseContext.Messages
                 .Include(message => message.Author)
+                .Where(message => message.IsFlagged == false)
                 .Where(message => message.AuthorID == author.ID)
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)
