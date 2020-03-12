@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplic
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication.Tests", "WebApplication.Tests\WebApplication.Tests.csproj", "{20275FD7-7131-4BA1-9F13-F857B5609FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,5 +21,9 @@ Global
 		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEFAC76B-29FC-4BA4-97EE-C1450CFF7856}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20275FD7-7131-4BA1-9F13-F857B5609FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20275FD7-7131-4BA1-9F13-F857B5609FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20275FD7-7131-4BA1-9F13-F857B5609FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20275FD7-7131-4BA1-9F13-F857B5609FC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
