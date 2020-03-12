@@ -13,13 +13,6 @@ namespace WebApplication.Entities
         public DatabaseContext(DbContextOptions options) : base(options)
         {}
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            base.OnConfiguring(options);
-
-            //options.UseSqlite("Data Source=minitwit.db");
-        }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
