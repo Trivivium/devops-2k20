@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Reflection;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+
 using Prometheus;
 using WebApplication.Auth;
 using WebApplication.Entities;
@@ -56,6 +61,25 @@ namespace WebApplication
             });
 
             services.AddControllersWithViews();
+
+            services.AddSwaggerGen(opts => 
+            {
+                opts.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "MiniTwit API",
+                    Version = "v1",
+                    Description = "Group B - ITU DevOps 2020 course Application",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Group B",
+                        Email = "thbi@itu.dk"
+                    }
+                });
+                
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                opts.IncludeXmlComments(xmlPath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,19 +95,27 @@ namespace WebApplication
             }
             
             // Count requests for each endpoint including the method
-            var counter = Metrics.CreateCounter("api_path_counter", "Counts request to the API endpoints", new CounterConfiguration()
-            {
-                LabelNames = new[] {"method", "endpoint"}
-            });
+             var counter = Metrics.CreateCounter("api_path_counter", "Counts request to the API endpoints", new CounterConfiguration()
+             {
+                 LabelNames = new[] {"method", "endpoint"}
+             });
             
-            app.Use((context, next) =>
-            {
-                counter.WithLabels(context.Request.Method, context.Request.Path).Inc();
-                return next();
-            });
+             app.Use((context, next) =>
+             {
+                 counter.WithLabels(context.Request.Method, context.Request.Path).Inc();
+                 return next();
+             });
             
             app.UseHttpMetrics();
             app.UseStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(setup => 
+            {
+                setup.SwaggerEndpoint("/swagger/v1/swagger.json", "MiniTwit API v1");
+                setup.RoutePrefix = "swagger";
+            });
+            
             app.UseAuthentication();
             app.UseRouting();
             
@@ -101,7 +133,6 @@ namespace WebApplication
             
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {
-                //because ASP.NET Core 3
                 endpoints.MapMetrics();
                 endpoints.MapControllerRoute(
                     name: "default",

@@ -15,6 +15,7 @@ using WebApplication.ViewModels.Timeline;
 namespace WebApplication.Controllers
 {
     [Authorize(Policy = AuthPolicies.Registered)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class TimelineController : Controller
     {
         private const int ResultsPerPage = 30;

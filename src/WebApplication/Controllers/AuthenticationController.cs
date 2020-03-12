@@ -20,6 +20,7 @@ using WebApplication.Services;
 namespace WebApplication.Controllers
 {
     [Authorize(Policy = AuthPolicies.Registered)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AuthenticationController : Controller
     {
         private readonly DatabaseContext _databaseContext;
