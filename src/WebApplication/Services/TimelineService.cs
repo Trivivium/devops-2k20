@@ -64,8 +64,8 @@ namespace WebApplication.Services
                 .Include(message => message.Author)
                 .Where(message => !message.IsFlagged)
                 .Where(message => _databaseContext.Followers
-                    .Where(f => f.WhomID == userID)
-                    .Select(f => f.WhoID)
+                    .Where(f => f.WhoID == userID)
+                    .Select(f => f.WhomID)
                     .Contains(message.AuthorID))
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)
