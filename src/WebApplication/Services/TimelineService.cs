@@ -34,9 +34,11 @@ namespace WebApplication.Services
 
             return messages;
         }
-// TODO This should probably use a string as the others.. or at least this class should have uniform standards
-        public async Task<List<Message>> GetMessagesForUser(User author, int resultsPerPage, CancellationToken ct)
+
+        public async Task<List<Message>> GetMessagesForUser(string username, int resultsPerPage, CancellationToken ct)
         {
+            var author = await _userService.GetUserFromUsername(username, ct);
+            
             var messages = await _databaseContext.Messages
                 .Include(message => message.Author)
                 .Where(message => message.AuthorID == author.ID)

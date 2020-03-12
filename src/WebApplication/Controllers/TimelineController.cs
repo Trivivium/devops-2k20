@@ -5,10 +5,13 @@ using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+
 using WebApplication.Auth;
+using WebApplication.Exceptions;
 using WebApplication.Services;
 using WebApplication.Extensions;
 using WebApplication.Models.Timeline;
+using WebApplication.ResponseModels;
 using WebApplication.ViewModels;
 using WebApplication.ViewModels.Timeline;
 
@@ -88,38 +91,54 @@ namespace WebApplication.Controllers
             {
                 return NotFound();
             }
+
+            UserTimelineVM vm;
+
+            try
+            {
+                var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, ct);
+                var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username, ct);
             
-            var messages = await _timelineService.GetMessagesForUser(author, ResultsPerPage, ct);
-            var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username, ct);
-            
-            var mapped = messages.Select(message => new TimelineMessageVM(
-                new UserVM(
-                    message.Author.ID,
-                    message.Author.Username,
-                    message.Author.Email
-                ),
-                message.Text,
-                message.PublishDate
-            )).ToList();
-            
-            var vm = new UserTimelineVM(
-                new UserVM(
-                    author.ID, 
-                    author.Username, 
-                    author.Email), 
-                isUserFollowing, 
-                mapped
-            );
+                var mapped = messages.Select(message => new TimelineMessageVM(
+                    new UserVM(
+                        message.Author.ID,
+                        message.Author.Username,
+                        message.Author.Email
+                    ),
+                    message.Text,
+                    message.PublishDate
+                )).ToList();
+
+                vm = new UserTimelineVM(
+                    new UserVM(
+                        author.ID,
+                        author.Username,
+                        author.Email),
+                    isUserFollowing,
+                    mapped
+                );
+            }
+            catch (UnknownUserException e)
+            {
+                return BadRequest(new ErrorResponse(e));
+            }
             
             ViewData["title"] = $"{author.Username}'s Timeline";
 
-            return View("UserTimeline", vm);
+            return View(nameof(UserTimeline), vm);
         }
 
         [HttpGet("/{username}/follow")]
         public async Task<IActionResult> AddFollow(string username, CancellationToken ct)
         {
-            await _userService.AddFollower(User.GetUserID(), username, ct);
+            try
+            {
+                await _userService.AddFollower(User.GetUserID(), username, ct);
+            }
+            catch (UnknownUserException e)
+            {
+                return BadRequest(new ErrorResponse(e));
+            }
 
             ViewData["messages"] = new List<string>
             {
@@ -131,11 +150,18 @@ namespace WebApplication.Controllers
         [HttpGet("/{username}/unfollow")]
         public async Task<IActionResult> AddUnfollow(string username, CancellationToken ct)
         {
-            await _userService.RemoveFollower(User.GetUserID(), username, ct);
+            try
+            {
+                await _userService.RemoveFollower(User.GetUserID(), username, ct);
+            }
+            catch (UnknownUserException e)
+            {
+                return BadRequest(new ErrorResponse(e));
+            }
 
             ViewData["messages"] = new List<string>
             {
-                $"You are now unfollowing {username}"
+                $"You are no longer following {username}"
             };
 
             return RedirectToAction(nameof(Timeline));
@@ -145,7 +171,14 @@ namespace WebApplication.Controllers
         [HttpPost("/add_message")]
         public async Task<IActionResult> AddMessage(CreateMessageModel model, CancellationToken ct)
         {
-            await _timelineService.CreateMessage(model, User.GetUserID(), ct);
+            try
+            {
+                await _timelineService.CreateMessage(model, User.GetUserID(), ct);
+            }
+            catch (UnknownUserException e)
+            {
+                return BadRequest(new ErrorResponse(e));
+            }
                 
             ViewData["messages"] = new List<string>
             {

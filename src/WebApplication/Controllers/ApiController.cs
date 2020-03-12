@@ -95,17 +95,24 @@ namespace WebApplication.Controllers
         /// <param name="no">The number of messages to return.</param>
         [HttpGet("msgs/{username}")]
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<MessageResponse>>> GetMessagesFromUser(string username, [FromQuery] int no = 20, CancellationToken ct = default)
         {
-            var user = await _userService.GetUserFromUsername(username, ct);
-            var messages = await _timelineService.GetMessagesForUser(user, no, ct);
-
-            return Ok(messages.Select(msg => new MessageResponse
+            try
             {
-                Content = msg.Text,
-                PublishDate = msg.PublishDate,
-                Author = msg.Author.Username
-            }));
+                var messages = await _timelineService.GetMessagesForUser(username, no, ct);
+
+                return Ok(messages.Select(msg => new MessageResponse
+                {
+                    Content = msg.Text,
+                    PublishDate = msg.PublishDate,
+                    Author = msg.Author.Username
+                }));
+            }
+            catch (UnknownUserException e)
+            {
+                return BadRequest(new ErrorResponse(e));
+            }
         }
         
         /// <summary>
@@ -114,10 +121,18 @@ namespace WebApplication.Controllers
         /// <param name="username">The username of the user to create the message for.</param>
         [HttpPost("msgs/{username}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddMessageToUser(string username, CreateMessageModel model, CancellationToken ct)
         {
-            await _timelineService.CreateMessage(model, username, ct);
-
+            try
+            {
+                await _timelineService.CreateMessage(model, username, ct);
+            }
+            catch (UnknownUserException e)
+            {
+                return BadRequest(new ErrorResponse(e));
+            }
+            
             return NoContent();
         }
         
@@ -129,14 +144,22 @@ namespace WebApplication.Controllers
         /// <returns>Returns a collection of followers for the user.</returns>
         [HttpGet("fllws/{username}")]
         [ProducesResponseType(typeof(FollowerCollectionResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<FollowerCollectionResponse>> GetFollowersFromUser(string username, [FromQuery] int no = 20, CancellationToken ct = default)
         {
-            var followers = await _userService.GetUserFollowers(username, no, ct);
-
-            return Ok(new FollowerCollectionResponse
+            try
             {
-                Follows = followers.Select(f => f.Who.Username).ToList()
-            });
+                var followers = await _userService.GetUserFollowers(username, no, ct);
+
+                return Ok(new FollowerCollectionResponse
+                {
+                    Follows = followers.Select(f => f.Who.Username).ToList()
+                });
+            }
+            catch (UnknownUserException e)
+            {
+                return BadRequest(new ErrorResponse(e));
+            }
         }
         
         /// <summary>
@@ -156,13 +179,24 @@ namespace WebApplication.Controllers
                 });
             }
 
-            if (!string.IsNullOrWhiteSpace(model.Follow))
+            try
             {
-                await _userService.AddFollower(username, model.Follow, ct);
+                if (!string.IsNullOrWhiteSpace(model.Follow))
+                {
+                    await _userService.AddFollower(username, model.Follow, ct);
+                }
+                else
+                {
+                    await _userService.RemoveFollower(username, model.Unfollow, ct);
+                }
             }
-            else
+            catch (UnknownUserException e)
             {
-                await _userService.RemoveFollower(username, model.Unfollow, ct);
+                return BadRequest(new ErrorResponse(e));
+            }
+            catch (UnknownFollowerRelationException e)
+            {
+                return BadRequest(new ErrorResponse(e));
             }
 
             return NoContent();
