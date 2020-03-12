@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 using WebApplication.Entities;
+using WebApplication.Exceptions;
 using WebApplication.Models.Timeline;
 
 namespace WebApplication.Services
@@ -52,7 +53,7 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                return new List<Message>();
+                throw new UnknownUserException($"Unknown user with username: ${username}");
             }
             
             return await GetFollowerMessagesForUser(user.ID, resultsPerPage, ct);
@@ -60,6 +61,13 @@ namespace WebApplication.Services
 
         public async Task<List<Message>> GetFollowerMessagesForUser(int userID, int resultsPerPage, CancellationToken ct)
         {
+            var userExists = await _databaseContext.Users.AnyAsync(user => user.ID == userID, ct);
+
+            if (!userExists)
+            {
+                throw new UnknownUserException($"Unknown user with ID: ${userID}.");
+            }
+            
             var messages = await _databaseContext.Messages
                 .Include(message => message.Author)
                 .Where(message => !message.IsFlagged)
@@ -78,14 +86,31 @@ namespace WebApplication.Services
         {
             var user = await _userService.GetUserFromUsername(username, ct);
 
+            if (user == null)
+            {
+                throw new UnknownUserException($"Unknown user with username: ${username}");
+            }
+            
             await CreateMessage(model, user.ID, ct);
         }
         
         public async Task CreateMessage(CreateMessageModel model, int userID, CancellationToken ct)
         {
+            var user = await _databaseContext.Users.SingleOrDefaultAsync(row => row.ID == userID, ct);
+
+            if (user == null)
+            {
+                throw new UnknownUserException($"Unknown user with ID: ${userID}.");
+            }
+            
+            await CreateMessage(model, user, ct);
+        }
+        
+        private async Task CreateMessage(CreateMessageModel model, User user, CancellationToken ct)
+        {
             _databaseContext.Messages.Add(new Message
             {
-                AuthorID = userID,
+                AuthorID = user.ID,
                 Text = model.Content.Trim(),
                 PublishDate = DateTimeOffset.Now,
                 IsFlagged = false
