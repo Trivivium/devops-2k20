@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Prometheus;
 using WebApplication.Auth;
 using WebApplication.Entities;
@@ -20,13 +18,8 @@ namespace WebApplication
 {
     public class Startup
     {
-
-        private readonly IWebHostEnvironment _env; 
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-
-            _env = env;
             Configuration = configuration;
         }
 
@@ -35,12 +28,10 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
              services.AddDbContext<DatabaseContext>(opts => {
-                    opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
-                });
+                opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
+            });
            
-
             services.AddTransient<TimelineService>();
             services.AddTransient<UserService>();
             
@@ -65,7 +56,6 @@ namespace WebApplication
             });
 
             services.AddControllersWithViews();
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,8 +64,6 @@ namespace WebApplication
             if (environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                
-
             }
             else
             {
@@ -83,11 +71,11 @@ namespace WebApplication
             }
             
             // Count requests for each endpoint including the method
-            var counter = Metrics.CreateCounter("api_path_counter", "Counts request to the API endpoints",
-                new CounterConfiguration()
-                {
-                    LabelNames = new[] {"method", "endpoint"}
-                });
+            var counter = Metrics.CreateCounter("api_path_counter", "Counts request to the API endpoints", new CounterConfiguration()
+            {
+                LabelNames = new[] {"method", "endpoint"}
+            });
+            
             app.Use((context, next) =>
             {
                 counter.WithLabels(context.Request.Method, context.Request.Path).Inc();
@@ -98,7 +86,6 @@ namespace WebApplication
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseRouting();
-           
             
             app.Use(async (context, next) => 
             {
@@ -112,8 +99,6 @@ namespace WebApplication
                 await next.Invoke();
             });
             
-            
-            
             app.UseAuthorization();
             app.UseEndpoints(endpoints => {
                 //because ASP.NET Core 3
@@ -122,7 +107,6 @@ namespace WebApplication
                     name: "default",
                     pattern: "{controller=Timeline}/{action=Timeline}/{id?}");
             });
-
         }
     }
 }
