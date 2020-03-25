@@ -13,6 +13,7 @@ using Bcr = BCrypt.Net;
 
 using WebApplication.Entities;
 using WebApplication.Exceptions;
+using WebApplication.Extensions;
 using WebApplication.Helpers;
 using WebApplication.Models.Authentication;
 using WebApplication.Services;
@@ -21,6 +22,7 @@ namespace WebApplication.Controllers
 {
     [Authorize(Policy = AuthPolicies.Registered)]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [ActionLogger]
     public class AuthenticationController : Controller
     {
         private readonly DatabaseContext _databaseContext;
