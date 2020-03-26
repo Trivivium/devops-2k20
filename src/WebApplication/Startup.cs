@@ -33,7 +33,7 @@ namespace WebApplication
         {
             Configuration = configuration;
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://134.209.245.96:9200"))
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://elastic:wpv47zN8@134.209.245.96:9200"))
                 {
                     IndexFormat = "minitwitlog-{0:yyyy.MM}",
                     AutoRegisterTemplate = true,
