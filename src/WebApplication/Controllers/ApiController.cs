@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using WebApplication.Entities;
 using WebApplication.Exceptions;
+using WebApplication.Extensions;
 using WebApplication.Helpers;
 using WebApplication.Models.Api;
 using WebApplication.Models.Authentication;
@@ -21,6 +22,7 @@ namespace WebApplication.Controllers
     [Route("api")]
     [ApiController]
     [Consumes("application/json")]
+    [ActionLogger]
     public class ApiController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;

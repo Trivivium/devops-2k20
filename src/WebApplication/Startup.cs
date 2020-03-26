@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-
+using Elasticsearch.Net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 using Prometheus;
+using Serilog;
+using Serilog.Formatting.Elasticsearch;
+using Serilog.Sinks.Elasticsearch;
 using WebApplication.Auth;
 using WebApplication.Entities;
 using WebApplication.Helpers;
@@ -23,12 +26,28 @@ namespace WebApplication
 {
     public class Startup
     {
+        private IConfiguration Configuration;
+        
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://134.209.245.96:9200"))
+                {
+                    IndexFormat = "minitwitlog-{0:yyyy.MM}",
+                    AutoRegisterTemplate = true,
+                    /*
+                     * will serialize the exception into the exception field as an
+                     * object with nested InnerException properties
+                     */
+                    CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage:true)
+                })
+                .CreateLogger();
+
         }
 
-        private IConfiguration Configuration;
+      
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -93,6 +112,7 @@ namespace WebApplication
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            
             
             // Count requests for each endpoint including the method
              var counter = Metrics.CreateCounter("api_path_counter", "Counts request to the API endpoints", new CounterConfiguration()

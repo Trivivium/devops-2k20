@@ -19,6 +19,7 @@ namespace WebApplication.Controllers
 {
     [Authorize(Policy = AuthPolicies.Registered)]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [ActionLogger]
     public class TimelineController : Controller
     {
         private const int ResultsPerPage = 30;
