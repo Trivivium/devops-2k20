@@ -96,7 +96,7 @@ namespace WebApplication.Tests
                 var service = new TimelineService(dbContext, userService);
 
                 var user = await userService.GetUserFromUsername("a", CancellationToken.None);
-                var messages = await service.GetMessagesForUser(user, 30, CancellationToken.None);
+                var messages = await service.GetMessagesForUser(user.Username, 30, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -129,7 +129,7 @@ namespace WebApplication.Tests
                 var service = new TimelineService(dbContext, userService);
 
                 var user = await userService.GetUserFromUsername("a", CancellationToken.None);
-                var messages = await service.GetMessagesForUser(user, 30, CancellationToken.None);
+                var messages = await service.GetMessagesForUser(user.Username, 30, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
             }

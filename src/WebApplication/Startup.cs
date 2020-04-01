@@ -44,7 +44,6 @@ namespace WebApplication
                     CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage:true)
                 })
                 .CreateLogger();
-
         }
 
       
