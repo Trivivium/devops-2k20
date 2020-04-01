@@ -10,8 +10,8 @@ namespace WebApplication.Extensions
         public override void OnActionExecuted(ActionExecutedContext context)
         {
             System.Net.IPAddress ipAddress = context.HttpContext.Connection.RemoteIpAddress;
-            string controllerName = ((ControllerActionDescriptor)context.ActionDescriptor).ControllerName;
-            string actionName = ((ControllerActionDescriptor)context.ActionDescriptor).ActionName;
+            var controllerName = ((ControllerActionDescriptor)context.ActionDescriptor).ControllerName;
+            var actionName = ((ControllerActionDescriptor)context.ActionDescriptor).ActionName;
 
             if (context.Exception == null)
             {
