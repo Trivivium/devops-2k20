@@ -4,6 +4,8 @@ services:
   webapplication:
     image: webapplication
     tty: true
+    ports:
+      - 80:80
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,5 +18,10 @@ services:
     environment:
        SA_PASSWORD: "ULA2V9sPbG"
        ACCEPT_EULA: "Y"
+    volumes:
+      - mssql-volume:/var/opt/mssql
+    ports:
+      - 1433:1433
 
-      
+volumes:
+  mssql-volume:
