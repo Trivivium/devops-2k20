@@ -4,6 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using Moq;
 
 using WebApplication.Entities;
 using WebApplication.Exceptions;
@@ -16,6 +19,16 @@ namespace WebApplication.Tests
 {
     public class TimelineServiceTests
     {
+        private static UserService CreateUserService(DatabaseContext dbContext)
+        {
+            return new UserService(dbContext, Mock.Of<ILogger<UserService>>());
+        }
+
+        private static TimelineService CreateTimelineService(DatabaseContext dbContext, UserService userService = null)
+        {
+            return new TimelineService(dbContext, userService ?? CreateUserService(dbContext), Mock.Of<ILogger<TimelineService>>());
+        }
+        
         [Fact]
         public async Task GetMessagesForAnonymousUser_Works()
         {
@@ -36,7 +49,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
                 var messages = await service.GetMessagesForAnonymousUser(30, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
@@ -64,7 +77,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
                 var messages = await service.GetMessagesForAnonymousUser(30, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
@@ -93,8 +106,8 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var userService = new UserService(dbContext);
-                var service = new TimelineService(dbContext, userService);
+                var userService = CreateUserService(dbContext);
+                var service = CreateTimelineService(dbContext, userService);
 
                 var user = await userService.GetUserFromUsername("a", CancellationToken.None);
                 var messages = await service.GetMessagesForUser(user.Username, 30, CancellationToken.None);
@@ -126,8 +139,8 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var userService = new UserService(dbContext);
-                var service = new TimelineService(dbContext, userService);
+                var userService = CreateUserService(dbContext);
+                var service = CreateTimelineService(dbContext, userService);
 
                 var user = await userService.GetUserFromUsername("a", CancellationToken.None);
                 var messages = await service.GetMessagesForUser(user.Username, 30, CancellationToken.None);
@@ -160,7 +173,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
                 var messages = await service.GetFollowerMessagesForUser("b", 30, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
@@ -177,7 +190,7 @@ namespace WebApplication.Tests
             await Assert.ThrowsAsync<UnknownUserException>(async () => {
                 await using (var dbContext = new DatabaseContext(options))
                 {
-                    var service = new TimelineService(dbContext, new UserService(dbContext));
+                    var service = CreateTimelineService(dbContext);
                     var messages = await service.GetFollowerMessagesForUser("b", 30, CancellationToken.None);
                 
                     Assert.Empty(messages);
@@ -209,7 +222,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
                 var messages = await service.GetFollowerMessagesForUser(2, 30, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
@@ -232,7 +245,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
                 var model = new CreateMessageModel
                 {
                     Content = "123"
@@ -258,7 +271,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
                 var model = new CreateMessageModel
                 {
                     Content = "123"
@@ -286,7 +299,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
                 var model = new CreateMessageModel
                 {
                     Content = "123"

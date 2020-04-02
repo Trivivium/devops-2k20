@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using WebApplication.Entities;
 using WebApplication.Exceptions;
@@ -16,11 +17,13 @@ namespace WebApplication.Services
     {
         private readonly DatabaseContext _databaseContext;
         private readonly UserService _userService;
+        private readonly ILogger<TimelineService> _logger;
 
-        public TimelineService(DatabaseContext dbContext, UserService userService)
+        public TimelineService(DatabaseContext dbContext, UserService userService, ILogger<TimelineService> logger)
         {
             _databaseContext = dbContext;
             _userService = userService;
+            _logger = logger;
         }
 
         public async Task<List<Message>> GetMessagesForAnonymousUser(int resultsPerPage, CancellationToken ct)
@@ -120,6 +123,8 @@ namespace WebApplication.Services
             });
 
             await _databaseContext.SaveChangesAsync(ct);
+            
+            _logger.LogInformation($"Created message for user: {user.Username}.");
         }
     }
 }
