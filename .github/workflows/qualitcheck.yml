@@ -16,3 +16,6 @@ jobs:
     - name: Run integration tests
       working-directory: ./src/
       run: docker-compose -f docker-compose.test.yml up --build --exit-code-from tester
+    - name: Run unit tests
+      run: dotnet test
+      working-directory: ./src/WebApplication.Tests
