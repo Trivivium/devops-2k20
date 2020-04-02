@@ -52,7 +52,7 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
              services.AddDbContext<DatabaseContext>(opts => {
-                opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
+                opts.UseSqlServer("Server=db;Database=MiniTwit;User=sa;Password=ULA2V9sPbG;");
             });
            
             services.AddTransient<TimelineService>();
