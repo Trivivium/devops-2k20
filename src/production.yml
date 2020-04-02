@@ -22,3 +22,10 @@ services:
     environment:
        SA_PASSWORD: "ULA2V9sPbG"
        ACCEPT_EULA: "Y"
+    volumes:
+      - mssql-volume:/var/opt/mssql
+    ports:
+      - "1433:1433"
+
+volumes:
+  mssql-volume:
