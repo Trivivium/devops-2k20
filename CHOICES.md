@@ -205,6 +205,25 @@ Github Action. We didn't do this initially out of fear for opening up our docker
 host to the world, as that seemed relatively risky. However, with more research,
 we could probably find a way to do this in a secure way.
 
-
 ## Issue tracking / Kanban: Github 
+Generally speaking we never really put much thought into how we would track
+issues and how we would separate the tasks at hand. As we already had Github
+open, we simply created all our tasks on the issue board there and never thought
+about alternatives. 
+Alternatively we could have created a Trello board or a Jira project, however
+with the limited scope of the project it seemed extensive to include a whole
+other system just for task management. As previously mentioned we generally
+tried limiting the number of different tools we used, and create a stack with as
+few different tools as possible.
 
+### Evaluation
+We definitely had problems with our taskmanagement and ended up doing some of the
+tasks too late, so we definitely had to change our workflow, and would have if
+we could do it over. I think the main issue was that we didn't consult the issue
+list often enough, and possibly didn't put deadlines on, as well as not
+assigning people to issues. Ideally we should probably have improved our overall
+development process earlier on, but this is covered in the [Post
+Mortem](postmortem.md). We probably wouldn't have gotten any alternative
+important features by choosing another service, as the problems we had were
+based on structural team problems rather than the tool itself. Having the issues
+closely aligned with the pull-request flow was definitely a helpful feature.
