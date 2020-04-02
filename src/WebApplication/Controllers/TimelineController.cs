@@ -40,12 +40,14 @@ namespace WebApplication.Controllers
             var messages = await _timelineService.GetFollowerMessagesForUser(User.GetUserID(), ResultsPerPage, ct);
             
             var mapped = messages.Select(message => new TimelineMessageVM(
+                message.ID,
                 new UserVM(
                     message.Author.ID, 
                     message.Author.Username, 
                     message.Author.Email),
                 message.Text,
-                message.PublishDate
+                message.PublishDate,
+                message.IsFlagged
             )).ToList();
             
             var vm = new UserTimelineVM(
@@ -67,15 +69,19 @@ namespace WebApplication.Controllers
         {
             ViewData["title"] = "Public Timeline";
 
-            var messages = await _timelineService.GetMessagesForAnonymousUser(ResultsPerPage, ct);
+            var includeFlaggedMessages = User.IsInRole(AuthRoles.Administrator);
+            
+            var messages = await _timelineService.GetMessagesForAnonymousUser(ResultsPerPage, includeFlaggedMessages, ct);
 
             var mapped = messages.Select(message => new TimelineMessageVM(
+                message.ID,
                 new UserVM(
                     message.Author.ID, 
                     message.Author.Username, 
                     message.Author.Email),
                 message.Text,
-                message.PublishDate
+                message.PublishDate,
+                message.IsFlagged
             )).ToList();
             
             var vm = new UserTimelineVM(null, false, mapped);
@@ -97,17 +103,20 @@ namespace WebApplication.Controllers
 
             try
             {
-                var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, ct);
+                var includeFlaggedMessages = User.IsInRole(AuthRoles.Administrator);
+                var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, includeFlaggedMessages, ct);
                 var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username, ct);
             
                 var mapped = messages.Select(message => new TimelineMessageVM(
+                    message.ID,
                     new UserVM(
                         message.Author.ID,
                         message.Author.Username,
                         message.Author.Email
                     ),
                     message.Text,
-                    message.PublishDate
+                    message.PublishDate,
+                    message.IsFlagged
                 )).ToList();
 
                 vm = new UserTimelineVM(
@@ -184,6 +193,64 @@ namespace WebApplication.Controllers
             ViewData["messages"] = new List<string>
             {
                 "Your message was recorded"
+            };
+
+            return RedirectToAction(nameof(Timeline));
+        }
+
+        [HttpPost("flag/{id:int}")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = AuthPolicies.Administrator)]
+        public async Task<IActionResult> AddFlagToMessage(int id, CancellationToken ct)
+        {
+            if (id < 1)
+            {
+                return BadRequest(new ErrorResponse("The provided message ID cannot be less than 1."));
+            }
+            
+            try
+            {
+                await _timelineService.AddFlagToMessage(id, ct);
+            }
+            catch (UnknownMessageException exception)
+            {
+                // TODO: Add logging of the exception, when the 'feature/audit-logging' branch has been merged into master
+                
+                return BadRequest(new ErrorResponse(exception));
+            }
+            
+            ViewData["messages"] = new List<string>
+            {
+                "The message was successfully flagged and hidden from non-administrator users."
+            };
+
+            return RedirectToAction(nameof(Timeline));
+        }
+        
+        [HttpPost("unflag/{id:int}")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = AuthPolicies.Administrator)]
+        public async Task<IActionResult> RemoveFlagFromMessage(int id, CancellationToken ct)
+        {
+            if (id < 1)
+            {
+                return BadRequest(new ErrorResponse("The provided message ID cannot be less than 1."));
+            }
+            
+            try
+            {
+                await _timelineService.RemoveFlagFromMessage(id, ct);
+            }
+            catch (UnknownMessageException exception)
+            {
+                // TODO: Add logging of the exception, when the 'feature/audit-logging' branch has been merged into master
+                
+                return BadRequest(new ErrorResponse(exception));
+            }
+            
+            ViewData["messages"] = new List<string>
+            {
+                "The message was successfully been un-flagged and is now visible to all users."
             };
 
             return RedirectToAction(nameof(Timeline));
