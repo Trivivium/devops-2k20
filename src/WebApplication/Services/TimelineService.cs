@@ -56,7 +56,7 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                throw new UnknownUserException($"Unknown user with username: ${username}");
+                throw new UnknownUserException($"Unknown user with username: {username}");
             }
             
             return await GetFollowerMessagesForUser(user.ID, resultsPerPage, ct);
@@ -68,7 +68,7 @@ namespace WebApplication.Services
 
             if (!userExists)
             {
-                throw new UnknownUserException($"Unknown user with ID: ${userID}.");
+                throw new UnknownUserException($"Unknown user with ID: {userID}.");
             }
             
             var messages = await _databaseContext.Messages
@@ -91,7 +91,7 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                throw new UnknownUserException($"Unknown user with username: ${username}");
+                throw new UnknownUserException($"Unknown user with username: {username}");
             }
             
             await CreateMessage(model, user.ID, ct);
@@ -103,7 +103,7 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                throw new UnknownUserException($"Unknown user with ID: ${userID}.");
+                throw new UnknownUserException($"Unknown user with ID: {userID}.");
             }
             
             await CreateMessage(model, user, ct);

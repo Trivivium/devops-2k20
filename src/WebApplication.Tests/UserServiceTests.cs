@@ -131,7 +131,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
                     var service = new UserService(dbContext);
                     
@@ -149,12 +149,11 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
-                {
-                    var service = new UserService(dbContext);
+                var service = new UserService(dbContext);
 
-                    await service.IsUserFollowing(2, "a", CancellationToken.None);
-                });
+                var isFollowing = await service.IsUserFollowing(2, "a", CancellationToken.None);
+                
+                Assert.False(isFollowing);
             }
         }
         
@@ -256,7 +255,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
                     var service = new UserService(dbContext);
 
@@ -280,7 +279,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
                     var service = new UserService(dbContext);
 
@@ -329,7 +328,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
                     var service = new UserService(dbContext);
 
@@ -353,7 +352,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
                     var service = new UserService(dbContext);
 
@@ -404,7 +403,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
                     var service = new UserService(dbContext);
 
@@ -429,7 +428,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
                     var service = new UserService(dbContext);
 
@@ -456,7 +455,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await Assert.ThrowsAsync<UnknownFollowerRelationException>(async () => 
                 {
                     var service = new UserService(dbContext);
 
@@ -487,7 +486,7 @@ namespace WebApplication.Tests
             {
                 var service = new UserService(dbContext);
                 
-                await service.RemoveFollower(1, "b", CancellationToken.None);
+                await service.RemoveFollower(2, "a", CancellationToken.None);
             }
             
             await using (var dbContext = new DatabaseContext(options))
@@ -507,7 +506,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
                     var service = new UserService(dbContext);
 
@@ -533,7 +532,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
                     var service = new UserService(dbContext);
 
@@ -560,7 +559,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await Assert.ThrowsAsync<UnknownFollowerRelationException>(async () => 
                 {
                     var service = new UserService(dbContext);
 

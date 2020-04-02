@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 using WebApplication.Entities;
+using WebApplication.Exceptions;
 using WebApplication.Models.Timeline;
 using WebApplication.Services;
 
@@ -172,14 +173,16 @@ namespace WebApplication.Tests
             var options = new DbContextOptionsBuilder<DatabaseContext>()
                 .UseInMemoryDatabase(nameof(GetFollowerMessagesForUser_UsingUsername_ReturnsEmptyCollection_WhenUserDoesNotExist))
                 .Options;
-
-            await using (var dbContext = new DatabaseContext(options))
-            {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
-                var messages = await service.GetFollowerMessagesForUser("b", 30, CancellationToken.None);
+            
+            await Assert.ThrowsAsync<UnknownUserException>(async () => {
+                await using (var dbContext = new DatabaseContext(options))
+                {
+                    var service = new TimelineService(dbContext, new UserService(dbContext));
+                    var messages = await service.GetFollowerMessagesForUser("b", 30, CancellationToken.None);
                 
-                Assert.Empty(messages);
-            }
+                    Assert.Empty(messages);
+                }
+            });
         }
         
         [Fact]
@@ -261,7 +264,7 @@ namespace WebApplication.Tests
                     Content = "123"
                 };
 
-                await Assert.ThrowsAsync<InvalidOperationException>(async () => {
+                await Assert.ThrowsAsync<UnknownUserException>(async () => {
                     await service.CreateMessage(model, "a", CancellationToken.None);
                 });
             }

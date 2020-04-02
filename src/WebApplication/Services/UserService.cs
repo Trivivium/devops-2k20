@@ -53,7 +53,7 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                throw new UnknownUserException($"Unknown user with username: ${username}");
+                throw new UnknownUserException($"Unknown user with username: {username}");
             }
 
             return user;
@@ -73,7 +73,7 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                throw new UnknownUserException($"Unknown user with username: ${username}");
+                throw new UnknownUserException($"Unknown user with username: {username}");
             }
             
             var followers = await _databaseContext.Followers
@@ -91,7 +91,7 @@ namespace WebApplication.Services
 
             if (who == null)
             {
-                throw new UnknownUserException($"Unknown user to follow: ${whoUsername}.");
+                throw new UnknownUserException($"Unknown user to follow: {whoUsername}.");
             }
             
             await AddFollower(who.ID, whomUsername, ct);
@@ -103,7 +103,7 @@ namespace WebApplication.Services
 
             if (whom == null)
             {
-                throw new UnknownUserException($"Unknown user to follow: ${whomUsername}.");
+                throw new UnknownUserException($"Unknown user to follow: {whomUsername}.");
             }
             
             _databaseContext.Followers.Add(new Follower
@@ -122,12 +122,12 @@ namespace WebApplication.Services
 
             if (user == null)
             {
-                throw new UnknownUserException($"Unknown user to unfollow: ${usernameToUnfollow}.");
+                throw new UnknownUserException($"Unknown user to unfollow: {usernameToUnfollow}.");
             }
 
             if (userToRemove == null)
             {
-                throw new UnknownUserException($"Unknown user to remove as follower: ${unfollowerUsername}.");
+                throw new UnknownUserException($"Unknown user to remove as follower: {unfollowerUsername}.");
             }
             
             var entry = await _databaseContext.Followers
@@ -145,13 +145,22 @@ namespace WebApplication.Services
             await _databaseContext.SaveChangesAsync(ct);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="whoID">Who follows</param>
+        /// <param name="whomUsername">Whom is followed</param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        /// <exception cref="UnknownUserException"></exception>
+        /// <exception cref="UnknownFollowerRelationException"></exception>
         public async Task RemoveFollower(int whoID, string whomUsername, CancellationToken ct)
         {
             var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername, ct);
             
             if (whom == null)
             {
-                throw new UnknownUserException($"Unknown user to unfollow: ${whomUsername}.");
+                throw new UnknownUserException($"Unknown user to unfollow: {whomUsername}.");
             }
             
             var entry = await _databaseContext.Followers
@@ -163,6 +172,8 @@ namespace WebApplication.Services
             {
                 throw new UnknownFollowerRelationException(whom.ID, whoID);
             }
+
+            _databaseContext.Followers.Remove(entry);
 
             await _databaseContext.SaveChangesAsync(ct);
         }
