@@ -9,7 +9,7 @@ We started by creating a monitoring tool collecting data about the `U buntu?`
 service, and then started pen-testing their service. After approximately a week
 of gathering monitoring data we had enough information to confidently evaluate
 whether Group C were violating their Service-Level agreement. The following
-order is not therefore not a reflection of the order in which the tasks were
+order is therefore not a reflection of the order in which the tasks were
 done, but merely with the intent of readability.
 
 ### Creating a monitoring tool
