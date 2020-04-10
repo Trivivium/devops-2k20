@@ -32,4 +32,127 @@ PLEASE ADD SOME SHIT HERE **ADAM**
 
 
 ## Security review of own service
-PLEASE ADD SOME SHIT HERE **ANDERS**
+**First draft**
+
+### Define Assets 
+
+**Our assets are:**
+
+Source Code:
+If source code contains any secrets such as passwords and the like.
+Information how the system is built and so forth.
+
+Access to the Database:
+If access is gained to the database it is possible to administer the database,
+giving you full access to the database users and all data contained within the
+database.
+
+Access to audit data: 
+The audit data shows all auditable events that occurred within the application.
+
+(Do not know if vulnerabilities and threats are required)
+
+**Vulnerabilities:**
+
+- Open ports
+
+
+**Threats:**
+
+- Denial of service
+- ClickJacking
+
+
+### Risk Accessement Matrix
+
+
+|          | Negligible | Marginal          | Critical     | Catastrophic |
+|----------|------------|-------------------|--------------|--------------|
+| Certain  |            | Denial of service |              |              |
+| Likely   |            |                   |              |              |
+| Possible |            |                   |              | DB           |
+| Unlikely |            |                   | ClickJacking |              |
+| Rare     |            |                   |              |              |
+
+
+
+## Penetration Testing of our own system
+
+Tools: 
+- Kali Linux
+- Nmap 
+- SqlMap
+- Metasploit
+- OWASP ZAP
+
+**Procedure**:
+
+- **Step 1**  
+The first step is to make a port scan of the system. We use Nmap to get an overview of Enable OS detection and version detection
+and open ports.
+````
+nmap -v -A 46.101.119.181
+````
+
+
+The most worrying finding is the open port at 1433 because it is our database.
+ 
+ - **Step 2**
+ 
+We will then try to test if we are vulnerable to Injection flaws, such as SQL injection. 
+SQL injection is the highest security risk according to OWASP
+and in that case, it makes sense to try that on our system.
+We used SqlMap to figure out if any of our inputs are injectable. If not, then SqlMap will return - 
+*[WARNING] heuristic (basic) test shows that POST parameter 'username' might not be injectable*
+That is, our system is not vulnerable regarding SQL injection. All tested parameters do not appear to be injectable.
+ 
+ - **Step 3** 
+ Information about the DB
+
+Because the Database port is open it is possible to acquire information about the database
+We will use a tool from Metasploit that will enumerate MSSQL configuration setting.
+
+In essence, the module will perform a series of configuration audits and security checks against our Microsoft SQL Server database.
+
+The password is required for the module to work. It given that you already to acquire the password using MSSQL Dictionary Attack.
+
+
+Using auxiliary/admin/mssql/mssql_sql will allow for simple SQL statements to be executed against an MSSQL instance given appropriate credentials.
+That is, if someone knows our password then they had all they did need to delete our database.
+
+- **Step 4**
+
+We have also tried to use another tool called OWASP ZAP.
+
+It is an open-source web application security scanner and its main goal is to find vulnerabilities in web applications.
+It will run different attack scenarios against the web application and record the results.
+
+The results that we got from OWASP ZAP were:
+````
+X-Frame-Options Header Not Set
+
+Risk: Medium
+
+X-Frame-Options header is not included in the HTTP response to protect against 'ClickJacking' attacks.
+````
+and
+
+````
+X-Content-Type-Options Header Missing
+
+Risk: Low
+
+The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, 
+potentially causing the response body to be interpreted
+
+````
+
+A comment on the first result is that it can be solved by setting the X-Frame-Options HTTP header and ensuring it is set
+ on all web pages returned by our web application.
+
+A comment on the second result  is that it can be solved by ensuring that the web application sets the Content-Type header appropriately and that it sets the X-Content-Type-Options
+Ensure that the application/web server sets the Content-Type header appropriately and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.
+
+Overall, OWASP ZAP did not find any **critical** vulnerabilities and both vulnerabilities that OWASP ZAP reported can
+be solved with few lines of code in our application. It is all about setting headers correctly concerning security.
+
