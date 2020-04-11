@@ -80,7 +80,7 @@ namespace WebApplication.Controllers
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<List<MessageResponse>>> GetMessages([FromQuery] int no = 20, CancellationToken ct = default)
         {
-            var messages = await _timelineService.GetMessagesForAnonymousUser(no, ct);
+            var messages = await _timelineService.GetMessagesForAnonymousUser(no, includeFlaggedMessages: false, ct);
 
             return Ok(messages.Select(msg => new MessageResponse()
             {
@@ -102,7 +102,7 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var messages = await _timelineService.GetMessagesForUser(username, no, ct);
+                var messages = await _timelineService.GetMessagesForUser(username, no, includeFlaggedMessages: false, ct);
 
                 return Ok(messages.Select(msg => new MessageResponse
                 {

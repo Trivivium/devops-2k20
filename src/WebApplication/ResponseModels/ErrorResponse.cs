@@ -16,6 +16,18 @@ namespace WebApplication.ResponseModels
         public ErrorResponse()
         { }
 
+        public ErrorResponse(string message)
+        {
+            if(message == null)
+                throw new ArgumentNullException(nameof(message));
+            
+            if(string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException($"The provided error response message cannot be empty or only whitespace.", nameof(message));
+            
+            Status = StatusCodes.Status400BadRequest;
+            Error = message;
+        }
+
         public ErrorResponse(Exception exception)
         {
             Status = StatusCodes.Status400BadRequest;
