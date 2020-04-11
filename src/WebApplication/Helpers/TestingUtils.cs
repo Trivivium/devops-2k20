@@ -32,7 +32,7 @@ namespace WebApplication.Helpers
             
             databaseContext.SaveChanges();
             }
-            catch (System.Threading.Tasks.TaskCanceledException ex) {
+            catch (System.Threading.Tasks.TaskCanceledException) {
                 // TODO log error somehow.
             }
         }

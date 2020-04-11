@@ -94,8 +94,8 @@ namespace WebApplication.Controllers
         {
             try
             {
-                var author = await _userService.GetUserFromUsername(username, ct);
                 UserTimelineVM vm;
+                var author = await _userService.GetUserFromUsername(username, ct);
 
                 var includeFlaggedMessages = User.IsInRole(AuthRoles.Administrator);
                 var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, includeFlaggedMessages, ct);
@@ -121,15 +121,16 @@ namespace WebApplication.Controllers
                     isUserFollowing,
                     mapped
                 );
+                ViewData["title"] = $"{author.Username}'s Timeline";
+
+                return View(nameof(UserTimeline), vm);
             }
             catch (UnknownUserException e)
             {
                 return BadRequest(new ErrorResponse(e));
             }
-            
-            ViewData["title"] = $"{author.Username}'s Timeline";
+            return NotFound();
 
-            return View(nameof(UserTimeline), vm);
         }
 
         [HttpGet("/{username}/follow")]
