@@ -14,6 +14,8 @@ namespace WebApplication.Helpers
 
         public static async Task SetLatest(DatabaseContext databaseContext, int val, CancellationToken ct)
         {
+            try {
+
             var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);
 
             if (result == null)
@@ -29,6 +31,10 @@ namespace WebApplication.Helpers
             }
             
             databaseContext.SaveChanges();
+            }
+            catch (System.Threading.Tasks.TaskCanceledException ex) {
+                // TODO log error somehow.
+            }
         }
         public static async Task<Latest> GetLatest(DatabaseContext databaseContext, CancellationToken ct)
         {

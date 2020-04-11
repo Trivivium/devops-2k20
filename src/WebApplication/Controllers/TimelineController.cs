@@ -263,23 +263,14 @@ namespace WebApplication.Controllers
 
             return View();
         }
-        [HttpGet("/not-found")]
-        public IActionResult AccessDenied()
-        {
-            ViewData["title"] = "Access denied";
 
-            return View();
-        }
-
-        [HttpGet("/error")]
         [AllowAnonymous]
         public IActionResult Error()
         {
             ViewData["title"] = "Error";
             
 
-            return View(new ErrorViewModel
-            { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }
