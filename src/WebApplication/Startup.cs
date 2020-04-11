@@ -123,7 +123,7 @@ namespace WebApplication
                  counter.WithLabels(context.Request.Method, context.Request.Path).Inc();
                  return next();
              });
-            
+            app.UseStatusCodePages();
             app.UseHttpMetrics();
             app.UseStaticFiles();
 

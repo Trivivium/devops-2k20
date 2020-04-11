@@ -92,17 +92,11 @@ namespace WebApplication.Controllers
         [HttpGet("/{username}")]
         public async Task<IActionResult> UserTimeline(string username, CancellationToken ct)
         {
-            var author = await _userService.GetUserFromUsername(username, ct);
-
-            if (author == null)
-            {
-                return NotFound();
-            }
-
-            UserTimelineVM vm;
-
             try
             {
+                var author = await _userService.GetUserFromUsername(username, ct);
+                UserTimelineVM vm;
+
                 var includeFlaggedMessages = User.IsInRole(AuthRoles.Administrator);
                 var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, includeFlaggedMessages, ct);
                 var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username, ct);
