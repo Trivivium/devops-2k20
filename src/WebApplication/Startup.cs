@@ -109,7 +109,7 @@ namespace WebApplication
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/error");
             }
 
             // Count requests for each endpoint including the method
