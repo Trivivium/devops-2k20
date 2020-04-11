@@ -122,8 +122,47 @@ everything on Heroku, which provides hosting for a docker-container and
 automatically handles everything without any critical downtime.
 
 ## Monitoring: Prometheus & Grafana
+We chose Prometheus as the primary monitoring tool and Grafana for data visualization.
+No one from the team had a lot of experience working with monitoring tools. It meant that no one had expectations or any preference regarding choosing the monitoring tool. 
+Taking a look at [Prometheus's comparison to alternatives](https://prometheus.io/docs/introduction/comparison/) (even though it should be taken with a grain of salt as they
+made the comparison themself) it made it clear that it did fit into the setup because Prometheus is designed to
+monitor targets as in servers, containers and the like.
+
+Also, supporting active monitoring by periodically scrap our application by pulling data from this target.
+A pull-based system enables us to rate control in which it will pull the data. 
+With a push-based system we may have the risk of sending too much data towards our server and in worst case crash it. 
+
+To set up Prometheus and Grafana is just a matter of creating docker containers. 
+
+### Evaluation
+
+In our case, it must integrate well into our current setup, and it is well-supported. That is, there is some kind of official
+library for the tool that we want to use, and it is actively maintained.
+[Prometheus has an official GitHub repository for .NET](https://github.com/prometheus-net/prometheus-net) with examples of getting started which fits with our criteria.
+Alternatives like Graphite there is no official GitHub repository, and a [simple search on Github](https://github.com/search?q=graphite+.net) reveals it. It also the fact that if the community is large enough
+there is a possibility of finding a solution to your problem in a short amount of time.
+
 
 ## Logging: ELK
+
+We chose Elasticsearch, Logstash and Kibana (ELK stack) as logging tools.
+Firstly, it enables us to do modern, scalable and user-friendly logging, and it is also one of the most popular
+choices at the moment.
+Because it promotes centralized logging we chose to set up the ELK stack on another droplet, and the fact that
+Elasticsearch requires a larger amount of memory.
+
+To setup the ELK stack is just a matter of creating docker containers. 
+
+### Evaluation
+As we prioritize ease of integration of the toolset that we choose, it felt that the ELK stack was the right choice.
+We tried to look for alternatives to avoid making the easy choice of choosing the most popular one.
+We had a look at [LogDNA](https://logdna.com) that is Elasticsearch and Kibana combined. It also supports containerized 
+environments even though they suggest using Kubernetes with their product.
+We want to ensure that libraries used for this product are well-supported and maintained for .NET. We found a Git
+Repository named [RedBear.LogDNA](https://github.com/RedBearSys/RedBear.LogDNA) where a library resides for connecting to logDNA from .NET. 
+Studying the issues that were made did make the choice easy for us as some issues stated that the library leads to system
+failure was not something that we wanted to work with. 
+Furthermore, it should be simple to acquire help which did not look like to be the case.
 
 ## Integration tests: Python3.8
 We wanted to test the API used by the simulator to make sure that this would

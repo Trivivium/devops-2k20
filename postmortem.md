@@ -63,7 +63,7 @@ The audit data shows all auditable events that occurred within the application.
 - ClickJacking
 
 
-### Risk Accessement Matrix
+### Risk Assessment Matrix
 
 
 |          | Negligible | Marginal          | Critical     | Catastrophic |
@@ -78,6 +78,8 @@ The audit data shows all auditable events that occurred within the application.
 
 ## Penetration Testing of our own system
 
+Our approach is to do both a penetration test, and a security audit. 
+
 Tools: 
 - Kali Linux
 - Nmap 
@@ -87,6 +89,17 @@ Tools:
 
 **Procedure**:
 
+In the security audit, we tried to follow OWASP guidelines for developing a secure application [Application Security Verification Standard](https://owasp-aasvs.readthedocs.io/en/latest/)
+One of the points is to [Verify that secrets, API keys, and passwords are not included in the source code, or online source code repositories](https://owasp-aasvs.readthedocs.io/en/latest/requirement-2.29.html)
+We realized that we are storing the admin password to the database in our docker-compose file. 
+It is not optimal unless you can change the password in our system which you cannot.
+That is a huge security flaw and must be solved.
+
+The solution to this would be to change the password and make the password an environmental constant instead.
+
+Next is the penetration test in which we have divided into several steps.
+
+
 - **Step 1**  
 The first step is to make a port scan of the system. We use Nmap to get an overview of Enable OS detection and version detection
 and open ports.
@@ -94,12 +107,11 @@ and open ports.
 nmap -v -A 46.101.119.181
 ````
 
-
-The most worrying finding is the open port at 1433 because it is our database.
+The most worrying finding is the open port at 1433 because it is our database. Also, in continuation of our admin database password being available in source code makes it quite straightforward to access our database. 
  
  - **Step 2**
- 
-We will then try to test if we are vulnerable to Injection flaws, such as SQL injection. 
+
+Firstly, we will try to test if we are vulnerable to Injection flaws, such as SQL injection. 
 SQL injection is the highest security risk according to OWASP
 and in that case, it makes sense to try that on our system.
 We used SqlMap to figure out if any of our inputs are injectable. If not, then SqlMap will return - 
@@ -107,18 +119,19 @@ We used SqlMap to figure out if any of our inputs are injectable. If not, then S
 That is, our system is not vulnerable regarding SQL injection. All tested parameters do not appear to be injectable.
  
  - **Step 3** 
- Information about the DB
+Information about the DB
 
 Because the Database port is open it is possible to acquire information about the database
 We will use a tool from Metasploit that will enumerate MSSQL configuration setting.
 
 In essence, the module will perform a series of configuration audits and security checks against our Microsoft SQL Server database.
 
-The password is required for the module to work. It given that you already to acquire the password using MSSQL Dictionary Attack.
-
+The password is required for the module to work and because the password is accessible in our source code it is not 
+difficult to acquire.
 
 Using auxiliary/admin/mssql/mssql_sql will allow for simple SQL statements to be executed against an MSSQL instance given appropriate credentials.
-That is, if someone knows our password then they had all they did need to delete our database.
+That is, if someone knows our password then they had all they did need to delete our database. Also, because we have
+stated it would be catastrophic in our risk matrix if something happens to our database.  
 
 - **Step 4**
 
