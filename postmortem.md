@@ -100,12 +100,12 @@ The solution to this would be to change the password and make the password an en
 Next is the penetration test in which we have divided into several steps.
 
 
-- **Step 1**  
+- **Step 1**
 The first step is to make a port scan of the system. We use Nmap to get an overview of Enable OS detection and version detection
 and open ports.
-````
+```
 nmap -v -A 46.101.119.181
-````
+```
 
 The most worrying finding is the open port at 1433 because it is our database. Also, in continuation of our admin database password being available in source code makes it quite straightforward to access our database. 
  
@@ -119,7 +119,7 @@ We used SqlMap to figure out if any of our inputs are injectable. If not, then S
 That is, our system is not vulnerable regarding SQL injection. All tested parameters do not appear to be injectable.
  
  - **Step 3** 
-Information about the DB
+Information about the DB.
 
 Because the Database port is open it is possible to acquire information about the database
 We will use a tool from Metasploit that will enumerate MSSQL configuration setting.
@@ -131,7 +131,7 @@ difficult to acquire.
 
 Using auxiliary/admin/mssql/mssql_sql will allow for simple SQL statements to be executed against an MSSQL instance given appropriate credentials.
 That is, if someone knows our password then they had all they did need to delete our database. Also, because we have
-stated it would be catastrophic in our risk matrix if something happens to our database.  
+stated it would be catastrophic in our risk matrix if something happens to our database.
 
 - **Step 4**
 
@@ -141,16 +141,16 @@ It is an open-source web application security scanner and its main goal is to fi
 It will run different attack scenarios against the web application and record the results.
 
 The results that we got from OWASP ZAP were:
-````
+```
 X-Frame-Options Header Not Set
 
 Risk: Medium
 
 X-Frame-Options header is not included in the HTTP response to protect against 'ClickJacking' attacks.
-````
+```
 and
 
-````
+```
 X-Content-Type-Options Header Missing
 
 Risk: Low
@@ -158,7 +158,7 @@ Risk: Low
 The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, 
 potentially causing the response body to be interpreted
 
-````
+```
 
 A comment on the first result is that it can be solved by setting the X-Frame-Options HTTP header and ensuring it is set
  on all web pages returned by our web application.
