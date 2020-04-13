@@ -51,7 +51,7 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-             services.AddDbContext<DatabaseContext>(opts => {
+            services.AddDbContext<DatabaseContext>(opts => {
                 opts.UseSqlServer("Server=db;Database=MiniTwit;User=sa;Password=ULA2V9sPbG;");
             });
            
@@ -98,6 +98,8 @@ namespace WebApplication
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 opts.IncludeXmlComments(xmlPath);
             });
+
+            services.AddTransient<TestingUtils>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -139,11 +141,11 @@ namespace WebApplication
             
             app.Use(async (context, next) => 
             {
-                var dbContext = context.Request.HttpContext.RequestServices.GetRequiredService<DatabaseContext>();
+                var utils = context.Request.HttpContext.RequestServices.GetRequiredService<TestingUtils>();
 
                 if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest))
                 {
-                    await TestingUtils.SetLatest(dbContext, latest, context.RequestAborted);
+                    await utils.SetLatest(latest, context.RequestAborted);
                 }
                 
                 await next.Invoke();
