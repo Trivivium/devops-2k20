@@ -19,6 +19,7 @@ using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 using WebApplication.Auth;
 using WebApplication.Entities;
+using WebApplication.Filters;
 using WebApplication.Helpers;
 using WebApplication.Services;
 
@@ -78,7 +79,9 @@ namespace WebApplication
                 opts.AddPolicy(AuthPolicies.Administrator, policy => policy.RequireRole(AuthRoles.Administrator));
             });
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options => {
+                options.Filters.Add<OperationCanceledExceptionFilter>();
+            });
 
             services.AddSwaggerGen(opts => 
             {
