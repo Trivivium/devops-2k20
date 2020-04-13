@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using Bcr = BCrypt.Net;
 
@@ -17,10 +18,12 @@ namespace WebApplication.Services
     public class UserService
     {
         private readonly DatabaseContext _databaseContext;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(DatabaseContext databaseContext)
+        public UserService(DatabaseContext databaseContext, ILogger<UserService> logger)
         {
             _databaseContext = databaseContext;
+            _logger = logger;
         }
 
         public async Task CreateUser(RegisterModel model, CancellationToken ct)
@@ -46,6 +49,8 @@ namespace WebApplication.Services
             });
             
             await _databaseContext.SaveChangesAsync(ct);
+            
+            _logger.LogInformation($"Created user with username: {model.Username}.");
         }
         
         public async Task<User> GetUserFromUsername(string username, CancellationToken ct)
@@ -96,6 +101,8 @@ namespace WebApplication.Services
             }
             
             await AddFollower(who.ID, whomUsername, ct);
+            
+            _logger.LogInformation($"Added user with username '{whoUsername}' as follower of: {whomUsername}.");
         }
         
         public async Task AddFollower(int whoID, string whomUsername, CancellationToken ct)
@@ -114,6 +121,8 @@ namespace WebApplication.Services
             });
 
             await _databaseContext.SaveChangesAsync(ct);
+            
+            _logger.LogInformation($"Added user with user ID '{whoID}' as follower of: {whom.Username}.");
         }
         
         public async Task RemoveFollower(string usernameToUnfollow, string unfollowerUsername, CancellationToken ct)
@@ -144,6 +153,8 @@ namespace WebApplication.Services
             _databaseContext.Followers.Remove(entry);
             
             await _databaseContext.SaveChangesAsync(ct);
+            
+            _logger.LogInformation($"Removed user with username '{userToRemove.Username}' as a follower of: {user.Username}.");
         }
 
         /// <summary>
@@ -177,6 +188,8 @@ namespace WebApplication.Services
             _databaseContext.Followers.Remove(entry);
 
             await _databaseContext.SaveChangesAsync(ct);
+            
+            _logger.LogInformation($"Removed user with user ID '{whoID}' as a follower of: {whom.Username}.");
         }
     }
 }

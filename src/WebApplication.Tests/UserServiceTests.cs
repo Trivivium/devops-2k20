@@ -4,6 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using Moq;
 
 using WebApplication.Entities;
 using WebApplication.Exceptions;
@@ -16,6 +19,11 @@ namespace WebApplication.Tests
 {
     public class UserServiceTests
     {
+        private static UserService CreateUserService(DatabaseContext dbContext)
+        {
+            return new UserService(dbContext, Mock.Of<ILogger<UserService>>());
+        }
+        
         [Fact]
         public async Task CreateUser_Works()
         {
@@ -25,7 +33,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 var model = new RegisterModel { Username = "a", Email = "a@a.a", Pwd = "a" };
 
                 await service.CreateUser(model, CancellationToken.None);
@@ -63,7 +71,7 @@ namespace WebApplication.Tests
             {
                 
                 await Assert.ThrowsAsync<CreateUserException>(async () => {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
                     var model = new RegisterModel { Username = "a", Email = "a@a.a", Pwd = "a" };
 
                     await service.CreateUser(model, CancellationToken.None);
@@ -88,7 +96,7 @@ namespace WebApplication.Tests
             {
                 
                 await Assert.ThrowsAsync<CreateUserException>(async () => {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
                     var model = new RegisterModel { Username = "a", Email = "a@a.a", Pwd = "a" };
 
                     await service.CreateUser(model, CancellationToken.None);
@@ -114,7 +122,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 var user = await service.GetUserFromUsername("b", CancellationToken.None);
                 
                 Assert.NotNull(user);
@@ -133,7 +141,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
                     
                     await service.GetUserFromUsername("b", CancellationToken.None);
                 });
@@ -149,7 +157,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
 
                 var isFollowing = await service.IsUserFollowing(2, "a", CancellationToken.None);
                 
@@ -179,7 +187,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 var result = await service.GetUserFollowers("a", 5, CancellationToken.None);
                 
                 Assert.Equal(2, result.Count);
@@ -208,7 +216,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 var result = await service.GetUserFollowers("a", 5, CancellationToken.None);
                 
                 Assert.Equal(2, result.Count);
@@ -233,7 +241,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 
                 await service.AddFollower("a", "b", CancellationToken.None);
             }
@@ -257,7 +265,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.AddFollower("a", "b", CancellationToken.None);
                 });
@@ -281,7 +289,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.AddFollower("a", "b", CancellationToken.None);
                 });
@@ -306,7 +314,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 
                 await service.AddFollower(1, "b", CancellationToken.None);
             }
@@ -330,7 +338,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.AddFollower(1, "b", CancellationToken.None);
                 });
@@ -354,7 +362,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () =>
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.AddFollower(1, "b", CancellationToken.None);
                 });
@@ -381,7 +389,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 
                 await service.RemoveFollower("a", "b", CancellationToken.None);
             }
@@ -405,7 +413,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.RemoveFollower("a", "b", CancellationToken.None);
                 });
@@ -430,7 +438,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.RemoveFollower("a", "b", CancellationToken.None);
                 });
@@ -457,7 +465,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownFollowerRelationException>(async () => 
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.RemoveFollower("a", "b", CancellationToken.None);
                 });
@@ -484,7 +492,7 @@ namespace WebApplication.Tests
 
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new UserService(dbContext);
+                var service = CreateUserService(dbContext);
                 
                 await service.RemoveFollower(2, "a", CancellationToken.None);
             }
@@ -508,7 +516,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.RemoveFollower(1, "b", CancellationToken.None);
                 });
@@ -534,7 +542,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownUserException>(async () => 
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.RemoveFollower(1, "b", CancellationToken.None);
                 });
@@ -561,7 +569,7 @@ namespace WebApplication.Tests
             {
                 await Assert.ThrowsAsync<UnknownFollowerRelationException>(async () => 
                 {
-                    var service = new UserService(dbContext);
+                    var service = CreateUserService(dbContext);
 
                     await service.RemoveFollower(1, "b", CancellationToken.None);
                 });

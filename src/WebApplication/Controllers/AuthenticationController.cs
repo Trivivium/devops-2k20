@@ -8,13 +8,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 using WebApplication.Auth;
 using Bcr = BCrypt.Net;
 
 using WebApplication.Entities;
 using WebApplication.Exceptions;
 using WebApplication.Extensions;
-using WebApplication.Helpers;
 using WebApplication.Models.Authentication;
 using WebApplication.Services;
 
@@ -27,11 +28,13 @@ namespace WebApplication.Controllers
     {
         private readonly DatabaseContext _databaseContext;
         private readonly UserService _service;
+        private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController(DatabaseContext databaseContext, UserService service)
+        public AuthenticationController(DatabaseContext databaseContext, UserService service, ILogger<AuthenticationController> logger)
         {
             _databaseContext = databaseContext ?? throw new ArgumentNullException(nameof(databaseContext));
             _service = service;
+            _logger = logger;
         }
 
         [AllowAnonymous]
@@ -87,14 +90,20 @@ namespace WebApplication.Controllers
                 "Invalid login credentials"
             };
 
+            _logger.LogWarning($"Login failed using username: {credentials.Username}.");
+            
             return View();
         }
         
         [HttpGet("/logout")]
         public async Task<IActionResult> Logout()
         {
+            var username = User.GetUsername();
+            
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
+            _logger.LogInformation($"Successfully logged out user with username: {username}.");
+            
             return RedirectToAction("Timeline", "Timeline");
         }
         
@@ -114,9 +123,13 @@ namespace WebApplication.Controllers
             try
             {
                 await _service.CreateUser(credentials, ct);
+                
+                _logger.LogInformation($"Successfully registered user with username: {credentials.Username}.");
             }
             catch (CreateUserException exception)
             {
+                _logger.LogWarning(exception, "Failed to register user.");
+                
                 ViewData["messages"] = new List<string>
                 {
                     exception.Message
