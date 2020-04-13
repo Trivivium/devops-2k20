@@ -333,7 +333,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
 
                 await service.AddFlagToMessage(1, CancellationToken.None);
             }
@@ -357,7 +357,7 @@ namespace WebApplication.Tests
             {
                 await using (var dbContext = new DatabaseContext(options))
                 {
-                    var service = new TimelineService(dbContext, new UserService(dbContext));
+                    var service = CreateTimelineService(dbContext);
 
                     await service.AddFlagToMessage(1, CancellationToken.None);
                 }
@@ -381,7 +381,7 @@ namespace WebApplication.Tests
             
             await using (var dbContext = new DatabaseContext(options))
             {
-                var service = new TimelineService(dbContext, new UserService(dbContext));
+                var service = CreateTimelineService(dbContext);
 
                 await service.RemoveFlagFromMessage(1, CancellationToken.None);
             }
@@ -405,7 +405,7 @@ namespace WebApplication.Tests
             {
                 await using (var dbContext = new DatabaseContext(options))
                 {
-                    var service = new TimelineService(dbContext, new UserService(dbContext));
+                    var service = CreateTimelineService(dbContext);
 
                     await service.RemoveFlagFromMessage(1, CancellationToken.None);
                 }
