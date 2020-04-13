@@ -1,7 +1,11 @@
+using System;
+
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Entities;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
 
 namespace WebApplication.Helpers
 {
@@ -9,27 +13,43 @@ namespace WebApplication.Helpers
      * Helper functions for the API spec tests
      * https://github.com/itu-devops/2020-spring/tree/master/sessions/session_02/API%20Spec
      */
-    public  static class TestingUtils
+    public class TestingUtils
     {
+        private readonly ILogger<TestingUtils> _logger;
+        private readonly DatabaseContext _database;
 
-        public static async Task SetLatest(DatabaseContext databaseContext, int val, CancellationToken ct)
+        public TestingUtils(ILogger<TestingUtils> logger, DatabaseContext database)
         {
-            var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);
-
-            if (result == null)
-            { 
-                databaseContext.Latests.Add(new Latest
-                {
-                   latest = val
-                });
-            }
-            else 
-            {
-                result.latest = val;
-            }
-            
-            databaseContext.SaveChanges();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _database = database ?? throw new ArgumentNullException(nameof(database));
         }
+
+        public async Task SetLatest(int val, CancellationToken ct)
+        {
+            try 
+            {
+                var result = await _database.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);
+
+                if (result == null)
+                { 
+                    _database.Latests.Add(new Latest
+                    {
+                       latest = val
+                    });
+                }
+                else 
+                {
+                    result.latest = val;
+                }
+                
+                _database.SaveChanges();
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogInformation("Operation canceled while updating latest value.");
+            }
+        }
+        
         public static async Task<Latest> GetLatest(DatabaseContext databaseContext, CancellationToken ct)
         {
             var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);

@@ -19,6 +19,7 @@ using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 using WebApplication.Auth;
 using WebApplication.Entities;
+using WebApplication.Filters;
 using WebApplication.Helpers;
 using WebApplication.Services;
 
@@ -51,7 +52,7 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-             services.AddDbContext<DatabaseContext>(opts => {
+            services.AddDbContext<DatabaseContext>(opts => {
                 opts.UseSqlServer("Server=db;Database=MiniTwit;User=sa;Password=ULA2V9sPbG;");
             });
            
@@ -78,7 +79,9 @@ namespace WebApplication
                 opts.AddPolicy(AuthPolicies.Administrator, policy => policy.RequireRole(AuthRoles.Administrator));
             });
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options => {
+                options.Filters.Add<OperationCanceledExceptionFilter>();
+            });
 
             services.AddSwaggerGen(opts => 
             {
@@ -98,6 +101,8 @@ namespace WebApplication
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 opts.IncludeXmlComments(xmlPath);
             });
+
+            services.AddTransient<TestingUtils>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -109,7 +114,7 @@ namespace WebApplication
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/error");
             }
 
             // Count requests for each endpoint including the method
@@ -123,7 +128,7 @@ namespace WebApplication
                  counter.WithLabels(context.Request.Method, context.Request.Path).Inc();
                  return next();
              });
-            
+            app.UseStatusCodePages();
             app.UseHttpMetrics();
             app.UseStaticFiles();
 
@@ -139,11 +144,11 @@ namespace WebApplication
             
             app.Use(async (context, next) => 
             {
-                var dbContext = context.Request.HttpContext.RequestServices.GetRequiredService<DatabaseContext>();
+                var utils = context.Request.HttpContext.RequestServices.GetRequiredService<TestingUtils>();
 
                 if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest))
                 {
-                    await TestingUtils.SetLatest(dbContext, latest, context.RequestAborted);
+                    await utils.SetLatest(latest, context.RequestAborted);
                 }
                 
                 await next.Invoke();

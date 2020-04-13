@@ -92,17 +92,15 @@ namespace WebApplication.Controllers
         [HttpGet("/{username}")]
         public async Task<IActionResult> UserTimeline(string username, CancellationToken ct)
         {
-            var author = await _userService.GetUserFromUsername(username, ct);
-
-            if (author == null)
-            {
-                return NotFound();
-            }
-
-            UserTimelineVM vm;
-
             try
             {
+                var author = await _userService.GetUserFromUsername(username, ct);
+
+                if (author == null)
+                {
+                    return NotFound();
+                }
+                
                 var includeFlaggedMessages = User.IsInRole(AuthRoles.Administrator);
                 var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, includeFlaggedMessages, ct);
                 var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username, ct);
@@ -119,7 +117,7 @@ namespace WebApplication.Controllers
                     message.IsFlagged
                 )).ToList();
 
-                vm = new UserTimelineVM(
+                var vm = new UserTimelineVM(
                     new UserVM(
                         author.ID,
                         author.Username,
@@ -127,15 +125,15 @@ namespace WebApplication.Controllers
                     isUserFollowing,
                     mapped
                 );
+                
+                ViewData["title"] = $"{author.Username}'s Timeline";
+
+                return View(nameof(UserTimeline), vm);
             }
             catch (UnknownUserException e)
             {
                 return BadRequest(new ErrorResponse(e));
             }
-            
-            ViewData["title"] = $"{author.Username}'s Timeline";
-
-            return View(nameof(UserTimeline), vm);
         }
 
         [HttpGet("/{username}/follow")]
@@ -264,11 +262,12 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        [HttpGet("/Error")]
+        [AllowAnonymous]
         public IActionResult Error()
         {
             ViewData["title"] = "Error";
             
+
             return View();
         }
     }
