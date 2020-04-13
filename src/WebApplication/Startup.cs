@@ -52,7 +52,7 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
              services.AddDbContext<DatabaseContext>(opts => {
-                opts.UseSqlServer("Server=db;Database=master;User=sa;Password=ULA2V9sPbG;");
+                opts.UseSqlServer("Server=db;Database=MiniTwit;User=sa;Password=ULA2V9sPbG;");
             });
            
             services.AddTransient<TimelineService>();
@@ -111,8 +111,7 @@ namespace WebApplication
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            
-            
+
             // Count requests for each endpoint including the method
              var counter = Metrics.CreateCounter("api_path_counter", "Counts request to the API endpoints", new CounterConfiguration()
              {
@@ -141,8 +140,8 @@ namespace WebApplication
             app.Use(async (context, next) => 
             {
                 var dbContext = context.Request.HttpContext.RequestServices.GetRequiredService<DatabaseContext>();
-                
-                if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest)) 
+
+                if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest))
                 {
                     await TestingUtils.SetLatest(dbContext, latest, context.RequestAborted);
                 }

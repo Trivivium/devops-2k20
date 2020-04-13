@@ -50,7 +50,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateTimelineService(dbContext);
-                var messages = await service.GetMessagesForAnonymousUser(30, CancellationToken.None);
+                var messages = await service.GetMessagesForAnonymousUser(30, false, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -78,7 +78,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateTimelineService(dbContext);
-                var messages = await service.GetMessagesForAnonymousUser(30, CancellationToken.None);
+                var messages = await service.GetMessagesForAnonymousUser(30, false, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -110,7 +110,7 @@ namespace WebApplication.Tests
                 var service = CreateTimelineService(dbContext, userService);
 
                 var user = await userService.GetUserFromUsername("a", CancellationToken.None);
-                var messages = await service.GetMessagesForUser(user.Username, 30, CancellationToken.None);
+                var messages = await service.GetMessagesForUser(user.Username, 30, false, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -143,7 +143,7 @@ namespace WebApplication.Tests
                 var service = CreateTimelineService(dbContext, userService);
 
                 var user = await userService.GetUserFromUsername("a", CancellationToken.None);
-                var messages = await service.GetMessagesForUser(user.Username, 30, CancellationToken.None);
+                var messages = await service.GetMessagesForUser(user.Username, 30, false, CancellationToken.None);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -314,6 +314,102 @@ namespace WebApplication.Tests
 
                 Assert.Single(messages);
             }
+        }
+
+        [Fact]
+        public async Task AddFlagToMessage_Works()
+        {
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(nameof(AddFlagToMessage_Works))
+                .Options;
+            
+            await using (var dbContext = new DatabaseContext(options))
+            {
+                dbContext.Users.Add(new User { Username = "a", Email = "a@a.a", Password = "a" });
+                dbContext.Messages.Add(new Message { AuthorID = 1, IsFlagged = false, Text = "test", PublishDate = DateTimeOffset.UtcNow});
+
+                dbContext.SaveChanges();
+            }
+            
+            await using (var dbContext = new DatabaseContext(options))
+            {
+                var service = new TimelineService(dbContext, new UserService(dbContext));
+
+                await service.AddFlagToMessage(1, CancellationToken.None);
+            }
+            
+            await using (var dbContext = new DatabaseContext(options))
+            {
+                var message = dbContext.Messages.Single(m => m.ID == 1);
+
+                Assert.True(message.IsFlagged);
+            }
+        }
+        
+        [Fact]
+        public async Task AddFlagToMessage_Throws_WhenMessageDoesNotExist()
+        {
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(nameof(AddFlagToMessage_Throws_WhenMessageDoesNotExist))
+                .Options;
+
+            await Assert.ThrowsAsync<UnknownMessageException>(async () => 
+            {
+                await using (var dbContext = new DatabaseContext(options))
+                {
+                    var service = new TimelineService(dbContext, new UserService(dbContext));
+
+                    await service.AddFlagToMessage(1, CancellationToken.None);
+                }
+            });
+        }
+        
+        [Fact]
+        public async Task RemoveFlagFromMessage_Works()
+        {
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(nameof(RemoveFlagFromMessage_Works))
+                .Options;
+            
+            await using (var dbContext = new DatabaseContext(options))
+            {
+                dbContext.Users.Add(new User { Username = "a", Email = "a@a.a", Password = "a" });
+                dbContext.Messages.Add(new Message { AuthorID = 1, IsFlagged = true, Text = "test", PublishDate = DateTimeOffset.UtcNow});
+
+                dbContext.SaveChanges();
+            }
+            
+            await using (var dbContext = new DatabaseContext(options))
+            {
+                var service = new TimelineService(dbContext, new UserService(dbContext));
+
+                await service.RemoveFlagFromMessage(1, CancellationToken.None);
+            }
+            
+            await using (var dbContext = new DatabaseContext(options))
+            {
+                var message = dbContext.Messages.Single(m => m.ID == 1);
+
+                Assert.False(message.IsFlagged);
+            }
+        }
+        
+        [Fact]
+        public async Task RemoveFlagFromMessage_Throws_WhenMessageDoesNotExist()
+        {
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(nameof(RemoveFlagFromMessage_Throws_WhenMessageDoesNotExist))
+                .Options;
+            
+            await Assert.ThrowsAsync<UnknownMessageException>(async () => 
+            {
+                await using (var dbContext = new DatabaseContext(options))
+                {
+                    var service = new TimelineService(dbContext, new UserService(dbContext));
+
+                    await service.RemoveFlagFromMessage(1, CancellationToken.None);
+                }
+            });
         }
     }
 }

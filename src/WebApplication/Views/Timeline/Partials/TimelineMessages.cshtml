@@ -1,3 +1,4 @@
+@using WebApplication.Auth
 @model List<WebApplication.ViewModels.Timeline.TimelineMessageVM>
 
 <ul class="messages">
@@ -17,6 +18,21 @@
                     @message.Text
                     <small>&mdash; @message.GetPublishDateFormatted()</small>
                 </p>
+                @if (User.IsInRole(AuthRoles.Administrator))
+                {
+                    if (message.IsFlagged)
+                    {
+                        <form asp-controller="Timeline" asp-action="RemoveFlagFromMessage" asp-route-id="@message.ID">
+                            <button type="submit">Remove flag</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Timeline" asp-action="AddFlagToMessage" asp-route-id="@message.ID">
+                            <button type="submit">Flag</button>
+                        </form>
+                    }
+                }
             </li>
         }
     }

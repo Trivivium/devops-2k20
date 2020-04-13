@@ -6,15 +6,19 @@ namespace WebApplication.ViewModels.Timeline
 {
     public class TimelineMessageVM
     {
+        public int ID { get; }
         public UserVM User { get; }
         public string Text { get; }
         public DateTimeOffset PublishDate { get; }
+        public bool IsFlagged { get; }
 
-        public TimelineMessageVM(UserVM user, string text, DateTimeOffset publishDate)
+        public TimelineMessageVM(int id, UserVM user, string text, DateTimeOffset publishDate, bool isFlagged)
         {
+            ID = id;
             User = user;
             Text = text;
             PublishDate = publishDate;
+            IsFlagged = isFlagged;
         }
 
         public string GetPublishDateFormatted()
@@ -28,6 +32,7 @@ namespace WebApplication.ViewModels.Timeline
             
             return $"http://www.gravatar.com/avatar/{hash}?d=identicon&s={size}";
         }
+        
         public string CalculateMD5Hash(string input)
         {
             // we want to remove any wild spaces etc.

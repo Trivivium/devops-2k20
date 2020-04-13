@@ -26,11 +26,17 @@ namespace WebApplication.Services
             _logger = logger;
         }
 
-        public async Task<List<Message>> GetMessagesForAnonymousUser(int resultsPerPage, CancellationToken ct)
+        public async Task<List<Message>> GetMessagesForAnonymousUser(int resultsPerPage, bool includeFlaggedMessages, CancellationToken ct)
         {
-            var messages = await  _databaseContext.Messages
-                .Include(message => message.Author)
-                .Where(message => !message.IsFlagged)
+            IQueryable<Message> query = _databaseContext.Messages
+                .Include(message => message.Author);
+
+            if (!includeFlaggedMessages)
+            {
+                query = query.Where(message => !message.IsFlagged);
+            }
+            
+            var messages = await query
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)
                 .ToListAsync(ct);
@@ -38,13 +44,19 @@ namespace WebApplication.Services
             return messages;
         }
 
-        public async Task<List<Message>> GetMessagesForUser(string username, int resultsPerPage, CancellationToken ct)
+        public async Task<List<Message>> GetMessagesForUser(string username, int resultsPerPage, bool includeFlaggedMessages, CancellationToken ct)
         {
             var author = await _userService.GetUserFromUsername(username, ct);
             
-            var messages = await _databaseContext.Messages
-                .Include(message => message.Author)
-                .Where(message => message.IsFlagged == false)
+            IQueryable<Message> query = _databaseContext.Messages
+                .Include(message => message.Author);
+
+            if (!includeFlaggedMessages)
+            {
+                query = query.Where(message => !message.IsFlagged);
+            }
+                
+            var messages = await query
                 .Where(message => message.AuthorID == author.ID)
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)
@@ -125,6 +137,50 @@ namespace WebApplication.Services
             await _databaseContext.SaveChangesAsync(ct);
             
             _logger.LogInformation($"Created message for user: {user.Username}.");
+        }
+
+        public async Task AddFlagToMessage(int id, CancellationToken ct)
+        {
+            var message = await _databaseContext.Messages.FirstOrDefaultAsync(m => m.ID == id, ct);
+
+            if (message == null)
+            {
+                throw new UnknownMessageException($"Unknown message with ID: {id}.");
+            }
+
+            // If the message is already flagged we can return early to avoid unnecessary database calls.
+            if (message.IsFlagged)
+            {
+                return;
+            }
+
+            message.IsFlagged = true;
+
+            await _databaseContext.SaveChangesAsync(ct);
+            
+            // TODO: Add logging of the action was successful, when the 'feature/audit-logging' branch has been merged into master. Remember to include the user ID that performed the action.
+        }
+        
+        public async Task RemoveFlagFromMessage(int id, CancellationToken ct)
+        {
+            var message = await _databaseContext.Messages.FirstOrDefaultAsync(m => m.ID == id, ct);
+
+            if (message == null)
+            {
+                throw new UnknownMessageException($"Unknown message with ID: {id}.");
+            }
+
+            // If the message is not flagged we can return early to avoid unnecessary database calls.
+            if (!message.IsFlagged)
+            {
+                return;
+            }
+
+            message.IsFlagged = false;
+
+            await _databaseContext.SaveChangesAsync(ct);
+            
+            // TODO: Add logging of the action was successful, when the 'feature/audit-logging' branch has been merged into master. Remember to include the user ID that performed the action.
         }
     }
 }

@@ -19,5 +19,6 @@ WORKDIR /src
 COPY wait-for-it.sh /app/wait-for-it.sh
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENTRYPOINT [ "./wait-for-it.sh", "db:1433", "-t", "0", "--", "dotnet", "WebApplication.dll"]
 
