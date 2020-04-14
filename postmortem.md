@@ -91,11 +91,19 @@ Tools:
 
 In the security audit, we tried to follow OWASP guidelines for developing a secure application [Application Security Verification Standard](https://owasp-aasvs.readthedocs.io/en/latest/)
 One of the points is to [Verify that secrets, API keys, and passwords are not included in the source code, or online source code repositories](https://owasp-aasvs.readthedocs.io/en/latest/requirement-2.29.html)
-We realized that we are storing the admin password to the database in our docker-compose file. 
-It is not optimal unless you can change the password in our system which you cannot.
+We realized that we are storing several passwords in our source code. The admin
+password to the database can be found in both  our docker-compose file, as well
+as our sourcecode. Additionally passwords to our admin user is visible in the
+sourcecode, as well as passwords to our logging tools. 
+This would in theory be acceptable if these can be changed in deployment, and
+regarding the admin user password, if it is possible to change via the user
+interface. This, however, is not the case.
 That is a huge security flaw and must be solved.
 
-The solution to this would be to change the password and make the password an environmental constant instead.
+The solution to this would be to implement a change-password functionality as
+well as store all external authorization credentials via environmental
+contants.
+
 
 Next is the penetration test in which we have divided into several steps.
 
