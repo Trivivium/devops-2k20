@@ -8,38 +8,65 @@ developed by *Group C*, as well as our security review of our own service.
 We started by creating a monitoring tool collecting data about the `U buntu?`
 service, and then started pen-testing their service. After approximately a week
 of gathering monitoring data we had enough information to confidently evaluate
-whether Group C were violating their Service-Level agreement. The following
+whether Group C were violating their Service-Level Agreement(SLA). The following
 order is therefore not a reflection of the order in which the tasks were
 done, but merely with the intent of readability.
 
 ### Creating a monitoring tool
 To investigate whether or not Group C lives up to their service-level agreement,
-we created a python script to monitor the uptime, response-time, and
-recovery-time of their webpage. The python script creates a csv file where
-metrics are continuously appended to the file. This is facilitated by the
-requests library that helps us send get requests to their webpage. If we receive
-a 200 status code, we log that the webpage is running as intended as well as a
-timestamp and the elapsed time since the request was sent. To make sure that
-this script is running 24/7, we moved the script to our droplet running our
-minitwit and run the script with a nohup command. 
+which had the following promises:
+
+- *Up-time:* 99%
+- *Average Response Time:* 200ms
+- *Time To Recover:* 2 hours
+
+To validate this we created two scripts, one for collecting data, done by
+monitoring their service, and one for evaluating the collected data.
+
+We chose to develop these tools in python3.6, as we would be able to run the
+script from anywhere, while still developing a usable program in a short timeframe.
+
+#### Monitoring script
+The monitoring script continuously appended data to a `csv`-file. This is
+facilitated by the requests library that helps us send `GET` requests to their
+webpage. We then logged the response-code from their service. A 200 status code,
+we log that the webpage is running as intended as well as a timestamp and the
+elapsed time since the request was sent, if no response was returned or a
+non-200 was returned, we would mark it as a failure. We pushed this script to
+our droplet so we would be able to run it without interruption for several days.
+
+The script can be found
+[here](https://github.com/Trivivium/devops-2k20/blob/master/monitoring/monitor.py). 
+
+#### Evaluation script
+Our secondary script takes the `csv`-file as input, and then calculates the
+up-time, average response time, and the time it had taken to recover if any
+downtime had existed. Running this script at any point in time would reveal this
+information.
+
+This script is simpler in nature, and can be found
+[here](https://github.com/Trivivium/devops-2k20/blob/master/monitoring/downtime.py).
+
 
 ### Evaluating the monitored data
-From the metrics in the csv file, we can calculate the requirements dictated by
-Group C’s SLA. This calculation is done in a separate python script and outputs
-the following results: 
+After running the monitoring script for a couple of days, we were able to
+extract the following results:
 
 Uptime: 100%
 
-Response Time: 1.87 seconds
+Average Response Time: 1.87 seconds
 
 Time to Recover: 0 seconds
 
 We see that the uptime of the webpage and therefore also the recovery time, is
 flawless and therefore lives up to the SLA. The response time, however, is
-considerably slower than the 200ms specified by the SLA. We gave the webpage the
-benefit of doubt and assumed that our monitoring implementation was somehow
-incorrect, but cross-validation with 3rd-party tools such as dotcom-tools.com
-confirmed that this was the case.  
+considerably slower than the 200ms specified by the SLA. We initially feared
+that it was simply our script that had an overhead, or the network time to our
+droplet, however after cross-validation with 3rd-party tools such as
+dotcom-tools.com, we could confirm that their response time was in fact slower
+than promised. 
+
+Therefore we could prove that they had violated their SLA. 
 
 
 ### Pen testing `U Buntu?`
