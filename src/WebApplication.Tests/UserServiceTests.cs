@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +34,7 @@ namespace WebApplication.Tests
                 var service = CreateUserService(dbContext);
                 var model = new RegisterModel { Username = "a", Email = "a@a.a", Pwd = "a" };
 
-                await service.CreateUser(model, CancellationToken.None);
+                await service.CreateUser(model);
                 dbContext.SaveChanges();
             }
 
@@ -74,7 +72,7 @@ namespace WebApplication.Tests
                     var service = CreateUserService(dbContext);
                     var model = new RegisterModel { Username = "a", Email = "a@a.a", Pwd = "a" };
 
-                    await service.CreateUser(model, CancellationToken.None);
+                    await service.CreateUser(model);
                 });
             }
         }
@@ -99,7 +97,7 @@ namespace WebApplication.Tests
                     var service = CreateUserService(dbContext);
                     var model = new RegisterModel { Username = "a", Email = "a@a.a", Pwd = "a" };
 
-                    await service.CreateUser(model, CancellationToken.None);
+                    await service.CreateUser(model);
                 });
             }
         }
@@ -123,7 +121,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateUserService(dbContext);
-                var user = await service.GetUserFromUsername("b", CancellationToken.None);
+                var user = await service.GetUserFromUsername("b");
                 
                 Assert.NotNull(user);
                 Assert.Equal("b", user.Username);
@@ -143,7 +141,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
                     
-                    await service.GetUserFromUsername("b", CancellationToken.None);
+                    await service.GetUserFromUsername("b");
                 });
             }
         }
@@ -159,7 +157,7 @@ namespace WebApplication.Tests
             {
                 var service = CreateUserService(dbContext);
 
-                var isFollowing = await service.IsUserFollowing(2, "a", CancellationToken.None);
+                var isFollowing = await service.IsUserFollowing(2, "a");
                 
                 Assert.False(isFollowing);
             }
@@ -188,7 +186,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateUserService(dbContext);
-                var result = await service.GetUserFollowers("a", 5, CancellationToken.None);
+                var result = await service.GetUserFollowers("a", 5);
                 
                 Assert.Equal(2, result.Count);
             }
@@ -217,7 +215,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateUserService(dbContext);
-                var result = await service.GetUserFollowers("a", 5, CancellationToken.None);
+                var result = await service.GetUserFollowers("a", 5);
                 
                 Assert.Equal(2, result.Count);
             }
@@ -243,7 +241,7 @@ namespace WebApplication.Tests
             {
                 var service = CreateUserService(dbContext);
                 
-                await service.AddFollower("a", "b", CancellationToken.None);
+                await service.AddFollower("a", "b");
             }
             
             await using (var dbContext = new DatabaseContext(options))
@@ -267,7 +265,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.AddFollower("a", "b", CancellationToken.None);
+                    await service.AddFollower("a", "b");
                 });
             }
         }
@@ -291,7 +289,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.AddFollower("a", "b", CancellationToken.None);
+                    await service.AddFollower("a", "b");
                 });
             }
         }
@@ -316,7 +314,7 @@ namespace WebApplication.Tests
             {
                 var service = CreateUserService(dbContext);
                 
-                await service.AddFollower(1, "b", CancellationToken.None);
+                await service.AddFollower(1, "b");
             }
             
             await using (var dbContext = new DatabaseContext(options))
@@ -340,7 +338,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.AddFollower(1, "b", CancellationToken.None);
+                    await service.AddFollower(1, "b");
                 });
             }
         }
@@ -364,7 +362,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.AddFollower(1, "b", CancellationToken.None);
+                    await service.AddFollower(1, "b");
                 });
             }
         }
@@ -391,7 +389,7 @@ namespace WebApplication.Tests
             {
                 var service = CreateUserService(dbContext);
                 
-                await service.RemoveFollower("a", "b", CancellationToken.None);
+                await service.RemoveFollower("a", "b");
             }
             
             await using (var dbContext = new DatabaseContext(options))
@@ -415,7 +413,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.RemoveFollower("a", "b", CancellationToken.None);
+                    await service.RemoveFollower("a", "b");
                 });
             }
         }
@@ -440,7 +438,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.RemoveFollower("a", "b", CancellationToken.None);
+                    await service.RemoveFollower("a", "b");
                 });
             }
         }
@@ -467,7 +465,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.RemoveFollower("a", "b", CancellationToken.None);
+                    await service.RemoveFollower("a", "b");
                 });
             }
         }
@@ -494,7 +492,7 @@ namespace WebApplication.Tests
             {
                 var service = CreateUserService(dbContext);
                 
-                await service.RemoveFollower(2, "a", CancellationToken.None);
+                await service.RemoveFollower(2, "a");
             }
             
             await using (var dbContext = new DatabaseContext(options))
@@ -518,7 +516,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.RemoveFollower(1, "b", CancellationToken.None);
+                    await service.RemoveFollower(1, "b");
                 });
             }
         }
@@ -544,7 +542,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.RemoveFollower(1, "b", CancellationToken.None);
+                    await service.RemoveFollower(1, "b");
                 });
             }
         }
@@ -571,7 +569,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateUserService(dbContext);
 
-                    await service.RemoveFollower(1, "b", CancellationToken.None);
+                    await service.RemoveFollower(1, "b");
                 });
             }
         }

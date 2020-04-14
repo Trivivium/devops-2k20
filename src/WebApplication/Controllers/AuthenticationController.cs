@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -49,9 +48,9 @@ namespace WebApplication.Controllers
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         [HttpPost("/login")]
-        public async Task<IActionResult> Login(LoginCredentialsModel credentials, CancellationToken ct)
+        public async Task<IActionResult> Login(LoginCredentialsModel credentials)
         {
-            var user = await _databaseContext.Users.FirstOrDefaultAsync(item => item.Username == credentials.Username, ct);
+            var user = await _databaseContext.Users.FirstOrDefaultAsync(item => item.Username == credentials.Username);
 
             if (user != null && Bcr.BCrypt.Verify(credentials.Password,user.Password))
             {
@@ -118,11 +117,11 @@ namespace WebApplication.Controllers
 
         [AllowAnonymous]
         [HttpPost("/register")]
-        public async Task<IActionResult> Register(RegisterModel credentials, CancellationToken ct)
+        public async Task<IActionResult> Register(RegisterModel credentials)
         {
             try
             {
-                await _service.CreateUser(credentials, ct);
+                await _service.CreateUser(credentials);
                 
                 _logger.LogInformation($"Successfully registered user with username: {credentials.Username}.");
             }

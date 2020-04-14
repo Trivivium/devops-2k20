@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -26,10 +24,10 @@ namespace WebApplication.Services
             _logger = logger;
         }
 
-        public async Task CreateUser(RegisterModel model, CancellationToken ct)
+        public async Task CreateUser(RegisterModel model)
         {
-            var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == model.Username, ct);
-            var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == model.Email, ct);
+            var usernameExists = await _databaseContext.Users.AnyAsync(item => item.Username == model.Username);
+            var emailExists = await _databaseContext.Users.AnyAsync(item => item.Email == model.Email);
             
             if (usernameExists) 
             {
@@ -48,14 +46,14 @@ namespace WebApplication.Services
                 Username = model.Username
             });
             
-            await _databaseContext.SaveChangesAsync(ct);
+            await _databaseContext.SaveChangesAsync();
             
             _logger.LogInformation($"Created user with username: {model.Username}.");
         }
         
-        public async Task<User> GetUserFromUsername(string username, CancellationToken ct)
+        public async Task<User> GetUserFromUsername(string username)
         {
-            var user = await _databaseContext.Users.FirstOrDefaultAsync(p => p.Username == username, ct);
+            var user = await _databaseContext.Users.FirstOrDefaultAsync(p => p.Username == username);
 
             if (user == null)
             {
@@ -65,17 +63,17 @@ namespace WebApplication.Services
             return user;
         }
 
-        public async Task<bool> IsUserFollowing(int userID, string followerUsernameToCheck, CancellationToken ct)
+        public async Task<bool> IsUserFollowing(int userID, string followerUsernameToCheck)
         {
             return await _databaseContext.Followers
-                .AnyAsync(f => f.Who.Username == followerUsernameToCheck && f.WhomID == userID, ct);
+                .AnyAsync(f => f.Who.Username == followerUsernameToCheck && f.WhomID == userID);
         }
 
-        public async Task<List<Follower>> GetUserFollowers(string username, int resultsPerPage, CancellationToken ct)
+        public async Task<List<Follower>> GetUserFollowers(string username, int resultsPerPage)
         {
             var user = await _databaseContext.Users
                 .Where(u => u.Username == username)
-                .FirstOrDefaultAsync(ct);
+                .FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -86,28 +84,28 @@ namespace WebApplication.Services
                 .Include(f => f.Who)
                 .Where(f => f.WhomID == user.ID)
                 .Take(resultsPerPage)
-                .ToListAsync(ct);
+                .ToListAsync();
 
             return followers;
         }
         
-        public async Task AddFollower(string whoUsername, string whomUsername, CancellationToken ct)
+        public async Task AddFollower(string whoUsername, string whomUsername)
         {
-            var who = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whoUsername, ct);
+            var who = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whoUsername);
 
             if (who == null)
             {
                 throw new UnknownUserException($"Unknown user to follow: {whoUsername}.");
             }
             
-            await AddFollower(who.ID, whomUsername, ct);
+            await AddFollower(who.ID, whomUsername);
             
             _logger.LogInformation($"Added user with username '{whoUsername}' as follower of: {whomUsername}.");
         }
         
-        public async Task AddFollower(int whoID, string whomUsername, CancellationToken ct)
+        public async Task AddFollower(int whoID, string whomUsername)
         {
-            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername, ct);
+            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername);
 
             if (whom == null)
             {
@@ -120,15 +118,15 @@ namespace WebApplication.Services
                 WhoID = whom.ID
             });
 
-            await _databaseContext.SaveChangesAsync(ct);
+            await _databaseContext.SaveChangesAsync();
             
             _logger.LogInformation($"Added user with user ID '{whoID}' as follower of: {whom.Username}.");
         }
         
-        public async Task RemoveFollower(string usernameToUnfollow, string unfollowerUsername, CancellationToken ct)
+        public async Task RemoveFollower(string usernameToUnfollow, string unfollowerUsername)
         {
-            var user = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == usernameToUnfollow, ct);
-            var userToRemove = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == unfollowerUsername, ct);
+            var user = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == usernameToUnfollow);
+            var userToRemove = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == unfollowerUsername);
 
             if (user == null)
             {
@@ -143,7 +141,7 @@ namespace WebApplication.Services
             var entry = await _databaseContext.Followers
                 .Where(p => p.WhoID == userToRemove.ID)
                 .Where(p => p.WhomID == user.ID)
-                .FirstOrDefaultAsync(ct);
+                .FirstOrDefaultAsync();
 
             if (entry == null)
             {
@@ -152,23 +150,14 @@ namespace WebApplication.Services
             
             _databaseContext.Followers.Remove(entry);
             
-            await _databaseContext.SaveChangesAsync(ct);
+            await _databaseContext.SaveChangesAsync();
             
             _logger.LogInformation($"Removed user with username '{userToRemove.Username}' as a follower of: {user.Username}.");
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="whoID">Who follows</param>
-        /// <param name="whomUsername">Whom is followed</param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        /// <exception cref="UnknownUserException"></exception>
-        /// <exception cref="UnknownFollowerRelationException"></exception>
-        public async Task RemoveFollower(int whoID, string whomUsername, CancellationToken ct)
+        
+        public async Task RemoveFollower(int whoID, string whomUsername)
         {
-            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername, ct);
+            var whom = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Username == whomUsername);
             
             if (whom == null)
             {
@@ -178,7 +167,7 @@ namespace WebApplication.Services
             var entry = await _databaseContext.Followers
                 .Where(p => p.WhoID == whoID)
                 .Where(p => p.WhomID == whom.ID)
-                .FirstOrDefaultAsync(ct);
+                .FirstOrDefaultAsync();
 
             if (entry == null)
             {
@@ -187,7 +176,7 @@ namespace WebApplication.Services
 
             _databaseContext.Followers.Remove(entry);
 
-            await _databaseContext.SaveChangesAsync(ct);
+            await _databaseContext.SaveChangesAsync();
             
             _logger.LogInformation($"Removed user with user ID '{whoID}' as a follower of: {whom.Username}.");
         }

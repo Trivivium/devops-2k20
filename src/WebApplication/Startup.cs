@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using Elasticsearch.Net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +27,6 @@ namespace WebApplication
     public class Startup
     {
         private IConfiguration Configuration;
-        
         
         public Startup(IConfiguration configuration)
         {
@@ -148,7 +146,7 @@ namespace WebApplication
 
                 if(context.Request.Query.TryGetValue("latest", out var testString) && int.TryParse(testString, out var latest))
                 {
-                    await utils.SetLatest(latest, context.RequestAborted);
+                    await utils.SetLatest(latest);
                 }
                 
                 await next.Invoke();
