@@ -113,18 +113,57 @@ all the inputs.
 
 2. *SQL Injection*
 
-Since XSS didn't work, chances that SQL Injection will were very low but we 
-gave it a try. We didn't have success here either.
+Since XSS didn't work and inputs are sanitized properly, chances that SQL 
+Injection will were very low but we gave it a try. We didn't have success 
+here doing it manually. Afterwards we used tool called SqlMap in 
+order to see if some of the inputs are injectable. Conclusion is that
+group C uses  Web Application Firewall or Intrusion Prevention System.
+
+`[CRITICAL] heuristics detected that the target is protected by some kind of WAF/IPS`
 
 3. *Broken authentication and session management*
 - URL rewriting is not possible
 - Application's timeout is set properly 
 - No predictable login credentials such as admin:admin or admin:12345678
+
 4. *Security Misconfigurations*
 * There are no unnecessary ports left open
 * There are no sufficient services or pages
 * Default accounts and their passwords are changed 
 * Error handling doesn't reveal any new information about the system
+
+5. *OWASP-ZAP scan* results
+```
+X-Frame-Options Header Not Set
+Risk: Medium
+X-Frame-Options header is not included in the HTTP response to protect
+against 'ClickJacking' attacks.
+```
+
+```
+Password Autocomplete in Browser
+Risk: Low
+The AUTOCOMPLETE attribute is not disabled on an HTML FORM/INPUT element containing 
+password type input.  Passwords may be stored in browsers and retrieved.
+```
+
+```
+Web Browser XSS Protection Not Enabled
+Risk: Low
+Web Browser XSS Protection is not enabled, or is disabled by the configuration of
+the 'X-XSS-Protection' HTTP response header on the web server
+```
+
+```
+X-Content-Type-Options Header Missing
+Risk: Low
+The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. 
+This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing 
+on the response body, potentially causing the response body to be interpreted and 
+displayed as a content type other than the declared content type. Current (early 2014) 
+and legacy versions of Firefox will use the declared content type (if one is set), 
+rather than performing MIME-sniffing.
+```
 
 
 ## Security review of own service
