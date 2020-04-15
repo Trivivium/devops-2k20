@@ -74,7 +74,6 @@ PLEASE ADD SOME SHIT HERE **ADAM**
 
 
 ## Security review of own service
-**First draft**
 
 ### Define Assets 
 
@@ -91,8 +90,6 @@ database.
 
 Access to audit data: 
 The audit data shows all auditable events that occurred within the application.
-
-(Do not know if vulnerabilities and threats are required)
 
 **Vulnerabilities:**
 
@@ -148,7 +145,7 @@ That is a huge security flaw and must be solved.
 
 The solution to this would be to implement a change-password functionality as
 well as store all external authorization credentials via environmental
-contants.
+constants.
 
 
 Next is the penetration test in which we have divided into several steps.
