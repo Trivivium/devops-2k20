@@ -147,6 +147,20 @@ The solution to this would be to implement a change-password functionality as
 well as store all external authorization credentials via environmental
 constants.
 
+Working with docker containers we fixed it by using [environment variables](https://docs.docker.com/compose/environment-variables/):
+E.g in the docker-compose file
+```
+environment:
+- PW
+
+```
+and then it is possible to set the variable from the terminal
+
+````
+docker-compose run -e PW=UiuiUi
+
+````
+
 
 Next is the penetration test in which we have divided into several steps.
 
