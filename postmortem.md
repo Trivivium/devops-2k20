@@ -69,8 +69,40 @@ than promised.
 Therefore we could prove that they had violated their SLA. 
 
 
-### Pen testing `U Buntu?`
-PLEASE ADD SOME SHIT HERE **ADAM**
+## Pen testing `U Buntu?`
+
+### Information gathering
+We used Nmap for information gathering:
+Target: www.minitwit.dk
+IP address: 142.93.162.43
+
+Ports:
+Open port 80/tcp on 142.93.162.43 tcpwrapped (http) 
+Open port 22/tcp on 142.93.162.43 tcpwrapped (ssh) 
+
+Open ports 2, Closed ports 0, Filtered ports 998 
+Operating System: 2N Helios IP VoIP doorbell (Accuracy 98%) – 1 st try 
+British Gas GS-Z3 data logger (Accuracy 92%) – 2 nd try 
+Tcpwrapped results for port scanning and unreliable operating system detection implies that group C is probably using firewall or some other filtering technique, thus we are unable to detect which operating system they are using.
+
+### Vulnerability assessment
+Unfortunately, we didn’t gather much useful information in the 1st step. 
+We proceeded with the basic scenario for Web Application Pen Testing. Using techniques such as SQL Injection, Cross Site Scripting and Broken authentication and session management we will check if their application is exposed to any security vulnerabilities.
+
+### Exploitations and Results
+1. *Cross Site Scripting*
+A few basic attempts but nothing worked. Looks like they are sanitizing all the inputs.
+2. *SQL Injection*
+Since XSS didn't work, chances that SQL Injection will were very low but we gave it a try. We didn't have success here either.
+3. *Broken authentication and session management*
+- URL rewriting is not possible
+- Application's timeout is set properly 
+- No predictable login credentials such as admin:admin or admin:12345678
+4. *Security Misconfigurations*
+* There are no unnecessary ports left open
+* There are no sufficient services or pages
+* Default accounts and their passwords are changed 
+* Error handling doesn't reveal any new information about the system
 
 
 ## Security review of own service
