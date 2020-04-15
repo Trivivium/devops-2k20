@@ -154,7 +154,7 @@ environment:
 - PW
 
 ```
-and then it is possible to set the variable from the terminal
+and then it is possible to pass the variable from the terminal to the container
 
 ````
 docker-compose run -e PW=UiuiUi
