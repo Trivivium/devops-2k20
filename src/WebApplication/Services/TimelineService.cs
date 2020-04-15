@@ -26,7 +26,7 @@ namespace WebApplication.Services
             _logger = logger;
         }
 
-        public async Task<List<Message>> GetMessagesForAnonymousUser(int resultsPerPage, bool includeFlaggedMessages, CancellationToken ct)
+        public async Task<List<Message>> GetMessagesForAnonymousUser(int resultsPerPage, bool includeFlaggedMessages)
         {
             IQueryable<Message> query = _databaseContext.Messages
                 .Include(message => message.Author);
@@ -39,14 +39,14 @@ namespace WebApplication.Services
             var messages = await query
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)
-                .ToListAsync(ct);
+                .ToListAsync();
 
             return messages;
         }
 
-        public async Task<List<Message>> GetMessagesForUser(string username, int resultsPerPage, bool includeFlaggedMessages, CancellationToken ct)
+        public async Task<List<Message>> GetMessagesForUser(string username, int resultsPerPage, bool includeFlaggedMessages)
         {
-            var author = await _userService.GetUserFromUsername(username, ct);
+            var author = await _userService.GetUserFromUsername(username);
             
             IQueryable<Message> query = _databaseContext.Messages
                 .Include(message => message.Author);
@@ -60,26 +60,26 @@ namespace WebApplication.Services
                 .Where(message => message.AuthorID == author.ID)
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)
-                .ToListAsync(ct);
+                .ToListAsync();
 
             return messages;
         }
 
-        public async Task<List<Message>> GetFollowerMessagesForUser(string username, int resultsPerPage, CancellationToken ct)
+        public async Task<List<Message>> GetFollowerMessagesForUser(string username, int resultsPerPage)
         {
-            var user = await _userService.GetUserFromUsername(username, ct);
+            var user = await _userService.GetUserFromUsername(username);
 
             if (user == null)
             {
                 throw new UnknownUserException($"Unknown user with username: {username}");
             }
             
-            return await GetFollowerMessagesForUser(user.ID, resultsPerPage, ct);
+            return await GetFollowerMessagesForUser(user.ID, resultsPerPage);
         }
 
-        public async Task<List<Message>> GetFollowerMessagesForUser(int userID, int resultsPerPage, CancellationToken ct)
+        public async Task<List<Message>> GetFollowerMessagesForUser(int userID, int resultsPerPage)
         {
-            var userExists = await _databaseContext.Users.AnyAsync(user => user.ID == userID, ct);
+            var userExists = await _databaseContext.Users.AnyAsync(user => user.ID == userID);
 
             if (!userExists)
             {
@@ -95,36 +95,36 @@ namespace WebApplication.Services
                     .Contains(message.AuthorID))
                 .OrderByDescending(message => message.PublishDate)
                 .Take(resultsPerPage)
-                .ToListAsync(ct);
+                .ToListAsync();
 
             return messages;
         }
 
-        public async Task CreateMessage(CreateMessageModel model, string username, CancellationToken ct)
+        public async Task CreateMessage(CreateMessageModel model, string username)
         {
-            var user = await _userService.GetUserFromUsername(username, ct);
+            var user = await _userService.GetUserFromUsername(username);
 
             if (user == null)
             {
                 throw new UnknownUserException($"Unknown user with username: {username}");
             }
             
-            await CreateMessage(model, user.ID, ct);
+            await CreateMessage(model, user.ID);
         }
         
-        public async Task CreateMessage(CreateMessageModel model, int userID, CancellationToken ct)
+        public async Task CreateMessage(CreateMessageModel model, int userID)
         {
-            var user = await _databaseContext.Users.SingleOrDefaultAsync(row => row.ID == userID, ct);
+            var user = await _databaseContext.Users.SingleOrDefaultAsync(row => row.ID == userID);
 
             if (user == null)
             {
                 throw new UnknownUserException($"Unknown user with ID: {userID}.");
             }
             
-            await CreateMessage(model, user, ct);
+            await CreateMessage(model, user);
         }
         
-        private async Task CreateMessage(CreateMessageModel model, User user, CancellationToken ct)
+        private async Task CreateMessage(CreateMessageModel model, User user)
         {
             _databaseContext.Messages.Add(new Message
             {
@@ -134,14 +134,14 @@ namespace WebApplication.Services
                 IsFlagged = false
             });
 
-            await _databaseContext.SaveChangesAsync(ct);
+            await _databaseContext.SaveChangesAsync();
             
             _logger.LogInformation($"Created message for user: {user.Username}.");
         }
 
-        public async Task AddFlagToMessage(int id, CancellationToken ct)
+        public async Task AddFlagToMessage(int id)
         {
-            var message = await _databaseContext.Messages.FirstOrDefaultAsync(m => m.ID == id, ct);
+            var message = await _databaseContext.Messages.FirstOrDefaultAsync(m => m.ID == id);
 
             if (message == null)
             {
@@ -156,14 +156,14 @@ namespace WebApplication.Services
 
             message.IsFlagged = true;
 
-            await _databaseContext.SaveChangesAsync(ct);
+            await _databaseContext.SaveChangesAsync();
             
             // TODO: Add logging of the action was successful, when the 'feature/audit-logging' branch has been merged into master. Remember to include the user ID that performed the action.
         }
         
-        public async Task RemoveFlagFromMessage(int id, CancellationToken ct)
+        public async Task RemoveFlagFromMessage(int id)
         {
-            var message = await _databaseContext.Messages.FirstOrDefaultAsync(m => m.ID == id, ct);
+            var message = await _databaseContext.Messages.FirstOrDefaultAsync(m => m.ID == id);
 
             if (message == null)
             {
@@ -178,7 +178,7 @@ namespace WebApplication.Services
 
             message.IsFlagged = false;
 
-            await _databaseContext.SaveChangesAsync(ct);
+            await _databaseContext.SaveChangesAsync();
             
             // TODO: Add logging of the action was successful, when the 'feature/audit-logging' branch has been merged into master. Remember to include the user ID that performed the action.
         }

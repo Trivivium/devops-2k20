@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -33,11 +32,11 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("/")]
-        public async Task<IActionResult> Timeline(CancellationToken ct)
+        public async Task<IActionResult> Timeline()
         {
             ViewData["title"] = "Timeline";
 
-            var messages = await _timelineService.GetFollowerMessagesForUser(User.GetUserID(), ResultsPerPage, ct);
+            var messages = await _timelineService.GetFollowerMessagesForUser(User.GetUserID(), ResultsPerPage);
             
             var mapped = messages.Select(message => new TimelineMessageVM(
                 message.ID,
@@ -65,13 +64,13 @@ namespace WebApplication.Controllers
 
         [AllowAnonymous]
         [HttpGet("/public")]
-        public async Task<IActionResult> PublicTimeline(CancellationToken ct)
+        public async Task<IActionResult> PublicTimeline()
         {
             ViewData["title"] = "Public Timeline";
 
             var includeFlaggedMessages = User.IsInRole(AuthRoles.Administrator);
             
-            var messages = await _timelineService.GetMessagesForAnonymousUser(ResultsPerPage, includeFlaggedMessages, ct);
+            var messages = await _timelineService.GetMessagesForAnonymousUser(ResultsPerPage, includeFlaggedMessages);
 
             var mapped = messages.Select(message => new TimelineMessageVM(
                 message.ID,
@@ -90,11 +89,11 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("/{username}")]
-        public async Task<IActionResult> UserTimeline(string username, CancellationToken ct)
+        public async Task<IActionResult> UserTimeline(string username)
         {
             try
             {
-                var author = await _userService.GetUserFromUsername(username, ct);
+                var author = await _userService.GetUserFromUsername(username);
 
                 if (author == null)
                 {
@@ -102,8 +101,8 @@ namespace WebApplication.Controllers
                 }
                 
                 var includeFlaggedMessages = User.IsInRole(AuthRoles.Administrator);
-                var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, includeFlaggedMessages, ct);
-                var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username, ct);
+                var messages = await _timelineService.GetMessagesForUser(author.Username, ResultsPerPage, includeFlaggedMessages);
+                var isUserFollowing = await _userService.IsUserFollowing(User.GetUserID(), username);
             
                 var mapped = messages.Select(message => new TimelineMessageVM(
                     message.ID,
@@ -137,11 +136,11 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("/{username}/follow")]
-        public async Task<IActionResult> AddFollow(string username, CancellationToken ct)
+        public async Task<IActionResult> AddFollow(string username)
         {
             try
             {
-                await _userService.AddFollower(User.GetUserID(), username, ct);
+                await _userService.AddFollower(User.GetUserID(), username);
             }
             catch (UnknownUserException e)
             {
@@ -156,11 +155,11 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Timeline));
         }
         [HttpGet("/{username}/unfollow")]
-        public async Task<IActionResult> AddUnfollow(string username, CancellationToken ct)
+        public async Task<IActionResult> AddUnfollow(string username)
         {
             try
             {
-                await _userService.RemoveFollower(User.GetUserID(), username, ct);
+                await _userService.RemoveFollower(User.GetUserID(), username);
             }
             catch (UnknownUserException e)
             {
@@ -177,11 +176,11 @@ namespace WebApplication.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost("/add_message")]
-        public async Task<IActionResult> AddMessage(CreateMessageModel model, CancellationToken ct)
+        public async Task<IActionResult> AddMessage(CreateMessageModel model)
         {
             try
             {
-                await _timelineService.CreateMessage(model, User.GetUserID(), ct);
+                await _timelineService.CreateMessage(model, User.GetUserID());
             }
             catch (UnknownUserException e)
             {
@@ -199,7 +198,7 @@ namespace WebApplication.Controllers
         [HttpPost("flag/{id:int}")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = AuthPolicies.Administrator)]
-        public async Task<IActionResult> AddFlagToMessage(int id, CancellationToken ct)
+        public async Task<IActionResult> AddFlagToMessage(int id)
         {
             if (id < 1)
             {
@@ -208,7 +207,7 @@ namespace WebApplication.Controllers
             
             try
             {
-                await _timelineService.AddFlagToMessage(id, ct);
+                await _timelineService.AddFlagToMessage(id);
             }
             catch (UnknownMessageException exception)
             {
@@ -228,7 +227,7 @@ namespace WebApplication.Controllers
         [HttpPost("unflag/{id:int}")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = AuthPolicies.Administrator)]
-        public async Task<IActionResult> RemoveFlagFromMessage(int id, CancellationToken ct)
+        public async Task<IActionResult> RemoveFlagFromMessage(int id)
         {
             if (id < 1)
             {
@@ -237,7 +236,7 @@ namespace WebApplication.Controllers
             
             try
             {
-                await _timelineService.RemoveFlagFromMessage(id, ct);
+                await _timelineService.RemoveFlagFromMessage(id);
             }
             catch (UnknownMessageException exception)
             {

@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Bcr = BCrypt.Net;
 
 using WebApplication.Entities;
-using WebApplication.Helpers;
 
 namespace WebApplication
 {

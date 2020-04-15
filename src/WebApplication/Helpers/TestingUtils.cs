@@ -2,7 +2,6 @@ using System;
 
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Entities;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -24,11 +23,11 @@ namespace WebApplication.Helpers
             _database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task SetLatest(int val, CancellationToken ct)
+        public async Task SetLatest(int val)
         {
             try 
             {
-                var result = await _database.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);
+                var result = await _database.Latests.SingleOrDefaultAsync(l => l.id == 1);
 
                 if (result == null)
                 { 
@@ -50,9 +49,9 @@ namespace WebApplication.Helpers
             }
         }
         
-        public static async Task<Latest> GetLatest(DatabaseContext databaseContext, CancellationToken ct)
+        public static async Task<Latest> GetLatest(DatabaseContext databaseContext)
         {
-            var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1, ct);
+            var result = await databaseContext.Latests.SingleOrDefaultAsync(l => l.id == 1);
 
             return result;
         }

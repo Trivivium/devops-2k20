@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +49,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateTimelineService(dbContext);
-                var messages = await service.GetMessagesForAnonymousUser(30, false, CancellationToken.None);
+                var messages = await service.GetMessagesForAnonymousUser(30, false);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -78,7 +77,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateTimelineService(dbContext);
-                var messages = await service.GetMessagesForAnonymousUser(30, false, CancellationToken.None);
+                var messages = await service.GetMessagesForAnonymousUser(30, false);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -109,8 +108,8 @@ namespace WebApplication.Tests
                 var userService = CreateUserService(dbContext);
                 var service = CreateTimelineService(dbContext, userService);
 
-                var user = await userService.GetUserFromUsername("a", CancellationToken.None);
-                var messages = await service.GetMessagesForUser(user.Username, 30, false, CancellationToken.None);
+                var user = await userService.GetUserFromUsername("a");
+                var messages = await service.GetMessagesForUser(user.Username, 30, false);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -142,8 +141,8 @@ namespace WebApplication.Tests
                 var userService = CreateUserService(dbContext);
                 var service = CreateTimelineService(dbContext, userService);
 
-                var user = await userService.GetUserFromUsername("a", CancellationToken.None);
-                var messages = await service.GetMessagesForUser(user.Username, 30, false, CancellationToken.None);
+                var user = await userService.GetUserFromUsername("a");
+                var messages = await service.GetMessagesForUser(user.Username, 30, false);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -174,7 +173,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateTimelineService(dbContext);
-                var messages = await service.GetFollowerMessagesForUser("b", 30, CancellationToken.None);
+                var messages = await service.GetFollowerMessagesForUser("b", 30);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -191,7 +190,7 @@ namespace WebApplication.Tests
                 await using (var dbContext = new DatabaseContext(options))
                 {
                     var service = CreateTimelineService(dbContext);
-                    var messages = await service.GetFollowerMessagesForUser("b", 30, CancellationToken.None);
+                    var messages = await service.GetFollowerMessagesForUser("b", 30);
                 
                     Assert.Empty(messages);
                 }
@@ -223,7 +222,7 @@ namespace WebApplication.Tests
             await using (var dbContext = new DatabaseContext(options))
             {
                 var service = CreateTimelineService(dbContext);
-                var messages = await service.GetFollowerMessagesForUser(2, 30, CancellationToken.None);
+                var messages = await service.GetFollowerMessagesForUser(2, 30);
                 
                 Assert.Equal(2, messages.Count);
             }
@@ -251,7 +250,7 @@ namespace WebApplication.Tests
                     Content = "123"
                 };
 
-                await service.CreateMessage(model, "a", CancellationToken.None);
+                await service.CreateMessage(model, "a");
             }
 
             await using (var dbContext = new DatabaseContext(options))
@@ -278,7 +277,7 @@ namespace WebApplication.Tests
                 };
 
                 await Assert.ThrowsAsync<UnknownUserException>(async () => {
-                    await service.CreateMessage(model, "a", CancellationToken.None);
+                    await service.CreateMessage(model, "a");
                 });
             }
         }
@@ -305,7 +304,7 @@ namespace WebApplication.Tests
                     Content = "123"
                 };
 
-                await service.CreateMessage(model, 1, CancellationToken.None);
+                await service.CreateMessage(model, 1);
             }
 
             await using (var dbContext = new DatabaseContext(options))
@@ -335,7 +334,7 @@ namespace WebApplication.Tests
             {
                 var service = CreateTimelineService(dbContext);
 
-                await service.AddFlagToMessage(1, CancellationToken.None);
+                await service.AddFlagToMessage(1);
             }
             
             await using (var dbContext = new DatabaseContext(options))
@@ -359,7 +358,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateTimelineService(dbContext);
 
-                    await service.AddFlagToMessage(1, CancellationToken.None);
+                    await service.AddFlagToMessage(1);
                 }
             });
         }
@@ -383,7 +382,7 @@ namespace WebApplication.Tests
             {
                 var service = CreateTimelineService(dbContext);
 
-                await service.RemoveFlagFromMessage(1, CancellationToken.None);
+                await service.RemoveFlagFromMessage(1);
             }
             
             await using (var dbContext = new DatabaseContext(options))
@@ -407,7 +406,7 @@ namespace WebApplication.Tests
                 {
                     var service = CreateTimelineService(dbContext);
 
-                    await service.RemoveFlagFromMessage(1, CancellationToken.None);
+                    await service.RemoveFlagFromMessage(1);
                 }
             });
         }

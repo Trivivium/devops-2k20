@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -41,9 +40,9 @@ namespace WebApplication.Controllers
         /// </summary>
         [HttpGet("latest")]
         [ProducesResponseType(typeof(List<Latest>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetLatest(CancellationToken ct)
+        public async Task<IActionResult> GetLatest()
         {
-            var latest = await TestingUtils.GetLatest(_databaseContext, ct);
+            var latest = await TestingUtils.GetLatest(_databaseContext);
             
             return Ok(latest);
         }
@@ -54,11 +53,11 @@ namespace WebApplication.Controllers
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddUser(RegisterModel model, CancellationToken ct)    // TODO Add request model
+        public async Task<IActionResult> AddUser(RegisterModel model)
         {
             try
             {
-                await _userService.CreateUser(model, ct);
+                await _userService.CreateUser(model);
             }
             catch (CreateUserException exception)
             {
@@ -78,9 +77,9 @@ namespace WebApplication.Controllers
         /// <param name="no">The number of messages to return.</param>
         [HttpGet("msgs")]
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<MessageResponse>>> GetMessages([FromQuery] int no = 20, CancellationToken ct = default)
+        public async Task<ActionResult<List<MessageResponse>>> GetMessages([FromQuery] int no = 20)
         {
-            var messages = await _timelineService.GetMessagesForAnonymousUser(no, includeFlaggedMessages: false, ct);
+            var messages = await _timelineService.GetMessagesForAnonymousUser(no, includeFlaggedMessages: false);
 
             return Ok(messages.Select(msg => new MessageResponse()
             {
@@ -98,11 +97,11 @@ namespace WebApplication.Controllers
         [HttpGet("msgs/{username}")]
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<List<MessageResponse>>> GetMessagesFromUser(string username, [FromQuery] int no = 20, CancellationToken ct = default)
+        public async Task<ActionResult<List<MessageResponse>>> GetMessagesFromUser(string username, [FromQuery] int no = 20)
         {
             try
             {
-                var messages = await _timelineService.GetMessagesForUser(username, no, includeFlaggedMessages: false, ct);
+                var messages = await _timelineService.GetMessagesForUser(username, no, includeFlaggedMessages: false);
 
                 return Ok(messages.Select(msg => new MessageResponse
                 {
@@ -124,11 +123,11 @@ namespace WebApplication.Controllers
         [HttpPost("msgs/{username}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddMessageToUser(string username, CreateMessageModel model, CancellationToken ct)
+        public async Task<IActionResult> AddMessageToUser(string username, CreateMessageModel model)
         {
             try
             {
-                await _timelineService.CreateMessage(model, username, ct);
+                await _timelineService.CreateMessage(model, username);
             }
             catch (UnknownUserException e)
             {
@@ -147,11 +146,11 @@ namespace WebApplication.Controllers
         [HttpGet("fllws/{username}")]
         [ProducesResponseType(typeof(FollowerCollectionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<FollowerCollectionResponse>> GetFollowersFromUser(string username, [FromQuery] int no = 20, CancellationToken ct = default)
+        public async Task<ActionResult<FollowerCollectionResponse>> GetFollowersFromUser(string username, [FromQuery] int no = 20)
         {
             try
             {
-                var followers = await _userService.GetUserFollowers(username, no, ct);
+                var followers = await _userService.GetUserFollowers(username, no);
 
                 return Ok(new FollowerCollectionResponse
                 {
@@ -170,7 +169,7 @@ namespace WebApplication.Controllers
         [HttpPost("fllws/{username}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddOrRemoveFollowerFromUser(string username, ChangeUserFollowerModel model,  CancellationToken ct)
+        public async Task<IActionResult> AddOrRemoveFollowerFromUser(string username, ChangeUserFollowerModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Follow) && string.IsNullOrWhiteSpace(model.Unfollow))
             {
@@ -185,11 +184,11 @@ namespace WebApplication.Controllers
             {
                 if (!string.IsNullOrWhiteSpace(model.Follow))
                 {
-                    await _userService.AddFollower(username, model.Follow, ct);
+                    await _userService.AddFollower(username, model.Follow);
                 }
                 else
                 {
-                    await _userService.RemoveFollower(username, model.Unfollow, ct);
+                    await _userService.RemoveFollower(username, model.Unfollow);
                 }
             }
             catch (UnknownUserException e)
