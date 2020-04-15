@@ -91,21 +91,28 @@ Operating System: 2N Helios IP VoIP doorbell (Accuracy 98%) – 1 st try
 
 British Gas GS-Z3 data logger (Accuracy 92%) – 2 nd try 
 
-Tcpwrapped results for port scanning and unreliable operating system detection implies that group C is probably using firewall or some other filtering technique, thus we are unable to detect which operating system they are using.
+Tcpwrapped results for port scanning and unreliable operating system detection
+implies that group C is probably using firewall or some other filtering technique, 
+thus we are unable to detect which operating system they are using.
 
 ### Vulnerability assessment
 Unfortunately, we didn’t gather much useful information in the 1st step. 
 
-We proceeded with the basic scenario for Web Application Pen Testing. Using techniques such as SQL Injection, Cross Site Scripting and Broken authentication and session management we will check if their application is exposed to any security vulnerabilities.
+We proceeded with the basic scenario for Web Application Pen Testing. 
+Using techniques such as SQL Injection, Cross Site Scripting and Broken 
+authentication and session management we will check if their application 
+is exposed to any security vulnerabilities.
 
 ### Exploitations and Results
 1. *Cross Site Scripting*
 
-A few basic attempts but nothing worked. Looks like they are sanitizing all the inputs.
+A few basic attempts but nothing worked. Looks like they are sanitizing 
+all the inputs.
 
 2. *SQL Injection*
 
-Since XSS didn't work, chances that SQL Injection will were very low but we gave it a try. We didn't have success here either.
+Since XSS didn't work, chances that SQL Injection will were very low but we 
+gave it a try. We didn't have success here either.
 
 3. *Broken authentication and session management*
 - URL rewriting is not possible
