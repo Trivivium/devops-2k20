@@ -69,9 +69,120 @@ than promised.
 Therefore we could prove that they had violated their SLA. 
 
 
-### Pen testing `U Buntu?`
-PLEASE ADD SOME SHIT HERE **ADAM**
+## Pen testing `U Buntu?`
 
+### Information gathering
+We used Nmap for information gathering:
+
+Target: www.minitwit.dk
+
+IP address: 142.93.162.43
+
+
+Ports:
+
+Open port 80/tcp on 142.93.162.43 tcpwrapped (http) 
+
+Open port 22/tcp on 142.93.162.43 tcpwrapped (ssh) 
+
+Open ports 2, Closed ports 0, Filtered ports 998 
+
+Operating System: 
+
+2N Helios IP VoIP doorbell (Accuracy 98%) – 1 st try 
+
+British Gas GS-Z3 data logger (Accuracy 92%) – 2 nd try 
+
+Tcpwrapped results for port scanning and unreliable operating system detection
+implies that group C is probably using firewall or some other filtering 
+technique, thus we are unable to detect which operating system they are using.
+
+### Vulnerability assessment
+Unfortunately, we didn’t gather much useful information in the 1st step. 
+
+We proceeded with the basic scenario for Web Application Pen Testing. 
+Using techniques such as SQL Injection, Cross Site Scripting and Broken 
+authentication and session management we will check if their application 
+is exposed to any security vulnerabilities.
+
+### Exploitations and Results
+1. *Cross Site Scripting*
+
+A few basic attempts but nothing worked. Looks like they are sanitizing 
+all the inputs.
+
+2. *SQL Injection*
+
+Since XSS didn't work and inputs are sanitized properly, chances that SQL 
+Injection will were very low but we gave it a try. We didn't have success 
+here doing it manually. Afterwards we used tool called SqlMap in 
+order to see if some of the inputs are injectable. Conclusion is that
+group C uses  Web Application Firewall or Intrusion Prevention System.
+
+`[CRITICAL] heuristics detected that the target is protected by some kind of WAF/IPS`
+
+3. *Broken authentication and session management*
+- URL rewriting is not possible
+- Application's timeout is set properly 
+- No predictable login credentials such as admin:admin or admin:12345678
+
+4. *Security Misconfigurations*
+* There are no unnecessary ports left open
+* There are no sufficient services or pages
+* Default accounts and their passwords are changed (except for the Kibana) 
+* Error handling doesn't reveal any new information about the system
+
+5. *OWASP-ZAP scan* results
+```
+X-Frame-Options Header Not Set
+Risk: Medium
+X-Frame-Options header is not included in the HTTP response to protect
+against 'ClickJacking' attacks.
+```
+
+```
+Password Autocomplete in Browser
+Risk: Low
+The AUTOCOMPLETE attribute is not disabled on an HTML FORM/INPUT element containing 
+password type input.  Passwords may be stored in browsers and retrieved.
+```
+
+```
+Web Browser XSS Protection Not Enabled
+Risk: Low
+Web Browser XSS Protection is not enabled, or is disabled by the configuration of
+the 'X-XSS-Protection' HTTP response header on the web server
+```
+
+```
+X-Content-Type-Options Header Missing
+Risk: Low
+The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. 
+This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing 
+on the response body, potentially causing the response body to be interpreted and 
+displayed as a content type other than the declared content type. Current (early 2014) 
+and legacy versions of Firefox will use the declared content type (if one is set), 
+rather than performing MIME-sniffing.
+```
+
+6. *Source code inspection*
+
+Since we had access to source code, we investigated a bit further and found an 
+error that could be fatal. `postgres.js` file contains all the information for 
+database we need
+
+```
+    user: 'minitwit',
+    host: 'db-postgresql-fra1-98386-do-user-3696963-0.db.ondigitalocean.com',
+    database: 'minitwit',
+    password: 'secret123shhhhhhhhhh',
+    port: 25060,
+    ssl: true
+```
+
+Next, we tried to use default credentials for some of the services 
+and succeeded for Kibana. Afterwards, we also confirmed that by
+inspecting kibana.yml file.
 
 ## Security review of own service
 
