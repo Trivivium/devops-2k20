@@ -129,7 +129,7 @@ group C uses  Web Application Firewall or Intrusion Prevention System.
 4. *Security Misconfigurations*
 * There are no unnecessary ports left open
 * There are no sufficient services or pages
-* Default accounts and their passwords are changed 
+* Default accounts and their passwords are changed (except for the Kibana) 
 * Error handling doesn't reveal any new information about the system
 
 5. *OWASP-ZAP scan* results
@@ -165,6 +165,24 @@ and legacy versions of Firefox will use the declared content type (if one is set
 rather than performing MIME-sniffing.
 ```
 
+6. *Source code inspection*
+
+Since we had access to source code, we investigated a bit further and found an 
+error that could be fatal. `postgres.js` file contains all the information for 
+database we need
+
+```
+    user: 'minitwit',
+    host: 'db-postgresql-fra1-98386-do-user-3696963-0.db.ondigitalocean.com',
+    database: 'minitwit',
+    password: 'secret123shhhhhhhhhh',
+    port: 25060,
+    ssl: true
+```
+
+Next, we tried to use default credentials for some of the services 
+and succeeded for Kibana. Afterwards, we also confirmed that by
+inspecting kibana.yml file.
 
 ## Security review of own service
 **First draft**
