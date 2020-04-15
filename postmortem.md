@@ -87,13 +87,15 @@ Open port 22/tcp on 142.93.162.43 tcpwrapped (ssh)
 
 Open ports 2, Closed ports 0, Filtered ports 998 
 
-Operating System: 2N Helios IP VoIP doorbell (Accuracy 98%) – 1 st try 
+Operating System: 
+
+2N Helios IP VoIP doorbell (Accuracy 98%) – 1 st try 
 
 British Gas GS-Z3 data logger (Accuracy 92%) – 2 nd try 
 
 Tcpwrapped results for port scanning and unreliable operating system detection
-implies that group C is probably using firewall or some other filtering technique, 
-thus we are unable to detect which operating system they are using.
+implies that group C is probably using firewall or some other filtering 
+technique, thus we are unable to detect which operating system they are using.
 
 ### Vulnerability assessment
 Unfortunately, we didn’t gather much useful information in the 1st step. 
