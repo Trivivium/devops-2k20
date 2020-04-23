@@ -67,6 +67,32 @@ easy to use tools for a variety of needs. Whether using Azure is a ideal,
 however, is a matter of discussion in the group, and is based on both political
 and personal bias and opinions.
 
+## Scaling solution: Docker Swarm
+We choose Docker Swarm as the technology used to scale the system. As this step
+was required later in the course the choice integrates beautifully with our
+prior investment into Docker Compose. To keep the setup simple we decided to
+run Docker Swarm with a single node (the original host machine) to act as the 
+swarm manager and only worker as it also hosts the web applicaton and database.
+
+We didn't invest too much time looking into alternatives as Docker Swarm seemed
+to provide all the tools necessary with less technical fragmentation (i.e., using
+several different providers with differing configuration systems).
+
+### Evaluation
+In accordance with your prior interest in Docker the choice of Docker Swarm was a
+natural extension of this. The main hurdles encountered is the isolated knowledge 
+of the technology. Due to nature of it we allocated a single person to set it up,
+which meant that when an error was encountered by others in the group we didn't
+have a clear picture. However, this can be helped by documenting the approach
+taken and sharing lessons learned.
+
+When considering the choice of using a single node there are some consequences we
+are aware of, but which means true scaling and reliability isn't archieved. In the
+case that the node crashes is the entire system also taken down. The scaling aspect
+is also constrained to the resources available on that single node. Both of these
+issues can be resolved by adding more physical machines to the swarm. However, this
+was a deliberate decision in order to keep monetary costs down.
+
 ## OS: Ubuntu 18.04.3 LTS 
 We wanted an OS that had long term support (LTS) as to make sure we had the
 least amount of bugs or security holes, and if any surfaced, then those would be
