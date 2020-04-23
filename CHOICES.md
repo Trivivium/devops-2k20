@@ -35,13 +35,11 @@ locally.
 However MSSQL in itself provided no problems - it had exactly the features that
 we were after, and worked like a charm. This seemed to have been a good choice.
 
-## Testing strategy - unit-tests & API-specification tests
+## Testing strategy - unit-tests
 To help increase our confidence in the changes added to the system we added
-two types of tests. The first being unit-tests written in C# using the XUnit
-test framework, which is used to test functionality as implemented in web
-application (e.g., creating a user, adding a message, etc.). The second is 
-integration/specification tests written in Python, which is run against the
-API to ensure it conforms to the specification of the simulator.
+unit tests. The unit-tests are written in C# using the XUnit test framework,
+which is used to test functionality as implemented in web application
+(e.g., creating a user, adding a message, etc.).
 
 The unit tests are focused around the service classes, which implements the
 business logic related to the functionality of the system. These tests aims
@@ -50,22 +48,13 @@ ted error paths (i.e., adding a message to an unknown user). The tests are
 executed using the built-in tooling of the dotnet CLI included in the .NET
 Core SDK.
 
-The integration tests is an adaption of the tests provided along with the
-simulator API. These tests acts as a client using the API. The API is
-deployed as a production environment using Docker Compose to ensure it 
-matches the actual production environment as closely as possible.
-
-Both types of tests are run as part of the CI pipeline on pull requests
+These tests are run as part of the CI pipeline on pull requests
 (PR), and when a PR is merged into the master branch.
 
 ### Evaluation
-Due to the fact that an entire Docker Compose setup with at least 2
-containers being bootstrapped as part of the CI pipeline does mean the
-run-time of those can be quite long. However, this has been a deliberate 
-choice to ensure a production like environment.
-
-However, the C# unit-tests are much quicker to run, but covers a lot
-smaller scope of the solution.
+The unit-tests are quick to run in the CI pipeline. However, the amount of
+code currently covered by the tests are limited to the primary functiona-
+lity. 
 
 ## Virtualization / Containerization: Docker & Docker-compose
 There are a few different alternatives to docker, but it is essentially the
