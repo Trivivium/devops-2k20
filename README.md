@@ -1,4 +1,5 @@
 ![Build Solution](https://github.com/trivivium/devops-2k20/workflows/Build%20Solution/badge.svg)
+
 [![BCH compliance](https://bettercodehub.com/edge/badge/Trivivium/devops-2k20?branch=master)](https://bettercodehub.com/)
 
 
