@@ -35,9 +35,31 @@ locally.
 However MSSQL in itself provided no problems - it had exactly the features that
 we were after, and worked like a charm. This seemed to have been a good choice.
 
-## Unittests: ???
+## Testing strategy - unit-tests
+To help increase our confidence in the changes added to the system we added
+unit tests. The unit-tests are written in C# using the XUnit test framework,
+which is used to test functionality as implemented in web application
+(e.g., creating a user, adding a message, etc.).
 
+The unit tests are focused around the service classes, which implements the
+business logic related to the functionality of the system. These tests aims
+to check the "happy-path" where the function succeeds as well as the expec-
+ted error paths (i.e., adding a message to an unknown user). The tests are
+executed using the built-in tooling of the dotnet CLI included in the .NET
+Core SDK.
 
+These tests are run as part of the CI pipeline on pull requests
+(PR), and when a PR is merged into the master branch.
+
+### Evaluation
+The unit-tests are quick to run in the CI pipeline. However, the amount of
+code currently covered by the tests are limited to the primary functiona-
+lity. This is, however, not a reflection of the choice of strategy, but rather the available time we allocated to this part of the project. 
+
+Some tests are without a doubt better than no tests, and we did catch some bad exceptions once in a while. Using the "happy-path" mentality strategy did catch the worst of errors however, meaning that it definitely added value to the project as a whole, however there is naturally always room for improvement. The focus did, however, mean that we tested wide, and meant that most features were covered.
+The unit-tests are quick to run in the CI pipeline. However, the amount of
+code currently covered by the tests are limited to the primary functiona-
+lity. 
 
 ## Virtualization / Containerization: Docker & Docker-compose
 There are a few different alternatives to docker, but it is essentially the
