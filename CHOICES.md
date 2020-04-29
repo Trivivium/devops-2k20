@@ -90,7 +90,7 @@ When considering the choice of using a single node there are some consequences w
 are aware of, but which means true scaling and reliability isn't archieved. In the
 case that the node crashes is the entire system also taken down. The scaling aspect
 is also constrained to the resources available on that single node. Both of these
-issues can be resolved by adding more physical machines to the swarm. However, this
+issues can be resolved by adding more physical machines to the swarm, which we can do seamlessly because of docker swarm. However, this
 was a deliberate decision in order to keep monetary costs down.
 
 ## OS: Ubuntu 18.04.3 LTS 
