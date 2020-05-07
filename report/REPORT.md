@@ -1,6 +1,5 @@
- # Development Report
+# Development Report
 This document will detail the process of migrating the Minitwit platform, as well as the 
-
 *TODO - improve introduction*
 
 
@@ -16,15 +15,10 @@ This document will detail the process of migrating the Minitwit platform, as wel
 
 
 ## State of solution
-*TODO - current state of our system, results of static analysis and code quality assessment*
+*TODO - current state of our system, results of static analysis and code quality assessment, add security assessment too*
 
 
-
-## Choices
-*TODO - argue for the choice of technologies and decisions. We can use CHOICES.md here.*
-
-
-## Process' details
+## Development practices
 *TODO - how do we interact? how is the team organized?*
 
 
@@ -36,19 +30,18 @@ This document will detail the process of migrating the Minitwit platform, as wel
 *TODO - organization of our repository, branching strategy, process and tools (how do we use issues, tasks, kanban board)*
 
 
-## Monitoring
+## Devops tools
+
+
+### Monitoring
 *TODO - how(and what) do we monitor in our system*
 
 
-## Logging
+### Logging
 *TODO - what do we log and how we aggregate it*
 
 
-## Security assessment
-*TODO - brief security assessment(we can use POSTMORTEM.md)*
-
-
-## Scaling and load balancing 
+### Scaling and load balancing
 *TODO- strategy for scaling and load balancing*
 
 
@@ -65,5 +58,5 @@ This document will detail the process of migrating the Minitwit platform, as wel
 3. maintenance
 
 
-*Link back to commit messages/issues to illustrate these. *
+* Link back to commit messages/issues to illustrate these. *
 
