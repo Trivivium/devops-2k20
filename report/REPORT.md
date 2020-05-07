@@ -9,24 +9,27 @@ This document will detail the process of migrating the Minitwit platform, as wel
 *TODO - dependencies and important interactions of subsystems*
 
 ### Hosting
-**Digital Ocean**
-We had to host our solution somewhere to have a production environment. The
-courses presented Digital Ocean, and a couple of us already had experience with
-it. However the main factor was probably the Github Education Pack that provides
-a bunch of free credit, meaning we wouldn't have to pay for any hosting for the
-duration of the course. 
+As the application should be publically available IP address we needed a hosting
+provider for the production environment. The course presented Digital Ocean as an
+option, and as a couple of us had prior experience with them we choose this solution.
+The prior experience along with the option to utilize the Github Education Pack for
+free credits meant we had confidence in the decision.
 
-**Evaluation**
-We initially provisioned a relatively small droplet, which is what they call
-their virtual private servers (VPS), however as we needed to add more monitoring
-and logging we had a growing requirement for the specs of the VPS. We ended up
-having to provision multiple droplets, because scaling vertically would give us
-some downtime, which we wanted to avoid. We ended up having a VPS for our tools
-and one for our solution. This was probably a good thing, however, as that makes
-sure that even if one of the two crashes the other wont necessarily. However, we
-would still have issues if we wanted to scale the solution itself, which would
-essentially be impossible without some downtime - as our service isn't completely
-stateless, we wouldn't just be able to scale vertically neither. 
+We started out provisioning a small droplet, which is what Digital Ocean names
+their virtual private servers (VPS), with enough resources to host the application
+and the database inside Docker containers. However, whenwe added monitoring
+and logging to application we had increasing requirements for the specs of the VPS. 
+To meet these requirements we provisioned multiple droplets as scaling a single VPS vertically would introduce downtime, which we wanted to avoid. 
+
+The result of this approach led us to having two droplets; one for our tools (e.g.,
+logging) and one for the solution. In retrospect this was probably the right
+decision as it increases our resiliency. If one of the droplets crashes the other
+one remains untouched.
+
+Despite the short-term benefit of this solution we still have issues scaling the
+droplet hosting the application. Because the application isn't stateless horizontal
+scaling isn't an option, and thus vertical scaling is our sole option, which requires
+us to incur some downtime when the droplet is upgraded.
 
 **OS: Ubuntu 18.04.3 LTS**
 We wanted an OS that had long term support (LTS) as to make sure we had the
