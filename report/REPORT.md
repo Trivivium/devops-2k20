@@ -52,42 +52,22 @@ be working too much directly on the operating system level. This meant that we d
 require to have one of the group members focusing on the OS more than others. It also
 proved to be a comfortable environment for the group members used to working in Windows.
 
-**Virtualization / Containerization: Docker & Docker-compose**
-In any professional context it might have been a better choice to use some
-containerization-as-a-service solution or something where the features were
-managed, however that naturally depends on the project at hand, however this
-left us with a lot of manually work, setting up docker etc and scaling issues.
-However, for the context of this course it was a great pick, as we learned a lot
-from having to work with the OS ourselves, rather than, for instance, hosting
-everything on Heroku, which provides hosting for a docker-container and
-automatically handles everything without any critical downtime.
+### Containerization
+To run the application and the database instance required by the application we decided
+on the use of Docker. This choice rested primarily on it being presented in the course,
+but a more important fact was that all group members had interest in using the 
+technology, and a good introduction to the fundamentals around containers, which has 
+broad applicability in other technologies such as Kubernetes.
 
-There are a few different alternatives to docker, but it is essentially the
-de-facto standard in the business. It was also what was introduced in the
-course, and seemed rather interesting. The alternative would have been vagrant,
-but as [argued
-here](https://stackoverflow.com/questions/16647069/should-i-use-vagrant-or-docker-for-creating-an-isolated-environment),
-it is probably less ideal. 
+In a professional context it might have been a better choice to use some
+containerization-as-a-service solution or a provider where the features underlying
+operating system support Docker is managed. Sticking with installing, configurating,
+and operating Docker was a lot more involved than a managed solution in terms of
+manual work, but it provided us with invaluable learning opportunities.
 
-We wanted to get more experience with docker. The syntax and tool can be
-extended to be used in a wide variety of similar tools, like Kubernetes or 
-
-**Evaluation**
-We would probably prefer having a more powerful host for the containers in the
-future. If we had to scale vertically it would presumably be difficult, and this
-is handled better in systems like Kubernetes, to the best of our knowledge.
-There are a large variety of different tools, which still builds on the docker
-syntax, that has a bigger set of features, that would presumably handle scaling
-better, however it worked for the relatively small service that we had to
-provide - so for the setting, it was probably an ideal choice, however for
-larger systems we would probably pick something else.
-
-If we hadn't want to focus on something that would provide learning, we would
-probably have picked Azure and focus fully on the Microsoft stack, as we
-essentially started working with that stack, and Azure does provide a lot of
-easy to use tools for a variety of needs. Whether using Azure is a ideal,
-however, is a matter of discussion in the group, and is based on both political
-and personal bias and opinions.
+There are other alternatives to Docker, but it is the primary technology supporting
+containerizatio and thus an unoffical standard in the business. An example of an alternative is Vagrant used to provision the servers, but we deemed it less attractive
+as it is a rather heavy-weight solution (i.e., entire operating system) in order to gain the same isolation Docker provides.
 
 ### Programming language & Runtime environment
 
@@ -346,6 +326,20 @@ was a deliberate decision in order to keep monetary costs down.
 ## Conclusion and evaluation
 *TODO - biggest issues, major lessons we have learned, overall takeaways, fuckups etc. regarding:*
 
+**Containerization (Docker) Evaluation**
+We would probably prefer having a more powerful host for the containers in the
+future. If we had to scale vertically it would presumably be difficult, and this
+is handled better in systems like Docker Swarm or Kubernetes. There are a large variety 
+of different tools, which still builds on the Docker syntax, which has a more expansive
+set of features, that would presumably handle scalability challanges better, however it
+worked for the relatively small service that we had to provide - so in this context, it
+was probably an ideal choice.
+
+If we didn't want to focus on an approach that would provide us with a good learning
+opportunity, we could have picked Azure and focus entirely on the application, as it 
+integrates very well with the .NET environment supporting the application stack. Azure 
+provides a lot of tools for a variety of requirements (e.g., logging). Whether using
+Azure is ideal, however, is a matter of discussion in the group, and is based on both political and personal bias and opinions.
 
 1. evolution and refactoring
 
