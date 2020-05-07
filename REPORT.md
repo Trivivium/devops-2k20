@@ -32,19 +32,37 @@ This document will detail the process of migrating the Minitwit platform, as wel
 
 
 ## Development practices
-*TODO - organization of our repository, branching strategy, process and tools (how do we use issues, tasks, kanban board),
-how(and what) do we monitor in our system, what do we log and how we aggregate it, brief security assessment(we can use
-POSTMORTEM.md), strategy for scaling and load balancing*
+*TODO - organization of our repository, branching strategy, process and tools (how do we use issues, tasks, kanban board)*
 
 
-
-## Evaluation
-*TODO - biggest issues, major lessons we have learned, overall takeaways, fuckups etc. regarding: 1. evolution and refactoring, 2. operation, 3. maintenance
-Link back to commit messages/issues to illustrate these. *
+## Monitoring
+*TODO - how(and what) do we monitor in our system*
 
 
+## Logging
+*TODO - what do we log and how we aggregate it*
 
-## Conclusion
-*TODO*
 
+## Security assessment
+*TODO - brief security assessment(we can use POSTMORTEM.md)*
+
+
+## Scaling and load balancing 
+*TODO- strategy for scaling and load balancing*
+
+
+## Conclusion and evaluation
+*TODO - biggest issues, major lessons we have learned, overall takeaways, fuckups etc. regarding:*
+
+
+1. evolution and refactoring
+
+
+2. operation
+
+
+3. maintenance
+
+
+*Link back to commit messages/issues to illustrate these. *
 
