@@ -70,25 +70,24 @@ containerizatio and thus an unoffical standard in the business. An example of an
 as it is a rather heavy-weight solution (i.e., entire operating system) in order to gain the same isolation Docker provides.
 
 ### Programming language & Runtime environment
+Before starting the refactoring of the existing MiniTwit application we considered our
+options and interests of the group members in relation to the programming language we
+aimed to use. This of course had an impact on our choices of web application frameworks
+available to us.
 
-**.NET Core 3.1**
+We ended up using .NET Core 3.1 with C# as it was argued that it was the language 
+that most of the group members would be able to write from the start. As mentioned 
+a couple of times in previous sections we wanted to focus less on the development of
+the application and more on setting up the DevOps tools and processing related to it, so 
+chosing a completely new, and thus challenging language wasn't a priority.
 
-*TODO - Write some about this choice and the value we expect from it*
-
-**C# 8.0**
-Early on we had to convert the existing system into a new programming language. 
-We had a short discussion about programming languages, and it was argued that C#
-was the language that most people would be able to write from the get go. We
-wanted to focus less on the development of the system, and rather on setting up
-DevOps tools and things in that regard, so picking a challenging language was
-not prioritized, rather something that would make the code itself somewhat easy
-to debug, seemed more sensible.
-
-**Evaluation**
-The team probably has varying opinions on the C# language, and some of use would
-probably have preferred somewhat that was more engaging or faster to write,
-however it got the job done, and it did make it easier to debug, leaving time
-for writing various tests.
+The choice of the C# naturally led us to the usage of the ASPNET Core web framework. This
+framework provides us with good documentation on authoring both server-rendered pages
+and REST APIs. For interaction with the database we decided to use an ORM rather than
+handwritten SQL statements for reasons regarding both security and speed of development.
+The choice of ORM ended on Entity Framework Core as it integrates very well with ASPNET
+Core, and has adapters to many different database giving us freedom in chosing our
+storage solution later.
 
 ### Testing
 **Unit tests: XUnit (C#)**
@@ -342,6 +341,18 @@ provides a lot of tools for a variety of requirements (e.g., logging). Whether u
 Azure is ideal, however, is a matter of discussion in the group, and is based on both political and personal bias and opinions.
 
 1. evolution and refactoring
+
+**C#/ASPNET Core Evaluation**
+
+> TODO: The first line kind of contradicts some of the content in the "Programming language"
+section. I was under the impression that the use of C# worked out fairly well. However, if
+this isn't the case please elaborate on this, and remember to change the programming
+language section to fit this.
+
+The team probably has varying opinions on the C# language, and some of use would
+probably have preferred somewhat that was more engaging or faster to write,
+however it got the job done, and it did make it easier to debug, leaving time
+for writing various tests.
 
 
 2. operation
