@@ -31,31 +31,26 @@ droplet hosting the application. Because the application isn't stateless horizon
 scaling isn't an option, and thus vertical scaling is our sole option, which requires
 us to incur some downtime when the droplet is upgraded.
 
-**OS: Ubuntu 18.04.3 LTS**
-We wanted an OS that had long term support (LTS) as to make sure we had the
-least amount of bugs or security holes, and if any surfaced, then those would be
-fixed accordingly.
+### Operating system
+For the operating system of the application droplet we decided on Ubuntu 18.04.3 LTS.
+It was important for us to use a version with long-term support (LTS) as it helps
+us ensure stability and reliability as well as active support should bugs or 
+security vulnerabilties surfaced during the course. 
 
-We wanted to use a Linux based system as that seemed to give the greatest level
-of learning. Creating a windows WM would give us a graphical user interface and
-that would definitely yield some learning as well, but seemed less relevant in
-the context of this course. We could have used an Arch Linux or other
-distribution, however Ubuntu is rather common and has a great community making
-it somewhat easy to figure out how things are done. This made it ideal for the
-members of the group that didn't have a great level of proficiency. 
+We wanted to use a Linux based distribution as it seemed to provide the greatest
+level of learning. Using Windows based virtual machine could provide us a graphical
+user interface and tools, and it would definitely yield some valuable learning as well
+it seemed a less attractive choice in the context of this course and tools we aimned
+to utilize. The choice of Ubuntu is definitive as we could have used Arch Linux or 
+any other distribution. However, Ubuntu is rather common and has a great community
+making tools, which make it easier to figure out how tasks are done. These considerations
+combined made Ubuntu an ideal choice for the members of the group that didn't have a
+extensive experience with the OS and thus a more limited level of proficiency with it.
 
-The OS was also less relevant regarding the software we would be running
-
-**Evaluation**
-As we are focusing on automating all the boring steps, we actually didn't have
-to do a lot of things at the OS level, so the choice was rather irrelevant after
-having initially set everything up, but it was nice that we wouldn't need a
-singular sysadmin, but rather used a tool everyone would be able to use to some
-degree, though with varying level of efficiency. 
-
-The tool provided learning both for the Linux proficient, as they learned things
-about docker, but it also provided a safe learning environment for the Windows
-users.
+Due to the technologies we were planning on using (i.e., Docker) we weren't going to
+be working too much directly on the operating system level. This meant that we didn't
+require to have one of the group members focusing on the OS more than others. It also
+proved to be a comfortable environment for the group members used to working in Windows.
 
 **Virtualization / Containerization: Docker & Docker-compose**
 In any professional context it might have been a better choice to use some
