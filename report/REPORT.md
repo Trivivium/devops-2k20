@@ -1,5 +1,6 @@
-# Development Report
+ # Development Report
 This document will detail the process of migrating the Minitwit platform, as well as the 
+
 *TODO - improve introduction*
 
 
@@ -23,7 +24,7 @@ This document will detail the process of migrating the Minitwit platform, as wel
 *TODO - argue for the choice of technologies and decisions. We can use CHOICES.md here.*
 
 
-##Process' details
+## Process' details
 *TODO - how do we interact? how is the team organized?*
 
 
