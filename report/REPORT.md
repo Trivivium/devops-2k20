@@ -1,7 +1,11 @@
 # Development Report
-This document will detail the process of migrating the Minitwit platform, as well as the 
-*TODO - improve introduction*
-
+This document is the final report of Group b (2k20 MSc) for the *DevOps, Software
+Evolution and Software Maintenance* course at IT University of Copenhagen, held in spring 2020.
+It will detail the process of migrating the Minitwit platform, refactoring of the system,
+major devops tasks we have done throughout the course, our team and repository organization and strategies.
+Report is divided by sections, not by the timeline, so the reader can get better overview of our work.
+We also argued for the choice of technologies and decisions we had made. At the end of the document,
+we give a summary of what were our biggest issues and challenges, what we have learned out of that and what could have done better.
 
 
 ## System Description
