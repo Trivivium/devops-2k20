@@ -1,9 +1,16 @@
 # Development Report
-This document will detail the process of migrating the Minitwit platform, as well as the 
-*TODO - improve introduction*
+This document is the final report of Group b (2k20 MSc) for the *DevOps, Software
+Evolution and Software Maintenance* course at IT University of Copenhagen, held in spring 2020.
+It will detail the process of migrating the Minitwit platform, refactoring of the system,
+major devops tasks we have done throughout the course, our team and repository organization and strategies.
+Report is divided by sections, not by the timeline, so the reader can get better overview of our work.
+We also argued for the choice of technologies and decisions we had made. At the end of the document,
+we give a summary of what were our biggest issues and challenges, what we have learned out of that and what could have done better.
+
 
 ## System Description
 *TODO - design and architecture of our ITU-MiniTwit system*
+
 
 ## Application Solution details
 *TODO - dependencies and important interactions of subsystems*
@@ -179,8 +186,10 @@ locally.
 However MSSQL in itself provided no problems - it had exactly the features that
 we were after, and worked like a charm. This seemed to have been a good choice.
 
+
 ## State of solution
 *TODO - current state of our system, results of static analysis and code quality assessment, add security assessment too*
+
 
 ## CI/CD implementation
 *TODO - complete description of stages and tools used in CI/CD chains (deployment and release)*
@@ -273,6 +282,7 @@ closely aligned with the pull-request flow was definitely a helpful feature.
 ### Monitoring
 *TODO - how(and what) do we monitor in our system*
 
+
 **Monitoring: Prometheus & Grafana**
 We chose Prometheus as the primary monitoring tool and Grafana for data visualization.
 No one from the team had a lot of experience working with monitoring tools. It meant that no one had expectations or any preference regarding choosing the monitoring tool. 
@@ -293,8 +303,10 @@ library for the tool that we want to use, and it is actively maintained.
 Alternatives like Graphite there is no official GitHub repository, and a [simple search on Github](https://github.com/search?q=graphite+.net) reveals it. It also the fact that if the community is large enough
 there is a possibility of finding a solution to your problem in a short amount of time.
 
+
 ### Logging
 *TODO - what do we log and how we aggregate it*
+
 
 **ELK**
 We chose Elasticsearch, Logstash and Kibana (the ELK stack) as logging tools.
@@ -316,8 +328,10 @@ Studying the issues that were made did make the choice easy for us as some issue
 failure was not something that we wanted to work with. 
 Furthermore, it should be simple to acquire help which did not look like to be the case.
 
+
 ### Scaling and load balancing
 *TODO- strategy for scaling and load balancing*
+
 
 **Docker Swarm**
 We choose Docker Swarm as the technology used to scale the system. As this step
@@ -344,6 +358,7 @@ case that the node crashes is the entire system also taken down. The scaling asp
 is also constrained to the resources available on that single node. Both of these
 issues can be resolved by adding more physical machines to the swarm, which we can do seamlessly because of docker swarm. However, this
 was a deliberate decision in order to keep monetary costs down.
+
 
 ## Conclusion and evaluation
 *TODO - biggest issues, major lessons we have learned, overall takeaways, fuckups etc. regarding:*
