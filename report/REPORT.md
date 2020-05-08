@@ -171,25 +171,30 @@ Integrating both Prometheus and Grafana proved to be simple due to the availabil
 pre-built container images, which integrated nicely with our investment into Docker.
 
 ### Logging
-**ELK**
-We chose Elasticsearch, Logstash and Kibana (the ELK stack) as logging tools.
-Firstly, it enables us to do modern, scalable and user-friendly logging, and it is also one of the most popular
-choices at the moment.
-Because it promotes centralized logging we chose to set up the ELK stack on another droplet, and the fact that
-Elasticsearch requires a larger amount of memory.
+Lastly is logging. We wanted to be sure we had an overview of the log messages produced by
+our system, and any exception that might have occurred in production. The former is implemented
+using Elasticsearch, Logstash, and Kibana (ELK stack). The ELK stack is a popular choice to 
+structured logging with a large community supporting it. The community along with it being
+presented during the course was the primary driving factors when deciding upon this solution.
 
-To setup the ELK stack is just a matter of creating docker containers. 
+A common theme throughout the development cycle has been ease of integration and the ELK stack
+did deliver in that area. However, we did research other alternatives. This led us to looking more
+closely into [LogDNA](https://logdna.com), which is Elasticsearch and Kibana combined. They also
+support containerization, but suggests using Kubernetes, which we aren't using. The integration 
+story with .NET is also another negative for this solution. We found a Github repository for a
+[RedBear.LogDNA](https://github.com/RedBearSys/RedBear.LogDNA) library, but upon further study
+it seemed to not be actively supported with few issues and pull requests. And the issues there was
+mentioned deal-breaking issues related to crashes of the application utilizing the library.
 
-**Evaluation**
-As we prioritize ease of integration of the toolset that we choose, it felt that the ELK stack was the right choice.
-We tried to look for alternatives to avoid making the easy choice of choosing the most popular one.
-We had a look at [LogDNA](https://logdna.com) that is Elasticsearch and Kibana combined. It also supports containerized 
-environments even though they suggest using Kubernetes with their product.
-We want to ensure that libraries used for this product are well-supported and maintained for .NET. We found a Git
-Repository named [RedBear.LogDNA](https://github.com/RedBearSys/RedBear.LogDNA) where a library resides for connecting to logDNA from .NET. 
-Studying the issues that were made did make the choice easy for us as some issues stated that the library leads to system
-failure was not something that we wanted to work with. 
-Furthermore, it should be simple to acquire help which did not look like to be the case.
+To send structured logs to Elasticsearch we used the .NET based library [Serilog](https://serilog.net/)
+which is also a popular choice in the .NET Core community, and it integrates very well with
+ASPNET Core and Entity Framework Core using built-in logging interceptors gathering data
+without any additional configuration. 
+
+As mentioned in the start we also sought to gather exception from the production environment. For
+this we ended up using [Sentry.io](https://sentry.io/welcome/). This was motivated primarily from
+their ability to aggregate the exceptions, and provide metrics with regards to the number of users
+affected by the exception, but also from prior experience from some of the group members.
 
 ## System Description
 *TODO - design and architecture of our ITU-MiniTwit system*
