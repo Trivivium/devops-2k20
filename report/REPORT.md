@@ -152,25 +152,23 @@ database thus avoiding an ETL process of translating the database schema into a 
 database. Lastly was most group members comfortable with relational databases.
 
 ### Monitoring
-**Monitoring: Prometheus & Grafana**
-We chose Prometheus as the primary monitoring tool and Grafana for data visualization.
-No one from the team had a lot of experience working with monitoring tools. It meant that no one had expectations or any preference regarding choosing the monitoring tool. 
-Taking a look at [Prometheus's comparison to alternatives](https://prometheus.io/docs/introduction/comparison/) (even though it should be taken with a grain of salt as they
-made the comparison themself) it made it clear that it did fit into the setup because Prometheus is designed to
-monitor targets as in servers, containers and the like.
+For the monitoring solution we decided on Prometheus coupled with Grafana for visualization.
+None of the group members had extensive prior experience with monitoring tools, which meant 
+that we had no preferences. Taking a look at [Prometheus's own comparison to alternatives](https://prometheus.io/docs/introduction/comparison/) (granted that it has a conflict of interests) made us comfortable 
+that it would fit into the setup we had planned due to Prometheus being designed to monitor 
+metrics over time, whereas some of the alternatives (e.g., InfluxDB) is more focused towards
+event logging, or has a less feature complete query languages.
 
-Also, supporting active monitoring by periodically scrap our application by pulling data from this target.
-A pull-based system enables us to rate control in which it will pull the data. 
-With a push-based system we may have the risk of sending too much data towards our server and in worst case crash it. 
+Another aspect which motivated this decision is good community support along with first-class
+support for [.NET based integration](https://github.com/prometheus-net/prometheus-net) from
+Prometheus themselves.
 
-To set up Prometheus and Grafana is just a matter of creating docker containers. 
+To ensure stability it was also important for us that Prometheus uses a pull-based model
+when scraping metrics from the servers. The opporsite solution of a push-based solution
+could prove problematic as the amount of data could overload the monitoring servers.
 
-**Evaluation**
-In our case, it must integrate well into our current setup, and it is well-supported. That is, there is some kind of official
-library for the tool that we want to use, and it is actively maintained.
-[Prometheus has an official GitHub repository for .NET](https://github.com/prometheus-net/prometheus-net) with examples of getting started which fits with our criteria.
-Alternatives like Graphite there is no official GitHub repository, and a [simple search on Github](https://github.com/search?q=graphite+.net) reveals it. It also the fact that if the community is large enough
-there is a possibility of finding a solution to your problem in a short amount of time.
+Integrating both Prometheus and Grafana proved to be simple due to the availability of 
+pre-built container images, which integrated nicely with our investment into Docker.
 
 ### Logging
 **ELK**
