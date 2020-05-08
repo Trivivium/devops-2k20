@@ -178,16 +178,16 @@ database. Lastly was most group members comfortable with relational databases.
 [db-4]: https://www.mysql.com/
 
 ### Monitoring
-For the monitoring solution we decided on Prometheus coupled with Grafana for visualization.
+For the monitoring solution we decided on [Prometheus][mon-1] coupled with Grafana for visualization.
 None of the group members had extensive prior experience with monitoring tools, which meant 
-that we had no preferences. Taking a look at [Prometheus's own comparison to alternatives](https://prometheus.io/docs/introduction/comparison/) (granted that it has a conflict of interests) made us comfortable 
-that it would fit into the setup we had planned due to Prometheus being designed to monitor 
-metrics over time, whereas some of the alternatives (e.g., InfluxDB) is more focused towards
-event logging, or has a less feature complete query languages.
+that we had no preferences. Taking a look at [Prometheus's own comparison to alternatives][mon-2]
+(granted that it has a conflict of interests) made us comfortable that it would fit into the
+setup we had planned due to Prometheus being designed to monitor metrics over time, whereas 
+some of the alternatives (e.g., [InfluxDB][mon-3]) is more focused towards event logging, or has a
+less feature complete query languages.
 
 Another aspect which motivated this decision is good community support along with first-class
-support for [.NET based integration](https://github.com/prometheus-net/prometheus-net) from
-Prometheus themselves.
+support for [.NET based integration][mon-4] from Prometheus themselves.
 
 To ensure stability it was also important for us that Prometheus uses a pull-based model
 when scraping metrics from the servers. The opporsite solution of a push-based solution
@@ -195,6 +195,11 @@ could prove problematic as the amount of data could overload the monitoring serv
 
 Integrating both Prometheus and Grafana proved to be simple due to the availability of 
 pre-built container images, which integrated nicely with our investment into Docker.
+
+[mon-1]: https://prometheus.io/
+[mon-2]: https://prometheus.io/docs/introduction/comparison/
+[mon-3]: https://www.influxdata.com/
+[mon-4]: https://github.com/prometheus-net/prometheus-net
 
 ### Logging
 Lastly is logging. We wanted to be sure we had an overview of the log messages produced by
@@ -221,6 +226,19 @@ As mentioned in the start we also sought to gather exception from the production
 this we ended up using [Sentry.io](https://sentry.io/welcome/). This was motivated primarily from
 their ability to aggregate the exceptions, and provide metrics with regards to the number of users
 affected by the exception, but also from prior experience from some of the group members.
+
+### Dependency diagram
+Having been through all the technologies used in the application we end the chapter with a diagram
+of all the dependencies introduced and the relations between and any external services they rely on.
+
+![](./images/dependency_graph.png)
+
+A noticable omission from the diagram is the technologies related to containerization and the 
+technologies supporting that (i.e., the operating system). These has been omitted since they're
+a prerequisite of the entire application, but doesn't play a role in the functionality of the 
+application. The use of containers due add some constraints on the architecture of the application
+with regards to scaling (e.g., horizontal scaling requires statelessness), however, this is discussed 
+in the following chapter.
 
 ## System Description
 *TODO - design and architecture of our ITU-MiniTwit system*
