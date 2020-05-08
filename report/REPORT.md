@@ -68,34 +68,23 @@ and operating Docker was a lot more involved than a managed solution in terms of
 manual work, but it provided us with invaluable learning opportunities.
 
 There are other alternatives to Docker, but it is the primary technology supporting
-containerizatio and thus an unoffical standard in the business. An example of an alternative is Vagrant used to provision the servers, but we deemed it less attractive
-as it is a rather heavy-weight solution (i.e., entire operating system) in order to gain the same isolation Docker provides.
+containerization and thus an unoffical standard in the business. An example of an
+alternative is Vagrant used to provision the servers, but we deemed it less attractive
+as it is a rather heavy-weight solution (i.e., entire operating system) in order to
+gain the same isolation Docker provides.
 
-**Docker Swarm**
-We choose Docker Swarm as the technology used to scale the system. As this step
-was required later in the course the choice integrates beautifully with our
-prior investment into Docker Compose. To keep the setup simple we decided to
-run Docker Swarm with a single node (the original host machine) to act as the 
-swarm manager and only worker as it also hosts the web applicaton and database.
+The technology we used to scale the system is Docker Swarm. This choice was primarily
+due to the providing all the features we required and having good integration with
+Docker, which we already had invested in. To keep the setup simple we decided to
+run Docker Swarm with a single node (the original host machine) acting as both the 
+swarm manager and sole worker node. We didn't invest much time looking into alternatives
+as Docker Swarm provided all the tools necessary with less technical fragmentation,
+whereas an alternative would require new configuration.
 
-We didn't invest too much time looking into alternatives as Docker Swarm seemed
-to provide all the tools necessary with less technical fragmentation (i.e., using
-several different providers with differing configuration systems).
-
-**Evaluation**
-In accordance with your prior interest in Docker the choice of Docker Swarm was a
-natural extension of this. The main hurdles encountered is the isolated knowledge 
-of the technology. Due to nature of it we allocated a single person to set it up,
-which meant that when an error was encountered by others in the group we didn't
-have a clear picture. However, this can be helped by documenting the approach
-taken and sharing lessons learned.
-
-When considering the choice of using a single node there are some consequences we
-are aware of, but which means true scaling and reliability isn't archieved. In the
-case that the node crashes is the entire system also taken down. The scaling aspect
-is also constrained to the resources available on that single node. Both of these
-issues can be resolved by adding more physical machines to the swarm, which we can do seamlessly because of docker swarm. However, this
-was a deliberate decision in order to keep monetary costs down.
+Using a single node did have the consequence of reduced reliability and scaling as we
+are restricted to the amount of resources on the host. However, both of these concerns
+can be resolved with the additional physical nodes in the future, which Docker Swarm
+simplifies greatly.
 
 ### Programming language & Runtime environment
 Before starting the refactoring of the existing MiniTwit application we considered our
@@ -362,6 +351,14 @@ for writing various tests.
 
 
 2. operation
+
+**Docker Swarm Evaluation**
+In accordance with your prior interest in Docker the choice of Docker Swarm was a
+natural extension of this. The main hurdles encountered is the isolated knowledge 
+of the technology. Due to nature of it we allocated a single person to set it up,
+which meant that when an error was encountered by others in the group we didn't
+have a clear picture. However, this can be helped by documenting the approach
+taken and sharing lessons learned.
 
 
 3. maintenance
