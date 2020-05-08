@@ -129,21 +129,27 @@ our group rewrote parts of it to convert into a simple test suite. This test sui
 run against the API in our CI pipeline.
 
 ### Database
-**Microsoft SQL Server**
-We did not want to use SQLite in production, so we had to change to another
-database scheme. Due to already picking C# for the programming language, it
-seemed to make sense to continue the development in the same technology sphere,
-by picking yet another microsoft product. This also provided the best possible
-object relation mapping (ORM), which made development somewhat easier.
+The storage solution started out using SQLite, which was the original choice of the
+application before refactoring. However, we wanted to use a more full-fletched database in
+our production environment. This was motivated primarily by the learning opportunity of
+operating a complex database system in production, and a wish to avoid the limitations of
+SQLite with regards to query efficiency under load and lack of features for scaling and
+backups.
 
-**Evaluation**
-The only problem we've had with this, was that a subset of our development team
-continued to use SQLite for local testing, and SQLite has a more relaxed
-relation to constraint, so some errors would occure in production that didn't
-locally. However we fixed this by making it easier to spin up a MSSQL database
-locally. 
-However MSSQL in itself provided no problems - it had exactly the features that
-we were after, and worked like a charm. This seemed to have been a good choice.
+To decided on the user of Microsoft SQL Server. This choice was motivated by our prior
+investment into the .NET ecosystem, and the choice of Entity Framework as our ORM solution.
+Despite the freedom of storage solution provided by the ORM is SQL Server a first-class
+supported database as it also originates from Microsoft. The column data-types used in
+T-SQL (which is the SQL dialect used in SQL Server) has direct translation to C# types, 
+which provides us with confidence in the reliability during materialization of database
+records not losing information (e.g., date-time or decimal precision).
+
+We did consider other alternatives of relational databases, but ended up deciding on the
+solution we had most confidence in, when the resource requirements of the alternatives
+(e.g., PostgreSQL, MySQL etc.) were very simlar. We didn't spend time looking into NoSQL
+solution as we wanted an easy approach when migrating data from the existing SQLite 
+database thus avoiding an ETL process of translating the database schema into a NoSQL
+database. Lastly was most group members comfortable with relational databases.
 
 ### Monitoring
 **Monitoring: Prometheus & Grafana**
@@ -334,6 +340,15 @@ application is exercised.
 This has so far proven to be a great choice. We haven't had to modify the files
 yet, so the primary factor seemed to be development time, which was low, so the
 choice seemed perfect.
+
+**Database Evaluation**
+The only problem we've had with this, was that a subset of our development team
+continued to use SQLite for local testing, and SQLite has a more relaxed
+relation to constraint, so some errors would occure in production that didn't
+locally. However we fixed this by making it easier to spin up a MSSQL database
+locally. 
+However MSSQL in itself provided no problems - it had exactly the features that
+we were after, and worked like a charm. This seemed to have been a good choice.
 
 2. operation
 
