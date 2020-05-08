@@ -17,19 +17,19 @@ and ending with external tools used during production of the application.
 
 ### Hosting
 As the application should be publically available IP address we needed a hosting
-provider for the production environment. The course presented Digital Ocean as an
+provider for the production environment. The course presented [Digital Ocean][host-1] as an
 option, and as a couple of us had prior experience with them we choose this solution.
-The prior experience along with the option to utilize the Github Education Pack for
-free credits meant we had confidence in the decision.
+The prior experience along with the option to utilize the [Github Student Developer Pack][host-2] 
+for free credits meant we had confidence in the decision.
 
-We started out provisioning a small droplet, which is what Digital Ocean names
-their virtual private servers (VPS), with enough resources to host the application
-and the database inside Docker containers. However, whenwe added monitoring
-and logging to application we had increasing requirements for the specs of the VPS. 
-To meet these requirements we provisioned multiple droplets as scaling a single VPS
-vertically would introduce downtime, which we wanted to avoid. 
+We started out provisioning a small [Droplet][host-3], which is what Digital Ocean names
+their virtual private servers (VPS), with enough resources to host the application and 
+the database inside Docker containers. However, when we added monitoring and logging to 
+application we had increasing requirements for the specs of the VPS. To meet these
+requirements we provisioned multiple Droplets as scaling a single VPS vertically would
+introduce downtime, which we wanted to avoid.     
 
-The result of this approach led us to having two droplets; one for our tools (e.g.,
+The result of this approach led us to having two Droplets; one for our tools (e.g.,
 logging) and one for the solution. In retrospect this was probably the right
 decision as it increases our resiliency. If one of the droplets crashes the other
 one remains untouched.
@@ -38,6 +38,10 @@ Despite the short-term benefit of this solution we still have issues scaling the
 droplet hosting the application. Because the application isn't stateless horizontal
 scaling isn't an option, and thus vertical scaling is our sole option, which requires
 us to incur some downtime when the droplet is upgraded.
+
+[host-1]: https://www.digitalocean.com/
+[host-2]: https://education.github.com/pack
+[host-3]: https://www.digitalocean.com/products/droplets/
 
 ### Operating system
 For the operating system of the application droplet we decided on Ubuntu 18.04.3 LTS.
@@ -62,9 +66,9 @@ proved to be a comfortable environment for the group members used to working in 
 
 ### Containerization
 To run the application and the database instance required by the application we decided
-on the use of Docker. This choice rested primarily on it being presented in the course,
-but a more important fact was that all group members had interest in using the 
-technology, and a good introduction to the fundamentals around containers, which has 
+on the use of [Docker][container-1]. This choice rested primarily on it being presented 
+in the course, but a more important fact was that all group members had interest in using
+the technology, and a good introduction to the fundamentals around containers, which has 
 broad applicability in other technologies such as Kubernetes.
 
 In a professional context it might have been a better choice to use some
@@ -75,22 +79,25 @@ manual work, but it provided us with invaluable learning opportunities.
 
 There are other alternatives to Docker, but it is the primary technology supporting
 containerization and thus an unoffical standard in the business. An example of an
-alternative is Vagrant used to provision the servers, but we deemed it less attractive
-as it is a rather heavy-weight solution (i.e., entire operating system) in order to
-gain the same isolation Docker provides.
+alternative is [Vagrant][container-2] used to provision the servers, but we deemed it less 
+attractive as it is a rather heavy-weight solution (i.e., entire operating system) in order
+to gain the same isolation Docker provides.
 
-The technology we used to scale the system is Docker Swarm. This choice was primarily
-due to the providing all the features we required and having good integration with
-Docker, which we already had invested in. To keep the setup simple we decided to
-run Docker Swarm with a single node (the original host machine) acting as both the 
-swarm manager and sole worker node. We didn't invest much time looking into alternatives
-as Docker Swarm provided all the tools necessary with less technical fragmentation,
-whereas an alternative would require new configuration.
+The technology we used to scale the system is [Docker Swarm][container-3]. This choice was 
+primarily due to the providing all the features we required and having good integration with
+Docker, which we already had invested in. To keep the setup simple we decided to run Docker 
+Swarm with a single node (the original host machine) acting as both the  swarm manager and
+sole worker node. We didn't invest much time looking into alternatives as Docker Swarm provided
+all the tools necessary with less technical fragmentation, whereas an alternative would require
+new configuration.
 
-Using a single node did have the consequence of reduced reliability and scaling as we
-are restricted to the amount of resources on the host. However, both of these concerns
-can be resolved with the additional physical nodes in the future, which Docker Swarm
-simplifies greatly.
+Using a single node did have the consequence of reduced reliability and scaling as we are
+restricted to the amount of resources on the host. However, both of these concerns can be resolved
+with the additional physical nodes in the future, which Docker Swarm simplifies greatly.
+
+[container-1]: https://www.docker.com/
+[container-2]: https://www.vagrantup.com/
+[container-3]: https://docs.docker.com/engine/swarm/
 
 ### Programming language & Runtime environment
 Before starting the refactoring of the existing MiniTwit application we considered our
@@ -98,23 +105,27 @@ options and interests of the group members in relation to the programming langua
 aimed to use. This of course had an impact on our choices of web application frameworks
 available to us.
 
-We ended up using .NET Core 3.1 with C# as it was argued that it was the language 
+We ended up using [.NET Core][prog-1] with C# as it was argued that it was the language 
 that most of the group members would be able to write from the start. As mentioned 
 a couple of times in previous sections we wanted to focus less on the development of
 the application and more on setting up the DevOps tools and processing related to it, so 
 chosing a completely new, and thus challenging language wasn't a priority.
 
-The choice of the C# naturally led us to the usage of the ASPNET Core web framework. This
+The choice of the C# naturally led us to the usage of the [ASPNET Core][prog-2] web framework.This
 framework provides us with good documentation on authoring both server-rendered pages
 and REST APIs. For interaction with the database we decided to use an ORM rather than
 handwritten SQL statements for reasons regarding both security and speed of development.
-The choice of ORM ended on Entity Framework Core as it integrates very well with ASPNET
+The choice of ORM ended on [Entity Framework Core][prog-3] as it integrates very well with ASPNET
 Core, and has adapters to many different database giving us freedom in chosing our
 storage solution later.
 
+[prog-1]: https://dotnet.microsoft.com/
+[prog-2]: https://dotnet.microsoft.com/apps/aspnet
+[prog-3]: https://docs.microsoft.com/en-us/ef/core/
+
 ### Testing
 To help increase our confidence in changes to the system we added unit tests. The
-unit-tests are written in C# using the XUnit test framework, which is used to test 
+unit-tests are written in C# using the [XUnit][test-1] test framework, which is used to test 
 functionality implemented in web application (e.g., creating a user, adding a message,
 etc.).
 
@@ -122,7 +133,7 @@ The unit tests are focused around the service classes, which implements the busi
 related to the main features of the system. These tests aims to exercise the "happy-path" 
 of each feature, where the execution succeeds as well as the expected error paths (i.e., 
 adding a message to an unknown user). The tests are executed using the built-in tooling 
-of the dotnet CLI included in the .NET Core SDK.
+of the [dotnet CLI][test-2] included in the .NET Core SDK.
 
 We also wanted to test the API used by the simulator to make sure that this would work as
 expected in accordance to the specification of the simulator. As the API is a boundary of
@@ -135,15 +146,18 @@ implementation of the simulator against our API. It is written is Python 3, so a
 our group rewrote parts of it to convert into a simple test suite. This test suite is then
 run against the API in our CI pipeline.
 
+[test-1]: https://xunit.net/
+[test-2]: https://docs.microsoft.com/en-us/dotnet/core/tools/
+
 ### Database
-The storage solution started out using SQLite, which was the original choice of the
+The storage solution started out using [SQLite][db-1], which was the original choice of the
 application before refactoring. However, we wanted to use a more full-fletched database in
 our production environment. This was motivated primarily by the learning opportunity of
 operating a complex database system in production, and a wish to avoid the limitations of
 SQLite with regards to query efficiency under load and lack of features for scaling and
 backups.
 
-To decided on the user of Microsoft SQL Server. This choice was motivated by our prior
+To decided on the user of [Microsoft SQL Server][db-2]. This choice was motivated by our prior
 investment into the .NET ecosystem, and the choice of Entity Framework as our ORM solution.
 Despite the freedom of storage solution provided by the ORM is SQL Server a first-class
 supported database as it also originates from Microsoft. The column data-types used in
@@ -153,10 +167,15 @@ records not losing information (e.g., date-time or decimal precision).
 
 We did consider other alternatives of relational databases, but ended up deciding on the
 solution we had most confidence in, when the resource requirements of the alternatives
-(e.g., PostgreSQL, MySQL etc.) were very simlar. We didn't spend time looking into NoSQL
+(e.g., [PostgreSQL][db-3], [MySQL][db-4] etc.) were very simlar. We didn't spend time looking into NoSQL
 solution as we wanted an easy approach when migrating data from the existing SQLite 
 database thus avoiding an ETL process of translating the database schema into a NoSQL
 database. Lastly was most group members comfortable with relational databases.
+
+[db-1]: https://www.sqlite.org/index.html
+[db-2]: https://www.microsoft.com/en-us/sql-server/sql-server-2019
+[db-3]: https://www.postgresql.org/
+[db-4]: https://www.mysql.com/
 
 ### Monitoring
 For the monitoring solution we decided on Prometheus coupled with Grafana for visualization.
