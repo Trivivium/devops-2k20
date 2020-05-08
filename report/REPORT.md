@@ -8,7 +8,12 @@ We also argued for the choice of technologies and decisions we had made. At the 
 we give a summary of what were our biggest issues and challenges, what we have learned out of that and what could have done better.
 
 ## Technology Stack
-*TODO - dependencies and important interactions of subsystems*
+This chapter will introduce the technologies used during the development of the
+application along with reasoning for the inclusion. The chapter ends with an
+overview of the dependencies during design-time, and how they relate to each other
+and external services implicitly required for them to function. The chapter is
+structured in way that seeks to describe the foundation of all our technologies
+and ending with external tools used during production of the application.
 
 ### Hosting
 As the application should be publically available IP address we needed a hosting
@@ -21,7 +26,8 @@ We started out provisioning a small droplet, which is what Digital Ocean names
 their virtual private servers (VPS), with enough resources to host the application
 and the database inside Docker containers. However, whenwe added monitoring
 and logging to application we had increasing requirements for the specs of the VPS. 
-To meet these requirements we provisioned multiple droplets as scaling a single VPS vertically would introduce downtime, which we wanted to avoid. 
+To meet these requirements we provisioned multiple droplets as scaling a single VPS
+vertically would introduce downtime, which we wanted to avoid. 
 
 The result of this approach led us to having two droplets; one for our tools (e.g.,
 logging) and one for the solution. In retrospect this was probably the right
@@ -112,7 +118,8 @@ unit-tests are written in C# using the XUnit test framework, which is used to te
 functionality implemented in web application (e.g., creating a user, adding a message,
 etc.).
 
-The unit tests are focused around the service classes, which implements the business logic related to the main features of the system. These tests aims to exercise the "happy-path" 
+The unit tests are focused around the service classes, which implements the business logic 
+related to the main features of the system. These tests aims to exercise the "happy-path" 
 of each feature, where the execution succeeds as well as the expected error paths (i.e., 
 adding a message to an unknown user). The tests are executed using the built-in tooling 
 of the dotnet CLI included in the .NET Core SDK.
