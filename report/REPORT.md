@@ -107,54 +107,26 @@ Core, and has adapters to many different database giving us freedom in chosing o
 storage solution later.
 
 ### Testing
-**Unit tests: XUnit (C#)**
-To help increase our confidence in the changes added to the system we added
-unit tests. The unit-tests are written in C# using the XUnit test framework,
-which is used to test functionality as implemented in web application
-(e.g., creating a user, adding a message, etc.).
+To help increase our confidence in changes to the system we added unit tests. The
+unit-tests are written in C# using the XUnit test framework, which is used to test 
+functionality implemented in web application (e.g., creating a user, adding a message,
+etc.).
 
-The unit tests are focused around the service classes, which implements the
-business logic related to the functionality of the system. These tests aims
-to check the "happy-path" where the function succeeds as well as the expec-
-ted error paths (i.e., adding a message to an unknown user). The tests are
-executed using the built-in tooling of the dotnet CLI included in the .NET
-Core SDK.
+The unit tests are focused around the service classes, which implements the business logic related to the main features of the system. These tests aims to exercise the "happy-path" 
+of each feature, where the execution succeeds as well as the expected error paths (i.e., 
+adding a message to an unknown user). The tests are executed using the built-in tooling 
+of the dotnet CLI included in the .NET Core SDK.
 
-These tests are run as part of the CI pipeline on pull requests
-(PR), and when a PR is merged into the master branch.
+We also wanted to test the API used by the simulator to make sure that this would work as
+expected in accordance to the specification of the simulator. As the API is a boundary of
+the application we also had the opportunity to use this as integration/system tests at the
+same time. Therefore we provisioned a production-like setup using Docker Compose easily
+and with confidence that is mimics the actual execution environment.
 
-**Evaluation**
-The unit-tests are quick to run in the CI pipeline. However, the amount of
-code currently covered by the tests are limited to the primary functiona-
-lity. This is, however, not a reflection of the choice of strategy, but rather the available time we allocated to this part of the project. 
-
-Some tests are without a doubt better than no tests, and we did catch some bad exceptions once in a while. Using the "happy-path" mentality strategy did catch the worst of errors however, meaning that it definitely added value to the project as a whole, however there is naturally always room for improvement. The focus did, however, mean that we tested wide, and meant that most features were covered.
-The unit-tests are quick to run in the CI pipeline. However, the amount of
-code currently covered by the tests are limited to the primary functiona-
-lity. 
-
-**Integration tests: Python 3.8**
-We wanted to test the API used by the simulator to make sure that this would
-continue to work - Also as this surface is a API it is easier to test than a
-graphical user interface, so we would be able to test all backend functionality
-relatively easy.
-
-The simulator that had to interface with our service was already written in
-python3, so testing if the simulator would be able to work, would, in theory, be
-as simple as running the simulator on a clean database, and see if the simulator
-failed. It would still have to be rewritten a bit though
-
-As a member of our team has worked with python professionally for multiple years
-he proposed he would convert it into unit tests. This made it somewhat easy to
-isolate where errors occurred if something failed within this tester.
-
-Python being fast to prototype in and great for scripts, also made this an ideal
-choice for blackbox testing. 
-
-**Evaluation**
-This has so far proven to be a great choice. We haven't had to modify the files
-yet, so the primary factor seemed to be development time, which was low, so the
-choice seemed perfect.
+To ensure the simulator worked as expected we decided to run the provided reference
+implementation of the simulator against our API. It is written is Python 3, so a member of
+our group rewrote parts of it to convert into a simple test suite. This test suite is then
+run against the API in our CI pipeline.
 
 ### Database
 **Microsoft SQL Server**
@@ -349,6 +321,19 @@ probably have preferred somewhat that was more engaging or faster to write,
 however it got the job done, and it did make it easier to debug, leaving time
 for writing various tests.
 
+**Unit tests Evaluation**
+The unit-tests are quick to run in the CI pipeline. However, the amount of code currently 
+covered by the tests are limited to the primary functionality. This is, however, not a 
+reflection of the choice of strategy, but rather an observation related to the available 
+time we allocated to this part of the project. 
+
+Some tests are without a doubt better than no tests, and we did catch some exceptions once in a while. Using the "happy-path" mentality strategy did catch the worst of errors however, meaning that it definitely added value to the project as a whole, however there is naturally always room for improvement. The focus did, however, mean that we tested wide to ensure all parts of the
+application is exercised.
+
+**Integration tests using an adapted simulator implementation**
+This has so far proven to be a great choice. We haven't had to modify the files
+yet, so the primary factor seemed to be development time, which was low, so the
+choice seemed perfect.
 
 2. operation
 
