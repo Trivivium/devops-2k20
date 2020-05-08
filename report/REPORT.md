@@ -1,6 +1,11 @@
 # Development Report
-This document will detail the process of migrating the Minitwit platform, as well as the 
-*TODO - improve introduction*
+This document is the final report of Group b (2k20 MSc) for the *DevOps, Software
+Evolution and Software Maintenance* course at IT University of Copenhagen, held in spring 2020.
+It will detail the process of migrating the Minitwit platform, refactoring of the system,
+major devops tasks we have done throughout the course, our team and repository organization and strategies.
+Report is divided by sections, not by the timeline, so the reader can get better overview of our work.
+We also argued for the choice of technologies and decisions we had made. At the end of the document,
+we give a summary of what were our biggest issues and challenges, what we have learned out of that and what could have done better.
 
 ## Technology Stack
 *TODO - dependencies and important interactions of subsystems*
@@ -233,6 +238,7 @@ Furthermore, it should be simple to acquire help which did not look like to be t
 ### Scaling and load balancing
 *TODO - Which strategy did we use for scaling and load balancing (ie. vertical vs. horizontal scaling)*
 
+
 ## CI/CD implementation
 *TODO - complete description of stages and tools used in CI/CD chains (deployment and release)*
 
@@ -320,6 +326,7 @@ closely aligned with the pull-request flow was definitely a helpful feature.
 
 ## State of solution
 *TODO - current state of our system, results of static analysis and code quality assessment, add security assessment too*
+
 
 ## Conclusion and evaluation
 *TODO - biggest issues, major lessons we have learned, overall takeaways, fuckups etc. regarding:*
