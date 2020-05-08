@@ -2,10 +2,7 @@
 This document will detail the process of migrating the Minitwit platform, as well as the 
 *TODO - improve introduction*
 
-## System Description
-*TODO - design and architecture of our ITU-MiniTwit system*
-
-## Application Solution details
+## Technology Stack
 *TODO - dependencies and important interactions of subsystems*
 
 ### Hosting
@@ -68,6 +65,32 @@ manual work, but it provided us with invaluable learning opportunities.
 There are other alternatives to Docker, but it is the primary technology supporting
 containerizatio and thus an unoffical standard in the business. An example of an alternative is Vagrant used to provision the servers, but we deemed it less attractive
 as it is a rather heavy-weight solution (i.e., entire operating system) in order to gain the same isolation Docker provides.
+
+**Docker Swarm**
+We choose Docker Swarm as the technology used to scale the system. As this step
+was required later in the course the choice integrates beautifully with our
+prior investment into Docker Compose. To keep the setup simple we decided to
+run Docker Swarm with a single node (the original host machine) to act as the 
+swarm manager and only worker as it also hosts the web applicaton and database.
+
+We didn't invest too much time looking into alternatives as Docker Swarm seemed
+to provide all the tools necessary with less technical fragmentation (i.e., using
+several different providers with differing configuration systems).
+
+**Evaluation**
+In accordance with your prior interest in Docker the choice of Docker Swarm was a
+natural extension of this. The main hurdles encountered is the isolated knowledge 
+of the technology. Due to nature of it we allocated a single person to set it up,
+which meant that when an error was encountered by others in the group we didn't
+have a clear picture. However, this can be helped by documenting the approach
+taken and sharing lessons learned.
+
+When considering the choice of using a single node there are some consequences we
+are aware of, but which means true scaling and reliability isn't archieved. In the
+case that the node crashes is the entire system also taken down. The scaling aspect
+is also constrained to the resources available on that single node. Both of these
+issues can be resolved by adding more physical machines to the swarm, which we can do seamlessly because of docker swarm. However, this
+was a deliberate decision in order to keep monetary costs down.
 
 ### Programming language & Runtime environment
 Before starting the refactoring of the existing MiniTwit application we considered our
@@ -156,8 +179,59 @@ locally.
 However MSSQL in itself provided no problems - it had exactly the features that
 we were after, and worked like a charm. This seemed to have been a good choice.
 
-## State of solution
-*TODO - current state of our system, results of static analysis and code quality assessment, add security assessment too*
+### Monitoring
+**Monitoring: Prometheus & Grafana**
+We chose Prometheus as the primary monitoring tool and Grafana for data visualization.
+No one from the team had a lot of experience working with monitoring tools. It meant that no one had expectations or any preference regarding choosing the monitoring tool. 
+Taking a look at [Prometheus's comparison to alternatives](https://prometheus.io/docs/introduction/comparison/) (even though it should be taken with a grain of salt as they
+made the comparison themself) it made it clear that it did fit into the setup because Prometheus is designed to
+monitor targets as in servers, containers and the like.
+
+Also, supporting active monitoring by periodically scrap our application by pulling data from this target.
+A pull-based system enables us to rate control in which it will pull the data. 
+With a push-based system we may have the risk of sending too much data towards our server and in worst case crash it. 
+
+To set up Prometheus and Grafana is just a matter of creating docker containers. 
+
+**Evaluation**
+In our case, it must integrate well into our current setup, and it is well-supported. That is, there is some kind of official
+library for the tool that we want to use, and it is actively maintained.
+[Prometheus has an official GitHub repository for .NET](https://github.com/prometheus-net/prometheus-net) with examples of getting started which fits with our criteria.
+Alternatives like Graphite there is no official GitHub repository, and a [simple search on Github](https://github.com/search?q=graphite+.net) reveals it. It also the fact that if the community is large enough
+there is a possibility of finding a solution to your problem in a short amount of time.
+
+### Logging
+**ELK**
+We chose Elasticsearch, Logstash and Kibana (the ELK stack) as logging tools.
+Firstly, it enables us to do modern, scalable and user-friendly logging, and it is also one of the most popular
+choices at the moment.
+Because it promotes centralized logging we chose to set up the ELK stack on another droplet, and the fact that
+Elasticsearch requires a larger amount of memory.
+
+To setup the ELK stack is just a matter of creating docker containers. 
+
+**Evaluation**
+As we prioritize ease of integration of the toolset that we choose, it felt that the ELK stack was the right choice.
+We tried to look for alternatives to avoid making the easy choice of choosing the most popular one.
+We had a look at [LogDNA](https://logdna.com) that is Elasticsearch and Kibana combined. It also supports containerized 
+environments even though they suggest using Kubernetes with their product.
+We want to ensure that libraries used for this product are well-supported and maintained for .NET. We found a Git
+Repository named [RedBear.LogDNA](https://github.com/RedBearSys/RedBear.LogDNA) where a library resides for connecting to logDNA from .NET. 
+Studying the issues that were made did make the choice easy for us as some issues stated that the library leads to system
+failure was not something that we wanted to work with. 
+Furthermore, it should be simple to acquire help which did not look like to be the case.
+
+## System Description
+*TODO - design and architecture of our ITU-MiniTwit system*
+
+### Monitoring
+*TODO - What do we monitor in our system*
+
+### Logging
+*TODO - what do we log and how we aggregate it*
+
+### Scaling and load balancing
+*TODO - Which strategy did we use for scaling and load balancing (ie. vertical vs. horizontal scaling)*
 
 ## CI/CD implementation
 *TODO - complete description of stages and tools used in CI/CD chains (deployment and release)*
@@ -244,83 +318,8 @@ important features by choosing another service, as the problems we had were
 based on structural team problems rather than the tool itself. Having the issues
 closely aligned with the pull-request flow was definitely a helpful feature.
 
-## Devops tools
-*TODO: Write an introduction to this section*
-
-### Monitoring
-*TODO - how(and what) do we monitor in our system*
-
-**Monitoring: Prometheus & Grafana**
-We chose Prometheus as the primary monitoring tool and Grafana for data visualization.
-No one from the team had a lot of experience working with monitoring tools. It meant that no one had expectations or any preference regarding choosing the monitoring tool. 
-Taking a look at [Prometheus's comparison to alternatives](https://prometheus.io/docs/introduction/comparison/) (even though it should be taken with a grain of salt as they
-made the comparison themself) it made it clear that it did fit into the setup because Prometheus is designed to
-monitor targets as in servers, containers and the like.
-
-Also, supporting active monitoring by periodically scrap our application by pulling data from this target.
-A pull-based system enables us to rate control in which it will pull the data. 
-With a push-based system we may have the risk of sending too much data towards our server and in worst case crash it. 
-
-To set up Prometheus and Grafana is just a matter of creating docker containers. 
-
-**Evaluation**
-In our case, it must integrate well into our current setup, and it is well-supported. That is, there is some kind of official
-library for the tool that we want to use, and it is actively maintained.
-[Prometheus has an official GitHub repository for .NET](https://github.com/prometheus-net/prometheus-net) with examples of getting started which fits with our criteria.
-Alternatives like Graphite there is no official GitHub repository, and a [simple search on Github](https://github.com/search?q=graphite+.net) reveals it. It also the fact that if the community is large enough
-there is a possibility of finding a solution to your problem in a short amount of time.
-
-### Logging
-*TODO - what do we log and how we aggregate it*
-
-**ELK**
-We chose Elasticsearch, Logstash and Kibana (the ELK stack) as logging tools.
-Firstly, it enables us to do modern, scalable and user-friendly logging, and it is also one of the most popular
-choices at the moment.
-Because it promotes centralized logging we chose to set up the ELK stack on another droplet, and the fact that
-Elasticsearch requires a larger amount of memory.
-
-To setup the ELK stack is just a matter of creating docker containers. 
-
-**Evaluation**
-As we prioritize ease of integration of the toolset that we choose, it felt that the ELK stack was the right choice.
-We tried to look for alternatives to avoid making the easy choice of choosing the most popular one.
-We had a look at [LogDNA](https://logdna.com) that is Elasticsearch and Kibana combined. It also supports containerized 
-environments even though they suggest using Kubernetes with their product.
-We want to ensure that libraries used for this product are well-supported and maintained for .NET. We found a Git
-Repository named [RedBear.LogDNA](https://github.com/RedBearSys/RedBear.LogDNA) where a library resides for connecting to logDNA from .NET. 
-Studying the issues that were made did make the choice easy for us as some issues stated that the library leads to system
-failure was not something that we wanted to work with. 
-Furthermore, it should be simple to acquire help which did not look like to be the case.
-
-### Scaling and load balancing
-*TODO- strategy for scaling and load balancing*
-
-**Docker Swarm**
-We choose Docker Swarm as the technology used to scale the system. As this step
-was required later in the course the choice integrates beautifully with our
-prior investment into Docker Compose. To keep the setup simple we decided to
-run Docker Swarm with a single node (the original host machine) to act as the 
-swarm manager and only worker as it also hosts the web applicaton and database.
-
-We didn't invest too much time looking into alternatives as Docker Swarm seemed
-to provide all the tools necessary with less technical fragmentation (i.e., using
-several different providers with differing configuration systems).
-
-**Evaluation**
-In accordance with your prior interest in Docker the choice of Docker Swarm was a
-natural extension of this. The main hurdles encountered is the isolated knowledge 
-of the technology. Due to nature of it we allocated a single person to set it up,
-which meant that when an error was encountered by others in the group we didn't
-have a clear picture. However, this can be helped by documenting the approach
-taken and sharing lessons learned.
-
-When considering the choice of using a single node there are some consequences we
-are aware of, but which means true scaling and reliability isn't archieved. In the
-case that the node crashes is the entire system also taken down. The scaling aspect
-is also constrained to the resources available on that single node. Both of these
-issues can be resolved by adding more physical machines to the swarm, which we can do seamlessly because of docker swarm. However, this
-was a deliberate decision in order to keep monetary costs down.
+## State of solution
+*TODO - current state of our system, results of static analysis and code quality assessment, add security assessment too*
 
 ## Conclusion and evaluation
 *TODO - biggest issues, major lessons we have learned, overall takeaways, fuckups etc. regarding:*
