@@ -1,11 +1,15 @@
 # Development Report
-This document is the final report of Group b (2k20 MSc) for the *DevOps, Software
-Evolution and Software Maintenance* course at IT University of Copenhagen, held in spring 2020.
-It will detail the process of migrating the Minitwit platform, refactoring of the system,
-major devops tasks we have done throughout the course, our team and repository organization and strategies.
-Report is divided by sections, not by the timeline, so the reader can get better overview of our work.
-We also argued for the choice of technologies and decisions we had made. At the end of the document,
-we give a summary of what were our biggest issues and challenges, what we have learned out of that and what could have done better.
+This document is the final report of Group b (2k20 MSc) for the *DevOps,
+Software Evolution and Software Maintenance* course at IT University of
+Copenhagen, held in spring 2020. It will detail the process of migrating the
+Minitwit platform (a really simple social network similar to Twitter),
+refactoring of its system, major devops tasks we have done throughout the
+course, our team and repository organization and strategies. Report is divided
+by sections, not by the timeline, so the reader can get better overview of our
+work. We also argued for the choice of technologies and decisions we had made.
+At the end of the document, we give a summary of what were our biggest issues
+and challenges, what we have learned out of that and what could have done
+better.
 
 ## Technology Stack
 This chapter will introduce the technologies used during the development of the
@@ -35,34 +39,36 @@ decision as it increases our resiliency. If one of the droplets crashes the othe
 one remains untouched.
 
 Despite the short-term benefit of this solution we still have issues scaling the
-droplet hosting the application. Because the application isn't stateless horizontal
-scaling isn't an option, and thus vertical scaling is our sole option, which requires
-us to incur some downtime when the droplet is upgraded.
+droplet hosting the application. Because the application isn't stateless
+horizontal scaling isn't an option, and thus vertical scaling is our sole
+option, which requires us to incur some downtime when the droplet is upgraded.
 
 [host-1]: https://www.digitalocean.com/
 [host-2]: https://education.github.com/pack
 [host-3]: https://www.digitalocean.com/products/droplets/
 
 ### Operating system
-For the operating system of the application droplet we decided on Ubuntu 18.04.3 LTS.
-It was important for us to use a version with long-term support (LTS) as it helps
-us ensure stability and reliability as well as active support should bugs or 
-security vulnerabilties surfaced during the course. 
+For the operating system of the application droplet we decided on Ubuntu 18.04.3
+LTS. It was important for us to use a version with long-term support (LTS) as it
+helps us ensure stability and reliability as well as active support should bugs
+or security vulnerabilties surfaced during the course.
 
 We wanted to use a Linux based distribution as it seemed to provide the greatest
-level of learning. Using Windows based virtual machine could provide us a graphical
-user interface and tools, and it would definitely yield some valuable learning as well
-it seemed a less attractive choice in the context of this course and tools we aimned
-to utilize. The choice of Ubuntu is definitive as we could have used Arch Linux or 
-any other distribution. However, Ubuntu is rather common and has a great community
-making tools, which make it easier to figure out how tasks are done. These considerations
-combined made Ubuntu an ideal choice for the members of the group that didn't have a
-extensive experience with the OS and thus a more limited level of proficiency with it.
+level of learning. Using Windows based virtual machine could provide us a
+graphical user interface and tools, and it would definitely yield some valuable
+learning as well it seemed a less attractive choice in the context of this
+course and tools we aimned to utilize. The choice of Ubuntu is definitive as we
+could have used Arch Linux or any other distribution. However, Ubuntu is rather
+common and has a great community making tools, which make it easier to figure
+out how tasks are done. These considerations combined made Ubuntu an ideal
+choice for the members of the group that didn't have a extensive experience with
+the OS and thus a more limited level of proficiency with it.
 
-Due to the technologies we were planning on using (i.e., Docker) we weren't going to
-be working too much directly on the operating system level. This meant that we didn't
-require to have one of the group members focusing on the OS more than others. It also
-proved to be a comfortable environment for the group members used to working in Windows.
+Due to the technologies we were planning on using (i.e., Docker) we weren't
+going to be working too much directly on the operating system level. This meant
+that we didn't require to have one of the group members focusing on the OS more
+than others. It also proved to be a comfortable environment for the group
+members used to working in Windows.
 
 ### Containerization
 To run the application and the database instance required by the application we decided
@@ -250,34 +256,35 @@ in the following chapter.
 *TODO - what do we log and how we aggregate it*
 
 ### Scaling and load balancing
-*TODO - Which strategy did we use for scaling and load balancing (ie. vertical vs. horizontal scaling)*
+*TODO - Which strategy did we use for scaling and load balancing (ie. vertical
+vs. horizontal scaling)*
 
 
 ## CI/CD implementation
-*TODO - complete description of stages and tools used in CI/CD chains (deployment and release)*
+*TODO - complete description of stages and tools used in CI/CD chains
+(deployment and release)*
 
-**Continuous Integration: Github Actions**
-We initially looked at a variety of different CI possibilities, and considered
-Jenkins for one, however we randomly looked at github and a group member
-asked if any of us have every tried using Github Actions, their CI solution, and
-we realized that neither of us had. This seemed like a great way to try
-something new and it also seemed ideal with the current stack we were running. 
-The choice was mainly based on this: the availability and the possibility to
-learn something new. 
+**Continuous Integration: Github Actions** We initially looked at a variety of
+different CI possibilities, and considered Jenkins for one, however we randomly
+looked at github and a group member asked if any of us have every tried using
+Github Actions, their CI solution, and we realized that neither of us had. This
+seemed like a great way to try something new and it also seemed ideal with the
+current stack we were running. The choice was mainly based on this: the
+availability and the possibility to learn something new.
 
-**Evaluation**
-It was really neat having it integrate so smoothly with our pull request flow.
+**Evaluation** It was really neat having it integrate so smoothly with our pull
+request flow.
 
-**Packaging & Docker image storage: Github**
-Github has the possibility to host and provide packages for downloading, much
-like Dockerhub. We considered moving our images to Dockerhub, but having in
-centralized one place seemed ideal. We liked the idea of having a few select
-services that we relied on, as to not create a too complex development flow, but
-rather utilize few tools that integrated nicely together and provided each a
-large chunk of the features required.
+**Packaging & Docker image storage: Github** Github has the possibility to host
+and provide packages for downloading, much like Dockerhub. We considered moving
+our images to Dockerhub, but having in centralized one place seemed ideal. We
+liked the idea of having a few select services that we relied on, as to not
+create a too complex development flow, but rather utilize few tools that
+integrated nicely together and provided each a large chunk of the features
+required.
 
-**Evaluation**
-We had a few issues, especially that you [cannot download without being logged
+**Evaluation** We had a few issues, especially that you [cannot download without
+being logged
 in](https://github.community/t5/GitHub-API-Development-and/Download-from-Github-Package-Registry-without-authentication/td-p/35255),
 which was rather tedious, but we overcame it by having one of our personal
 tokens stored on the production site (which is less than ideal, but works).
@@ -286,88 +293,97 @@ use, we would have gotten nothing more out of using Dockerhub, so having it all
 centralized one place, packaging, repository & CI seemed like a neat choice, on
 that we stand by.
 
-**Continuous Delivery: Watchtower**
-We needed our production server to automatically update whenever the master
-branch updated on our repository - which was when ever a new version was
-released on the packaging provider. There is a few different tools for this, and
-this is something Jenkins does provide, however installing Jenkins for this
-feature alone, seemed overkill and would use a magnitude more CPU power than we
-wanted. So we found a service called Watchtower, which runs as a docker
-container, and with with a consistant interval checks whether the remote image
-has been updated - if it has, it updates the running container. 
+**Continuous Delivery: Watchtower** We needed our production server to
+automatically update whenever the master branch updated on our repository -
+which was when ever a new version was released on the packaging provider. There
+is a few different tools for this, and this is something Jenkins does provide,
+however installing Jenkins for this feature alone, seemed overkill and would use
+a magnitude more CPU power than we wanted. So we found a service called
+Watchtower, which runs as a docker container, and with with a consistant
+interval checks whether the remote image has been updated - if it has, it
+updates the running container.
 
-**Evaluation**
-It worked as expected and we didn't really touch it after installing it. This was
-lightweight and provided exactly what we needed. Some critique can be made of
-the service, as it in theory has access to the whole docker system, which might
-be dangerous, and we are not exactly sure how it handles any errors in building
-a new package, so it is probably more error prone, however it works for our
-limited need. If we were to scale up and use this in a more system critical
-setting, we would probably research this more, and find a enterprise grade
-solution. Maybe even giving the github actions direct access to the Docker
-service, and giving it the possibility to update the service directly from a
-Github Action. We didn't do this initially out of fear for opening up our docker
-host to the world, as that seemed relatively risky. However, with more research,
-we could probably find a way to do this in a secure way.
+**Evaluation** It worked as expected and we didn't really touch it after
+installing it. This was lightweight and provided exactly what we needed. Some
+critique can be made of the service, as it in theory has access to the whole
+docker system, which might be dangerous, and we are not exactly sure how it
+handles any errors in building a new package, so it is probably more error
+prone, however it works for our limited need. If we were to scale up and use
+this in a more system critical setting, we would probably research this more,
+and find a enterprise grade solution. Maybe even giving the github actions
+direct access to the Docker service, and giving it the possibility to update the
+service directly from a Github Action. We didn't do this initially out of fear
+for opening up our docker host to the world, as that seemed relatively risky.
+However, with more research, we could probably find a way to do this in a secure
+way.
 
 ## Development practices
-*TODO - how do we interact? how is the team organized?*
+With the Covid-19 epidemic emerging approximately half-way through the course, the interaction amongst us inevitably changed as it was unwise to meet physically. Initially when the course started, we would hold a meeting after the lecture to plan the steps which needed to be accomplished for the following weeks release. 
 
-*TODO - organization of our repository, branching strategy, process and tools (how do we use issues, tasks, kanban board)*
+As Covid-19 progressed, ITU closed down, and gatherings became rightfully frowned upon which forced us to settle for the suboptimal approach of talking over Zoom. While the content of these meetings were almost identical to that of our physical meetings, the overhead of technical issues involving subpar microphones and a internet connections made these meetings far less efficient. These meetings over Zoom took place approximately once every week. Meetings over Zoom weren’t always necessary, which is why we also used Slack to keep each other updated on progress on issues as well as to ask for consent to make changes to the system or to ask for help. 
 
-**Issue tracking / Kanban: Github**
-Generally speaking we never really put much thought into how we would track
-issues and how we would separate the tasks at hand. As we already had Github
-open, we simply created all our tasks on the issue board there and never thought
-about alternatives. 
-Alternatively we could have created a Trello board or a Jira project, however
-with the limited scope of the project it seemed extensive to include a whole
-other system just for task management. As previously mentioned we generally
-tried limiting the number of different tools we used, and create a stack with as
-few different tools as possible.
+The typical output of the meetings was an understanding of what tasks needed to be carried out and by whom. These tasks would be posted as issues on Github, where a group member would assign themselves to it. Using Github issues rather than other tools, was an easy choice for us as it provided the functionality we needed while also minimizing the spread of tools we used, seeing as we also used Github for version control. 
 
-**Evaluation**
-We definitely had problems with our taskmanagement and ended up doing some of the
-tasks too late, so we definitely had to change our workflow, and would have if
-we could do it over. I think the main issue was that we didn't consult the issue
-list often enough, and possibly didn't put deadlines on, as well as not
-assigning people to issues. Ideally we should probably have improved our overall
-development process earlier on, but this is covered in the [Post
+The vast majority of the issues were handled independently without pair programming, which is definitely something we should have done in hindsight, as mistakes could have been avoided and knowledge of more intricate details in our program could be shared more conveniently. Although we didn’t define any clear roles for the group members, the lack of pair programming resulted in some intrinsic roles when the issues were perhaps larger than they should have been. Being more consistent with creating smaller issues, could have solved this problem, as multiple people would then have the opportunity of working on the same subsystem. 
+
+When working on an issue that is some new feature in the project, we created a new branch to work on it in a separate environment. Once the issue was deemed complete, a pull request was made to finally merge the new feature into the master branch. This branching strategy is very much in line with the ‘Topic Branches’ model where branches are short-lived and become merged with the master branch once the feature is working as intended. 
+*TODO - reasoning for branch model
+
+**Issue tracking / Kanban: Github** Generally speaking we never really put much
+thought into how we would track issues and how we would separate the tasks at
+hand. As we already had Github open, we simply created all our tasks on the
+issue board there and never thought about alternatives. Alternatively we could
+have created a Trello board or a Jira project, however with the limited scope of
+the project it seemed extensive to include a whole other system just for task
+management. As previously mentioned we generally tried limiting the number of
+different tools we used, and create a stack with as few different tools as
+possible.
+
+**Evaluation** We definitely had problems with our taskmanagement and ended up
+doing some of the tasks too late, so we definitely had to change our workflow,
+and would have if we could do it over. I think the main issue was that we didn't
+consult the issue list often enough, and possibly didn't put deadlines on, as
+well as not assigning people to issues. Ideally we should probably have improved
+our overall development process earlier on, but this is covered in the [Post
 Mortem](postmortem.md). We probably wouldn't have gotten any alternative
 important features by choosing another service, as the problems we had were
 based on structural team problems rather than the tool itself. Having the issues
 closely aligned with the pull-request flow was definitely a helpful feature.
 
 ## State of solution
-*TODO - current state of our system, results of static analysis and code quality assessment, add security assessment too*
+*TODO - current state of our system, results of static analysis and code quality
+assessment, add security assessment too*
 
 
 ## Conclusion and evaluation
-*TODO - biggest issues, major lessons we have learned, overall takeaways, fuckups etc. regarding:*
+*TODO - biggest issues, major lessons we have learned, overall takeaways,
+fuckups etc. regarding:*
 
-**Containerization (Docker) Evaluation**
-We would probably prefer having a more powerful host for the containers in the
-future. If we had to scale vertically it would presumably be difficult, and this
-is handled better in systems like Docker Swarm or Kubernetes. There are a large variety 
-of different tools, which still builds on the Docker syntax, which has a more expansive
-set of features, that would presumably handle scalability challanges better, however it
-worked for the relatively small service that we had to provide - so in this context, it
-was probably an ideal choice.
+**Containerization (Docker) Evaluation** We would probably prefer having a more
+powerful host for the containers in the future. If we had to scale vertically it
+would presumably be difficult, and this is handled better in systems like Docker
+Swarm or Kubernetes. There are a large variety of different tools, which still
+builds on the Docker syntax, which has a more expansive set of features, that
+would presumably handle scalability challanges better, however it worked for the
+relatively small service that we had to provide - so in this context, it was
+probably an ideal choice.
 
-If we didn't want to focus on an approach that would provide us with a good learning
-opportunity, we could have picked Azure and focus entirely on the application, as it 
-integrates very well with the .NET environment supporting the application stack. Azure 
-provides a lot of tools for a variety of requirements (e.g., logging). Whether using
-Azure is ideal, however, is a matter of discussion in the group, and is based on both political and personal bias and opinions.
+If we didn't want to focus on an approach that would provide us with a good
+learning opportunity, we could have picked Azure and focus entirely on the
+application, as it integrates very well with the .NET environment supporting the
+application stack. Azure provides a lot of tools for a variety of requirements
+(e.g., logging). Whether using Azure is ideal, however, is a matter of
+discussion in the group, and is based on both political and personal bias and
+opinions.
 
-1. evolution and refactoring
+### 1. evolution and refactoring
 
 **C#/ASPNET Core Evaluation**
 
-> TODO: The first line kind of contradicts some of the content in the "Programming language"
-section. I was under the impression that the use of C# worked out fairly well. However, if
-this isn't the case please elaborate on this, and remember to change the programming
-language section to fit this.
+> TODO: The first line kind of contradicts some of the content in the
+"Programming language" section. I was under the impression that the use of C#
+worked out fairly well. However, if this isn't the case please elaborate on
+this, and remember to change the programming language section to fit this.
 
 The team probably has varying opinions on the C# language, and some of use would
 probably have preferred somewhat that was more engaging or faster to write,
@@ -397,7 +413,7 @@ locally.
 However MSSQL in itself provided no problems - it had exactly the features that
 we were after, and worked like a charm. This seemed to have been a good choice.
 
-2. operation
+### 2. operation
 
 **Docker Swarm Evaluation**
 In accordance with your prior interest in Docker the choice of Docker Swarm was a
@@ -408,7 +424,7 @@ have a clear picture. However, this can be helped by documenting the approach
 taken and sharing lessons learned.
 
 
-3. maintenance
+### 3. maintenance
 
 
 * Link back to commit messages/issues to illustrate these. *
