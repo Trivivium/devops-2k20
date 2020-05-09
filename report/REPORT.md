@@ -373,7 +373,7 @@ application stack. Azure provides a lot of tools for a variety of requirements
 discussion in the group, and is based on both political and personal bias and
 opinions.
 
-1. evolution and refactoring
+### 1. evolution and refactoring
 
 **C#/ASPNET Core Evaluation**
 
@@ -388,10 +388,10 @@ however it got the job done, and it did make it easier to debug, leaving time
 for writing various tests.
 
 
-2. operation
+### 2. operation
 
 
-3. maintenance
+### 3. maintenance
 
 
 * Link back to commit messages/issues to illustrate these. *
