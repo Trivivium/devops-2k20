@@ -513,8 +513,7 @@ assessment, add security assessment too_
 
 ## Conclusion and evaluation
 
-_TODO - biggest issues, major lessons we have learned, overall takeaways,
-fuckups etc. regarding:_
+Here we list some of our biggest issues, lessons we have learned, overall takeaways as well as some minor mistakes we had made that caused us troubles and inconveniences.
 
 **Containerization (Docker) Evaluation** We would probably prefer having a more
 powerful host for the containers in the future. If we had to scale vertically it
