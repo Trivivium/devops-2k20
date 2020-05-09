@@ -13,47 +13,55 @@ and challenges, what we have learned out of that and what could have done
 better.
 
 ## Technology Stack
+The MiniTwit solution is only a small part of the system, which consists of
+various tools and utilities that improve the development flow, monitoring,
+logging and performance of the MiniTwit application. The following diagram, and
+sections shows how these services fit together and form the architecture
+surrounding the solution. The diagram shows the type of connections, as well as
+any relevant comment to that connection.
 
-This chapter will introduce the technologies used during the development of the
-application along with reasoning for the inclusion. The chapter ends with an
-overview of the dependencies during design-time, and how they relate to each
-other and external services implicitly required for them to function. The
-chapter is structured in way that seeks to describe the foundation of all our
-technologies and ending with external tools used during production of the
-application.
+![Deployment Diagram](./images/deployment_diagram.png)
+
+The following sections seek describe what each of these do, with reasoning for
+the inclusion. The chapter ends with an overview of the dependencies during
+design-time, and how they relate to each other and external services implicitly
+required for them to function. The chapter is structured in way that seeks to
+describe the foundation of all our technologies and ending with external tools
+used in the production environment of the application.
 
 ### Hosting
 
-As the application should be publically available IP address we needed a hosting
-provider for the production environment. The course presented [Digital
-Ocean][host-1] as an option, and as a couple of us had prior experience with
-them we choose this solution. The prior experience along with the option to
-utilize the [Github Student Developer Pack][host-2] for free credits meant we
-had confidence in the decision.
+The application is required to have a publically available IP address. Therefore
+we needed a hosting provider for the production environment. The course
+presented [Digital Ocean][host-1] as an option, and as a couple of us had prior
+experience with the service we choose this solution. The prior experience, along
+with the option to utilize the [Github Student Developer Pack][host-2] for free
+credits, meant we had confidence in that decision.
 
 We started out provisioning a small [Droplet][host-3], which is what Digital
 Ocean names their virtual private servers (VPS), with enough resources to host
 the application and the database inside Docker containers. However, when we
-added monitoring and logging to application we had increasing requirements for
-the specs of the VPS. To meet these requirements we provisioned multiple
-Droplets as scaling a single VPS vertically would introduce downtime, which we
+added monitoring and logging, we had increasing requirements for the specs of
+the VPS. To meet these requirements we would either have to provision multiple
+Droplets or scale the existing VPS vertically would introduce downtime, which we
 wanted to avoid.
 
-The result of this approach led us to having two Droplets; one for our tools
-(e.g., logging) and one for the solution. In retrospect this was probably the
-right decision as it increases our resiliency. If one of the droplets crashes
-the other one remains untouched.
+We decided to have two droplets; one for our tools (e.g., logging) and
+one for the solution. In hindsight this was probably the right decision as it
+increases our resiliency. If one of the droplets crashes the other one remains
+untouched. These will be referenced as _Application Droplet_ and _Tool Droplet_,
+when applicable.
 
 Despite the short-term benefit of this solution we still have issues scaling the
-droplet hosting the application. Because the application isn't stateless
-horizontal scaling isn't an option, and thus vertical scaling is our sole
-option, which requires us to incur some downtime when the droplet is upgraded.
+droplet hosting the application. As the application isn't stateless, horizontal
+scaling isn't an option, and thus vertical scaling is our sole option, which
+requires us to incur some downtime when the droplet is upgraded.
 
 [host-1]: https://www.digitalocean.com/
 [host-2]: https://education.github.com/pack
 [host-3]: https://www.digitalocean.com/products/droplets/
 
-### Operating system
+### Operating System
 
 For the operating system of the application droplet we decided on Ubuntu 18.04.3
 LTS. It was important for us to use a version with long-term support (LTS) as it
@@ -63,35 +71,22 @@ or security vulnerabilties surfaced during the course.
 We wanted to use a Linux based distribution as it seemed to provide the greatest
 level of learning. Using Windows based virtual machine could provide us a
 graphical user interface and tools, and it would definitely yield some valuable
-learning as well it seemed a less attractive choice in the context of this
-course and tools we aimned to utilize. The choice of Ubuntu is definitive as we
-could have used Arch Linux or any other distribution. However, Ubuntu is rather
-common and has a great community making tools, which make it easier to figure
-out how tasks are done. These considerations combined made Ubuntu an ideal
-choice for the members of the group that didn't have a extensive experience with
-the OS and thus a more limited level of proficiency with it.
-
-Due to the technologies we were planning on using (i.e., Docker) we weren't
-going to be working too much directly on the operating system level. This meant
-that we didn't require to have one of the group members focusing on the OS more
-than others. It also proved to be a comfortable environment for the group
-members used to working in Windows.
+learning as well, however it seemed to be a less attractive choice in the
+context of this course and the tools we aimed to utilize. The choice of Ubuntu
+is deliberate as we could have used Arch Linux or any other Linux distribution.
+However, Ubuntu is the most common and has a great community, which make it
+easier to debug and get support. These considerations combined made Ubuntu an
+ideal choice with a group of varying levels Linux experience, and thus a more
+limited level of proficiency with it.
 
 ### Containerization
 
-To run the application and the database instance required by the application we
-decided on the use of [Docker][container-1]. This choice rested primarily on it
-being presented in the course, but a more important fact was that all group
-members had interest in using the technology, and a good introduction to the
-fundamentals around containers, which has broad applicability in other
-technologies such as Kubernetes.
-
-In a professional context it might have been a better choice to use some
-containerization-as-a-service solution or a provider where the features
-underlying operating system support Docker is managed. Sticking with installing,
-configurating, and operating Docker was a lot more involved than a managed
-solution in terms of manual work, but it provided us with invaluable learning
-opportunities.
+To run the application and the database system, we decided on the use of
+[Docker][container-1]. This choice rested primarily on it being presented in the
+course, but a more important fact was that all group members had interest in
+using the technology, and wanted some essential understanding of containers,
+which has broad applicability in other similar technologies, for instance
+Kubernetes.
 
 There are other alternatives to Docker, but it is the primary technology
 supporting containerization and thus an unoffical standard in the business. An
@@ -100,19 +95,15 @@ servers, but we deemed it less attractive as it is a rather heavy-weight
 solution (i.e., entire operating system) in order to gain the same isolation
 Docker provides.
 
-The technology we used to scale the system is [Docker Swarm][container-3]. This
-choice was primarily due to the providing all the features we required and
-having good integration with Docker, which we already had invested in. To keep
-the setup simple we decided to run Docker Swarm with a single node (the original
-host machine) acting as both the swarm manager and sole worker node. We didn't
-invest much time looking into alternatives as Docker Swarm provided all the
-tools necessary with less technical fragmentation, whereas an alternative would
-require new configuration.
+We used [Docker Swarm][container-3] to horizontally scale the system. This
+choice was primarily due to it providing all the features we required and
+already being part of the Docker ecosystem, which we already had invested in. To
+keep the setup simple we decided to run Docker Swarm with a single node (the
+original host machine) acting as both the swarm manager and sole worker node. We
+didn't invest much time looking into alternatives as Docker Swarm provided all
+the tools necessary with less technical fragmentation, whereas an alternative
+would require new configuration.
 
-Using a single node did have the consequence of reduced reliability and scaling
-as we are restricted to the amount of resources on the host. However, both of
-these concerns can be resolved with the additional physical nodes in the future,
-which Docker Swarm simplifies greatly.
 
 [container-1]: https://www.docker.com/
 [container-2]: https://www.vagrantup.com/
@@ -121,9 +112,9 @@ which Docker Swarm simplifies greatly.
 ### Programming language & Runtime environment
 
 Before starting the refactoring of the existing MiniTwit application we
-considered our options and interests of the group members in relation to the
-programming language we aimed to use. This of course had an impact on our
-choices of web application frameworks available to us.
+considered different programming languages, as well as the interests of the
+group members regarding this decision. This of course had an impact on the
+possibilities regarding web application frameworks.
 
 We ended up using [.NET Core][prog-1] with C# as it was argued that it was the
 language that most of the group members would be able to write from the start.
@@ -138,67 +129,43 @@ both server-rendered pages and REST APIs. For interaction with the database we
 decided to use an ORM rather than handwritten SQL statements for reasons
 regarding both security and speed of development. The choice of ORM ended on
 [Entity Framework Core][prog-3] as it integrates very well with ASPNET Core, and
-has adapters to many different database giving us freedom in chosing our storage
-solution later.
+has adapters to many different databases, giving us freedom in the choice of
+storage solution.
 
 [prog-1]: https://dotnet.microsoft.com/
 [prog-2]: https://dotnet.microsoft.com/apps/aspnet
 [prog-3]: https://docs.microsoft.com/en-us/ef/core/
 
-### Testing
-
-To help increase our confidence in changes to the system we added unit tests.
-The unit-tests are written in C# using the [XUnit][test-1] test framework, which
-is used to test functionality implemented in web application (e.g., creating a
-user, adding a message, etc.).
-
-The unit tests are focused around the service classes, which implements the
-business logic related to the main features of the system. These tests aims to
-exercise the "happy-path" of each feature, where the execution succeeds as well
-as the expected error paths (i.e., adding a message to an unknown user). The
-tests are executed using the built-in tooling of the [dotnet CLI][test-2]
-included in the .NET Core SDK.
-
-We also wanted to test the API used by the simulator to make sure that this
-would work as expected in accordance to the specification of the simulator. As
-the API is a boundary of the application we also had the opportunity to use this
-as integration/system tests at the same time. Therefore we provisioned a
-production-like setup using Docker Compose easily and with confidence that is
-mimics the actual execution environment.
-
-To ensure the simulator worked as expected we decided to run the provided
-reference implementation of the simulator against our API. It is written is
-Python 3, so a member of our group rewrote parts of it to convert into a simple
-test suite. This test suite is then run against the API in our CI pipeline.
-
-[test-1]: https://xunit.net/
-[test-2]: https://docs.microsoft.com/en-us/dotnet/core/tools/
-
 ### Database
-
-The storage solution started out using [SQLite][db-1], which was the original
-choice of the application before refactoring. However, we wanted to use a more
+Initially the system utilized [SQLite][db-1], which was the original choice of
+the application before refactoring. However, we wanted to use a more
 full-fletched database in our production environment. This was motivated
-primarily by the learning opportunity of operating a complex database system in
-production, and a wish to avoid the limitations of SQLite with regards to query
-efficiency under load and lack of features for scaling and backups.
+primarily by the learning opportunity regarding the operation of a complex
+database system in a production environment. On top of this we had a variety of
+limitations regarding SQLite regarding query efficiency under load and lack of
+features for scaling and backups.
 
-To decided on the user of [Microsoft SQL Server][db-2]. This choice was
+We decided on the user of [Microsoft SQL Server][db-2]. This choice was
 motivated by our prior investment into the .NET ecosystem, and the choice of
-Entity Framework as our ORM solution. Despite the freedom of storage solution
-provided by the ORM is SQL Server a first-class supported database as it also
-originates from Microsoft. The column data-types used in T-SQL (which is the SQL
-dialect used in SQL Server) has direct translation to C# types, which provides
-us with confidence in the reliability during materialization of database records
-not losing information (e.g., date-time or decimal precision).
+Entity Framework as our ORM solution. The ORM provided a freedom of storage
+solution, however the ORM still sees the SQL Server a first-class supported
+database as it also originates from Microsoft. The column data-types used in
+T-SQL (which is the SQL dialect used in SQL Server) has direct translation to C#
+types, which provides us with confidence in the reliability during
+materialization of database (e.g., date-time or decimal precision).
 
 We did consider other alternatives of relational databases, but ended up
-deciding on the solution we had most confidence in, when the resource
-requirements of the alternatives (e.g., [PostgreSQL][db-3], [MySQL][db-4] etc.)
-were very simlar. We didn't spend time looking into NoSQL solution as we wanted
-an easy approach when migrating data from the existing SQLite database thus
-avoiding an ETL process of translating the database schema into a NoSQL
-database. Lastly was most group members comfortable with relational databases.
+deciding on the solution we had most confidence in. Alternatives like
+[PostgreSQL][db-3] and [MySQL][db-4] were very similar, had similiar hardware
+requirements, and provided no extra relevant functionality. We didn't spend time
+looking into NoSQL solution as we wanted an easy approach when migrating data
+from the existing SQLite database thus avoiding an ETL process of translating
+the database schema into a NoSQL database. Lastly was the motivation that most
+group members comfortable with relational databases.
+
+The database itself, is mounted in a docker volume, to provide persistence even
+upon a crash or restart, which normally would not be the case as containers are
+non persistant.
 
 [db-1]: https://www.sqlite.org/index.html
 [db-2]: https://www.microsoft.com/en-us/sql-server/sql-server-2019
@@ -212,11 +179,11 @@ Grafana for visualization. None of the group members had extensive prior
 experience with monitoring tools, which meant that we had no preferences. Taking
 a look at [Prometheus's own comparison to alternatives][mon-2] (granted that it
 has a conflict of interests) made us comfortable that it would fit into the
-setup we had planned due to Prometheus being designed to monitor metrics over
-time, whereas some of the alternatives (e.g., [InfluxDB][mon-3]) is more focused
-towards event logging, or has a less feature complete query languages.
+setup we had planned. Primarily, Prometheus being designed to monitor metrics
+over time, whereas some of the alternatives (e.g., [InfluxDB][mon-3]) is more
+focused towards event logging, or has a less feature complete query languages.
 
-Another aspect which motivated this decision is good community support along
+Another aspect, which motivated this decision, was good community support along
 with first-class support for [.NET based integration][mon-4] from Prometheus
 themselves.
 
@@ -236,13 +203,16 @@ investment into Docker.
 
 ### Logging
 
-Lastly is logging. We wanted to be sure we had an overview of the log messages
-produced by our system, and any exception that might have occurred in
-production. The former is implemented using Elasticsearch, Logstash, and Kibana
-(ELK stack). The ELK stack is a popular choice to structured logging with a
-large community supporting it. The community along with it being presented
-during the course was the primary driving factors when deciding upon this
-solution.
+We wanted to be sure we had an overview of the log messages produced by our
+system, and any exception that might have occurred in production. This provides
+two distinct problems, which will be covered here.
+
+#### Event Logging
+Event Logging is implemented using Elasticsearch, Logstash, and Kibana (often
+called the ELK stack). The ELK stack is a popular choice to structured logging
+with a large community supporting it. The community along with it being
+presented during the course was the primary driving factors when deciding upon
+this solution.
 
 A common theme throughout the development cycle has been ease of integration and
 the ELK stack did deliver in that area. However, we did research other
@@ -261,28 +231,38 @@ To send structured logs to Elasticsearch we used the .NET based library
 community, and it integrates very well with ASPNET Core and Entity Framework
 Core using built-in logging interceptors gathering data without any additional
 configuration.
-
+#### Exception Logging
 As mentioned in the start we also sought to gather exception from the production
 environment. For this we ended up using [Sentry.io](https://sentry.io/welcome/).
 This was motivated primarily from their ability to aggregate the exceptions, and
 provide metrics with regards to the number of users affected by the exception,
-but also from prior experience from some of the group members.
+but also from prior experience from some of the group members. This was a
+relatively simple choice, and provided quick setup as well as an easy to read
+interface. Additionally utilizing a managed solution, made sure that it wouldn't
+crash or fail, which was crucial when considering the various bugs we would
+accidentally introduce in our production environment. We could potentially
+extract these from the ELK stack, but this was easy to setup and extract data
+from, making it an ideal choice.
 
-### Dependency diagram
+### Dependency Diagram 
 
 Having been through all the technologies used in the application we end the
-chapter with a diagram of all the dependencies introduced and the relations
-between and any external services they rely on.
+chapter with an overview of how these tools fit together.
 
-![](./images/dependency_graph.png)
+The software solution had a variety of dependencies, both on various packages
+and libraries, but also on external services that, would they crash, would crash
+our service. The following diagram shows the relations between them and any
+external services they rely on.
 
-A noticable omission from the diagram is the technologies related to
+![Dependency Diagram](./images/dependency_graph.png)
+
+A noticeable omission from the diagram is the technologies related to
 containerization and the technologies supporting that (i.e., the operating
 system). These has been omitted since they're a prerequisite of the entire
 application, but doesn't play a role in the functionality of the application.
-The use of containers due add some constraints on the architecture of the
+The use of containers does add some constraints on the architecture of the
 application with regards to scaling (e.g., horizontal scaling requires
-statelessness), however, this is discussed in the following chapter.
+statelessness).
 
 ## System Description
 
@@ -464,20 +444,6 @@ probably have preferred somewhat that was more engaging or faster to write,
 however it got the job done, and it did make it easier to debug, leaving time
 for writing various tests.
 
-**Unit tests Evaluation**
-The unit-tests are quick to run in the CI pipeline. However, the amount of code currently
-covered by the tests are limited to the primary functionality. This is, however, not a
-reflection of the choice of strategy, but rather an observation related to the available
-time we allocated to this part of the project.
-
-Some tests are without a doubt better than no tests, and we did catch some exceptions once in a while. Using the "happy-path" mentality strategy did catch the worst of errors however, meaning that it definitely added value to the project as a whole, however there is naturally always room for improvement. The focus did, however, mean that we tested wide to ensure all parts of the
-application is exercised.
-
-**Integration tests using an adapted simulator implementation**
-This has so far proven to be a great choice. We haven't had to modify the files
-yet, so the primary factor seemed to be development time, which was low, so the
-choice seemed perfect.
-
 **Database Evaluation**
 The only problem we've had with this, was that a subset of our development team
 continued to use SQLite for local testing, and SQLite has a more relaxed
@@ -489,14 +455,44 @@ we were after, and worked like a charm. This seemed to have been a good choice.
 
 ### 2. operation
 
-**Docker Swarm Evaluation**
-In accordance with your prior interest in Docker the choice of Docker Swarm was a
+#### Containerization
+
+The choice of manually installing, configuring, and operating Docker was a lot
+more involved than a managed solution in terms of manual work, than many of the
+managed alternatives, but it provided us with invaluable learning opportunities.
+The setup process was interesting and we were able to learn various things about
+the inner workings of docker, however it did leave space for the potential for
+critical areas, some of which we encountered (TODO link to database deletion
+fuckup).
+
+In accordance with our prior interest in Docker the choice of Docker Swarm was a
 natural extension of this. The main hurdles encountered is the isolated knowledge
 of the technology. Due to nature of it we allocated a single person to set it up,
 which meant that when an error was encountered by others in the group we didn't
 have a clear picture. However, this can be helped by documenting the approach
 taken and sharing lessons learned.
 
+Using a single node did have the consequence of reduced reliability and scaling
+as we are restricted to the amount of resources on the host. However, both of
+these concerns can be resolved with the additional physical nodes in the future,
+which Docker Swarm simplifies greatly.
+
+Due to hurdles and errors encountered, we would probably use a service provider
+for this instead, in other cases. Be it Heroku, AWS or Azure, they all provide a
+great ecosystem for these things, and reduce the risk of errors, and reduces
+configuration time. This is naturally a tradeoff, and depends on the context in
+which the development is taking place - having full control of your stack does
+have it's advantages, however in projects of this size and type, it provides a
+massive overhead.
+
+With that being said, the choice was still great from a learning perspective.
+
+#### Operating System
+
+The operating system didn't seem to be crucial. The majority of our development
+was in config files, and the challenges we would have required
+only a low level Linux proficiency, however having an entry-level distribution
+did make it easier to debug the various issues we would come across. 
 ### 3. maintenance
 
 - Link back to commit messages/issues to illustrate these. \*
