@@ -533,7 +533,7 @@ application stack. Azure provides a lot of tools for a variety of requirements
 discussion in the group, and is based on both political and personal bias and
 opinions.
 
-### 1. evolution and refactoring
+### 1. Evolution and refactoring
 
 **C#/ASPNET Core Evaluation**
 
@@ -556,7 +556,7 @@ locally.
 However MSSQL in itself provided no problems - it had exactly the features that
 we were after, and worked like a charm. This seemed to have been a good choice.
 
-### 2. operation
+### 2. Operation
 
 #### Containerization
 
@@ -595,7 +595,20 @@ With that being said, the choice was still great from a learning perspective.
 The operating system didn't seem to be crucial. The majority of our development
 was in config files, and the challenges we would have required
 only a low level Linux proficiency, however having an entry-level distribution
-did make it easier to debug the various issues we would come across. 
-### 3. maintenance
+did make it easier to debug the various issues we would come across. Due to the technologies we were planning on using (i.e., Docker) we weren't going to
+be working too much directly on the operating system level. This meant that we didn't require to have one of the group members focusing on the OS more than others. It also proved to be a comfortable environment for the group members used to working in Windows.
 
-- Link back to commit messages/issues to illustrate these. \*
+#### Exceptions
+
+For the first month, we didn't implement any sort of great logging that would highlight all the uncaught exceptions we had in production. This meant that we had a couple of days with downtime once in a while, without realizing it till it was too late. This is obviously really bad. we ended up utilizing sentry.io to solve this problem, however we had already lost a ton of users due to the lack of possibility to sign up. Implementing sentry.io earlier would have fixed the problem.
+
+#### Losing the database volume when migrating to Docker Swarm
+When we went from normal docker to docker swarm mode, we somehow didn't use the same database volume. This is probably because the naming of volumes are prefixed with the context of which it is created in docker-compose, which we utilize. This meant that docker created a new volume, and we didn't really check this. Without active monitoring of our logging software we weren't fully aware that users were dropped and therefore didn't see the error. Also we didn't go through the system thoroughly after the migration, so we didn't realize that something was wrong until a few days later. We then had new users in the new database and old in the old. Naturally we should have created a backup, even though this wasn't an issue it would have been a good idea. Additionally we should have done some quick tests to validate that the production database wasn't empty (by checking whether the feed was empty on the website). This would have done a lot and made it easy to fix and mount the correct volume. An other thing that would have helped was setting up chatops. Having the error log not sent to a specific developer by email but rather in a chat we all had access too, would have helped. Additionally we could have monitored the monitoring and logs as well easily and created various triggers (the amount of 4XX errors presumably increased afterwards, which would have been nice to know, even those these are not normally errors we are concerned with as they are not uncaught exceptions).
+
+### 3. Maintenance
+
+#### Losing the database in system update
+One of the trivial mistakes we have made is that we didn't mount our database into a volume, thus we lost a lot of data. This is one of the main reasons why we had many errors regarding Minitwit simulator. Such a small issue that caused relatively big damage to our system.
+
+#### Disk space on server
+As the number of requests and users from the simulator increased, we run out of space, thus we missed some data. As a quick fix, we did a docker system prune and successfully reclaimed more than 4GBs. After rescaling our system, everything worked fine but we should have planned this in advance.
