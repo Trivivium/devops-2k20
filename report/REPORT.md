@@ -281,63 +281,167 @@ _TODO - what do we log and how we aggregate it_
 _TODO - Which strategy did we use for scaling and load balancing (ie. vertical
 vs. horizontal scaling)_
 
-## CI/CD implementation
+## CI/CD Pipeline
 
-_TODO - complete description of stages and tools used in CI/CD chains
-(deployment and release)_
+Having a strong CI/CD pipeline is a crucial development step in an agile
+development team. Having automated deployment removes operations time from
+having to manual deploy to production, it also limits potential errors.
+Combining that with a variety of automated tests, makes sure that our production
+environment is as close to perfect as possible. This, however, depends on the
+quality of the tests and the various tools utilized.
 
-**Continuous Integration: Github Actions** We initially looked at a variety of
-different CI possibilities, and considered Jenkins for one, however we randomly
-looked at github and a group member asked if any of us have every tried using
-Github Actions, their CI solution, and we realized that neither of us had. This
-seemed like a great way to try something new and it also seemed ideal with the
-current stack we were running. The choice was mainly based on this: the
-availability and the possibility to learn something new.
+This section will go through the choices we made relating to the pipeline, and
+how it integrated in our workflow.
 
-**Evaluation** It was really neat having it integrate so smoothly with our pull
-request flow.
+To understand the pipeline, it is first important to understand the context. The
+following diagram illustrates a generic development flow.
 
-**Packaging & Docker image storage: Github** Github has the possibility to host
-and provide packages for downloading, much like Dockerhub. We considered moving
-our images to Dockerhub, but having in centralized one place seemed ideal. We
-liked the idea of having a few select services that we relied on, as to not
-create a too complex development flow, but rather utilize few tools that
-integrated nicely together and provided each a large chunk of the features
-required.
+![Development Flow](./images/development_diagram.png)
 
-**Evaluation** We had a few issues, especially that you [cannot download without
-being logged
-in](https://github.community/t5/GitHub-API-Development-and/Download-from-Github-Package-Registry-without-authentication/td-p/35255),
-which was rather tedious, but we overcame it by having one of our personal
-tokens stored on the production site (which is less than ideal, but works).
-Other than that it provided the features we needed. Looking at the features we
-use, we would have gotten nothing more out of using Dockerhub, so having it all
-centralized one place, packaging, repository & CI seemed like a neat choice, on
-that we stand by.
+The pipeline is only a small part of the development flow, however, done
+correct, it increases the effectiveness ten-fold.
 
-**Continuous Delivery: Watchtower** We needed our production server to
-automatically update whenever the master branch updated on our repository -
-which was when ever a new version was released on the packaging provider. There
-is a few different tools for this, and this is something Jenkins does provide,
-however installing Jenkins for this feature alone, seemed overkill and would use
-a magnitude more CPU power than we wanted. So we found a service called
-Watchtower, which runs as a docker container, and with with a consistant
-interval checks whether the remote image has been updated - if it has, it
-updates the running container.
+### Continuous Integration
 
-**Evaluation** It worked as expected and we didn't really touch it after
-installing it. This was lightweight and provided exactly what we needed. Some
-critique can be made of the service, as it in theory has access to the whole
-docker system, which might be dangerous, and we are not exactly sure how it
-handles any errors in building a new package, so it is probably more error
-prone, however it works for our limited need. If we were to scale up and use
-this in a more system critical setting, we would probably research this more,
-and find a enterprise grade solution. Maybe even giving the github actions
-direct access to the Docker service, and giving it the possibility to update the
-service directly from a Github Action. We didn't do this initially out of fear
-for opening up our docker host to the world, as that seemed relatively risky.
-However, with more research, we could probably find a way to do this in a secure
-way.
+After any commit is pushed to the remote repository, the CI tests check if the
+new feature introduces any regression, and if code quality is of satisfactory
+levels. This is an important part of our review process of each feature - this
+alleviated some pressure from the peer-reviewer, making it easier to trust that
+the feature did not break anything - this cut down on time spent on reviews,
+leaving room for developing features and operations.
+
+#### Github Actions
+
+Continuous integration required the ability to run a variety of scripts,
+essentially, when ever a new commit enters the repository. We initially looked
+at a variety of different CI possibilities, and considered Jenkins for one,
+however we randomly looked at github and a group member asked if any of us have
+every tried using Github Actions, their CI solution, and we realized that
+neither of us had. This seemed like a great way to try something new and it also
+seemed ideal with the current stack we were running. The choice was mainly based
+on the availability and the possibility to learn something new.
+
+We created three Github Action, whereas the following file is related to the
+automated tests:
+
+```YAML
+name: Automated Tests
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+    - name: Run integration tests
+      working-directory: ./src/
+      run: docker-compose -f docker-compose.test.yml up --build --exit-code-from tester
+    - name: Run unit tests
+      run: dotnet test
+      working-directory: ./src/WebApplication.Tests
+```
+
+#### Unit tests
+
+To help increase our confidence in the changes added to the system we added unit
+tests. The unit-tests are written in C# using the XUnit test framework, which is
+used to test functionality as implemented in web application (e.g., creating a
+user, adding a message, etc.).
+
+The unit tests are focused around the service classes, which implements the
+business logic related to the functionality of the system. These tests aims to
+check the "happy-path" where the function succeeds as well as the expec- ted
+error paths (i.e., adding a message to an unknown user). The tests are executed
+using the built-in tooling of the dotnet CLI included in the .NET Core SDK.
+
+These tests are run as part of the CI pipeline on pull requests (PR), and when a
+PR is merged into the master branch.
+
+#### Integration tests
+
+We wanted to test the API used by the simulator to make sure that this would
+continue to work - Also as this surface is a API it is easier to test than a
+graphical user interface, so we would be able to test all backend functionality
+relatively easy.
+
+The simulator that had to interface with our service was already written in
+python3, so testing if the simulator would be able to work, would, in theory, be
+as simple as running the simulator on a clean database, and see if the simulator
+failed. It would still have to be rewritten a bit though
+
+As a member of our team has worked with python professionally for multiple years
+he proposed he would convert it into unit tests. This made it somewhat easy to
+isolate where errors occurred if something failed within this tester.
+
+### Continuous Delivery
+
+When new commits enters the master branch, we needs to update the production
+server. The alternative would be to manually connect to the production
+environment and pull the newest version of the system. This takes time and is
+error prone, therefore this flow is automated. This is, in our case, done by
+releasing a version of the code, organized by a docker image, to a package host,
+which could then be downloaded by our production server.
+
+**Github, as a packaging host**, has the possibility to host and provide
+packages for downloading, much like Dockerhub. We considered moving our images
+to Dockerhub, but having packages stored the same place as storing the
+repository seemed ideal. We liked the idea of having a few select services that
+we relied on, as to not create a too complex development flow, but rather
+utilize few tools that integrated nicely together and provided each a large
+chunk of the features required.
+
+**Our github action**, automated the creation of the docker image as well as
+pushing the image to the packaging host, seen
+[here](https://github.com/Trivivium/devops-2k20/blob/master/.github/workflows/dockerpush.yml).
+When pushed, the latest release can be accessed
+[here](https://github.com/Trivivium/devops-2k20/packages/133732).
+
+We had an [additional
+action](https://github.com/Trivivium/devops-2k20/blob/master/.github/workflows/release.yml)
+to create release [tags](https://github.com/Trivivium/devops-2k20/releases).
+
+Upon the package being pushed to the packaging host, the next step is for the
+production environment to pull the image.
+
+**Watchtower** is a tool that automatically updates the base image of Docker
+containers, which can be found [here](https://github.com/containrrr/watchtower).
+There are a few different tools for this, and this is something Jenkins does
+provide, however installing Jenkins for this feature alone, seemed overkill and
+would use a magnitude more CPU power than we wanted. We wanted to utilize a
+minimal tool that provides what was needed, and nothing else. This is what
+watchtower did. It checks your package host with a consistant interval checks
+whether the remote image has been updated - if it has, it updates the running
+container. The setup was really simple, here showing the full configuration in
+our `docker-compose`
+[file](https://github.com/Trivivium/devops-2k20/blob/master/src/production.yml):
+
+```yml
+watchtower:
+  image: v2tec/watchtower
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /root/.docker/config.json:/config.json
+  command: --interval 300
+```
+
+Worth noting, however, is that Watchtower does this by connecting to the docker
+socket, making it able to spy on and interact with all running containers. This
+is naturally dangerous if there is a security bug in watchtower, or if it is in
+any way acts maliciously. We, however, trusted the service in the context of
+this course, but that is a security estimate that should be considered in
+projects.
+
+The push step is easily visualized on the repository, making it transparent
+whether the package creation was successful, however we have no way to monitor
+whether the production is updated, nor the version of the software is running,
+other than SSH'ing into the production server and checking.
 
 ## Development practices
 
@@ -379,9 +483,8 @@ new branch to work on it in a separate environment. Once the issue was deemed
 complete, a pull request was made to finally merge the new feature into the
 master branch. This branching strategy is very much in line with the ‘Topic
 Branches’ model where branches are short-lived and become merged with the master
-branch once the feature is working as intended. \*TODO - reasoning for branch
-model
-
+branch once the feature is working as intended. 
+ 
 **Issue tracking / Kanban: Github** Generally speaking we never really put much
 thought into how we would track issues and how we would separate the tasks at
 hand. As we already had Github open, we simply created all our tasks on the
@@ -398,7 +501,7 @@ and would have if we could do it over. I think the main issue was that we didn't
 consult the issue list often enough, and possibly didn't put deadlines on, as
 well as not assigning people to issues. Ideally we should probably have improved
 our overall development process earlier on, but this is covered in the [Post
-Mortem](postmortem.md). We probably wouldn't have gotten any alternative
+Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
 important features by choosing another service, as the problems we had were
 based on structural team problems rather than the tool itself. Having the issues
 closely aligned with the pull-request flow was definitely a helpful feature.
