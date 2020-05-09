@@ -152,7 +152,7 @@ solution, however the ORM still sees the SQL Server a first-class supported
 database as it also originates from Microsoft. The column data-types used in
 T-SQL (which is the SQL dialect used in SQL Server) has direct translation to C#
 types, which provides us with confidence in the reliability during
-materialization of database (e.g., date-time or decimal precision).
+materialization of database record (e.g., not losing date-time or decimal precision).
 
 We did consider other alternatives of relational databases, but ended up
 deciding on the solution we had most confidence in. Alternatives like
@@ -462,7 +462,7 @@ more involved than a managed solution in terms of manual work, than many of the
 managed alternatives, but it provided us with invaluable learning opportunities.
 The setup process was interesting and we were able to learn various things about
 the inner workings of docker, however it did leave space for the potential for
-critical areas, some of which we encountered (TODO link to database deletion
+errors in critical components of the application; some of which we encountered (TODO link to database deletion
 fuckup).
 
 In accordance with our prior interest in Docker the choice of Docker Swarm was a
