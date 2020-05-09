@@ -1,4 +1,4 @@
-name: Build Solution
+name: Automated Tests
 
 on: [push]
 

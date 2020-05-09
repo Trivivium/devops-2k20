@@ -318,16 +318,46 @@ However, with more research, we could probably find a way to do this in a secure
 way.
 
 ## Development practices
-With the Covid-19 epidemic emerging approximately half-way through the course, the interaction amongst us inevitably changed as it was unwise to meet physically. Initially when the course started, we would hold a meeting after the lecture to plan the steps which needed to be accomplished for the following weeks release. 
+With the Covid-19 epidemic emerging approximately half-way through the course,
+the interaction amongst us inevitably changed as it was unwise to meet
+physically. Initially when the course started, we would hold a meeting after the
+lecture to plan the steps which needed to be accomplished for the following
+weeks release.
 
-As Covid-19 progressed, ITU closed down, and gatherings became rightfully frowned upon which forced us to settle for the suboptimal approach of talking over Zoom. While the content of these meetings were almost identical to that of our physical meetings, the overhead of technical issues involving subpar microphones and a internet connections made these meetings far less efficient. These meetings over Zoom took place approximately once every week. Meetings over Zoom weren’t always necessary, which is why we also used Slack to keep each other updated on progress on issues as well as to ask for consent to make changes to the system or to ask for help. 
+As Covid-19 progressed, ITU closed down, and gatherings became rightfully
+frowned upon which forced us to settle for the suboptimal approach of talking
+over Zoom. While the content of these meetings were almost identical to that of
+our physical meetings, the overhead of technical issues involving subpar
+microphones and a internet connections made these meetings far less efficient.
+These meetings over Zoom took place approximately once every week. Meetings over
+Zoom weren’t always necessary, which is why we also used Slack to keep each
+other updated on progress on issues as well as to ask for consent to make
+changes to the system or to ask for help.
 
-The typical output of the meetings was an understanding of what tasks needed to be carried out and by whom. These tasks would be posted as issues on Github, where a group member would assign themselves to it. Using Github issues rather than other tools, was an easy choice for us as it provided the functionality we needed while also minimizing the spread of tools we used, seeing as we also used Github for version control. 
+The typical output of the meetings was an understanding of what tasks needed to
+be carried out and by whom. These tasks would be posted as issues on Github,
+where a group member would assign themselves to it. Using Github issues rather
+than other tools, was an easy choice for us as it provided the functionality we
+needed while also minimizing the spread of tools we used, seeing as we also used
+Github for version control.
 
-The vast majority of the issues were handled independently without pair programming, which is definitely something we should have done in hindsight, as mistakes could have been avoided and knowledge of more intricate details in our program could be shared more conveniently. Although we didn’t define any clear roles for the group members, the lack of pair programming resulted in some intrinsic roles when the issues were perhaps larger than they should have been. Being more consistent with creating smaller issues, could have solved this problem, as multiple people would then have the opportunity of working on the same subsystem. 
+The vast majority of the issues were handled independently without pair
+programming, which is definitely something we should have done in hindsight, as
+mistakes could have been avoided and knowledge of more intricate details in our
+program could be shared more conveniently. Although we didn’t define any clear
+roles for the group members, the lack of pair programming resulted in some
+intrinsic roles when the issues were perhaps larger than they should have been.
+Being more consistent with creating smaller issues, could have solved this
+problem, as multiple people would then have the opportunity of working on the
+same subsystem.
 
-When working on an issue that is some new feature in the project, we created a new branch to work on it in a separate environment. Once the issue was deemed complete, a pull request was made to finally merge the new feature into the master branch. This branching strategy is very much in line with the ‘Topic Branches’ model where branches are short-lived and become merged with the master branch once the feature is working as intended. 
-*TODO - reasoning for branch model
+When working on an issue that is some new feature in the project, we created a
+new branch to work on it in a separate environment. Once the issue was deemed
+complete, a pull request was made to finally merge the new feature into the
+master branch. This branching strategy is very much in line with the ‘Topic
+Branches’ model where branches are short-lived and become merged with the master
+branch once the feature is working as intended. *TODO - reasoning for branch
+model
 
 **Issue tracking / Kanban: Github** Generally speaking we never really put much
 thought into how we would track issues and how we would separate the tasks at
