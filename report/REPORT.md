@@ -370,7 +370,7 @@ have created a Trello board or a Jira project, however with the limited scope of
 the project it seemed extensive to include a whole other system just for task
 management. As previously mentioned we generally tried limiting the number of
 different tools we used, and create a stack with as few different tools as
-possible.
+possible. 
 
 **Evaluation** We definitely had problems with our taskmanagement and ended up
 doing some of the tasks too late, so we definitely had to change our workflow,
@@ -383,64 +383,83 @@ important features by choosing another service, as the problems we had were
 based on structural team problems rather than the tool itself. Having the issues
 closely aligned with the pull-request flow was definitely a helpful feature.
 
-## State of solution
+## Quality Assessment 
+In an evolving IT system, it is important to consider technical debt and the
+quality of the work, as this can inhibit the development speed massively.
+Various automated tools can assess the quality of your software solution, which
+will catch a variety of a generic code-quality problems, as well as suggest
+improvements. Certain problems naturally exist with automated tools - at times
+they will be over sensitive and report errors that are acceptable in context,
+however they will also have miss some structural issues that can be difficult to
+automatically detect.
+
+This chapter will go through how we can assess the quality of our system, both
+automatically but also manually.
 
 We have chosen [BetterCode](https://bettercodehub.com) as our Software Quality
-Assessment Tool and to include in our CI/CD pipeline. With this tool, we can
+Assessment Tool and included it in our CI/CD pipeline. With this tool, we can
 measure the characteristics of system components and then aggregating these
 measurements. The measurements can be used to assess system quality attributes,
 such as maintainability, and system components whose characteristics deviate
 from that.
 
 Other than scoring our quality it also prioritizes the code that we need to work
-on first. BetterCode gave us an 8/10 compliance score.
+on first. BetterCode gave us an 8/10 compliance score, which is good, however
+far from perfect, and signals areas in which improvement should be considered.
 
-![](/report/images/WriteShortsUnitOfCode.png)
+### BetterCode assessments
+The following section goes through the reasoning for the 8/10 score, and covers
+the considerations to be made in relation to our system.
 
-**Write Shorts Unit Of Code**
 
-To get a higher score BetterCode recommends that we take a look at the lines of
-code in each method. The reason being that small methods are easier to
-understand, reuse and test. The picture shows a list of files in which there is
-a method that violates the guideline. It can be also used as a software metric
-and a high amount of lines of code are interesting as it either shows importance
-or not being maintained in a long time. The .sh file is used in our integration
-test to ensure that all components are successfully running. Other than that it
-is mostly files where the configuration is happening or important parts in our
-system. The guideline from BetterCode is at most 15 lines of code in a method.
+#### Write Short Units Of Code
 
-![](/report/images/WriteSimpleUnitsOfCode.png)
+![Output of `write short units of code`](images/WriteShortsUnitOfCode.png)
 
-**Write Simple Units of Code**
+To get a higher score BetterCode recommends that we take a look at LOC(Lines of
+Code) in our methods. [LOC](https://en.wikipedia.org/wiki/Source_lines_of_code)
+is sometimes used as a metric for software complexity, as small methods are
+easier to understand, reuse and test. A large LOC can be an indication of
+importance or complexity, but also methods that have not been mainted for a long
+time.
+
+The picture shows a list of files in which there is a method that violates the
+guideline. The `.sh` file is used in our docker-compose files, to ensure that
+all components are successfully running. The other methods mainly consist of
+configuration methods or important parts in our system. The guideline from
+BetterCode is at most 15 lines of code in a method.
+
+#### Write Simple Units of Code
+![Output of `Write Simple Units of  Once`](images/WriteSimpleUnitsOfCode.png)
 
 The guideline explanation is mainly keeping the number of branch points (if,
 for, while, etc) low. The reason being that it makes units easier to modify and
 test.
 
-Once again it is the same '.sh' that is a rather complex unit. ApiController is
-the that draw the most of our attention as it is part of a component in our
-system. The method in ApiController does not that high of severity which is
-fine.
+Once again it is the same `.sh` that is a rather complex unit. `ApiController`
+is the class that draw the most of our attention as it is part of a component in
+our MiniTwit solution. The highlighted method in `ApiController` does not have
+that high of severity which is fine.
+
+#### Write Code Once
+
+![Output of `Write Code Once`](images/WriteCodeOnce.png)
 
 
-![](/report/images/Write%20Code%20Once.png)
+This is basically the _Don't Repeat yourself_ principal.
 
-**Write Code Once**
-
-This is basically the Don't Repeat yourself principal.
-
-When code is copied, bugs need to fixed in multiple places. Also avoid
+When code is copied, bugs need to fixed in multiple places. Avoid
 duplication by never copy/pasting blocks of code. Instead, do reduce duplication
 by extracting shared code into a new method or class.
 
-At this point we only have two duplicates which BetterCode indicated as being
-fine. This is also one of the more easier things to fix.
+At this point we only have two cases of duplication - this amount is indicated
+to be acceptable by BetterCode. This is also one of the easiest problems to fix.
 
-![](/report/images/Keep%20Unit%20Interfaces%20Small.png)
+#### Keep Unit Interfaces Small
 
-**Keep Unit Interfaces Small**
+![Output of `Keep Unit Interfaces Small`](images/KeepUnitInterfaceSmall.png)
 
-This states that keeping the number of parameters low makes methods easier to
+This states that keeping the number of parameters low, makes methods easier to
 understand and reuse.
 
 One way to improve this is that the number of parameters can be reduced by
@@ -450,12 +469,13 @@ Our most severe is a constructor that creates a TimelineMessage. If we wanted to
 reduce this even further, we can make a new Message class and group related
 parameters in that class.
 
+#### Separate Concerns in Modules
 
-![](/report/images/Separate%20Concerns%20In%20Modules.png)
+![Output of `Separate Concerns in
+Modules`](images/SeparateConcernsInModules.png)
 
-**Separate Concerns in Modules**
 
-It is mainly concerning keeping the codebase loosely coupled, as it makes it
+It is mainly concerned with keeping the codebase loosely coupled, as it makes it
 easier to minimize the consequences of changes.
 
 Identify and extract the responsibilities of large modules to separate modules
@@ -463,29 +483,32 @@ and hide implementation details behind interfaces.
 
 BetterCode is giving us full points for this.
 
+#### Couple Architecture Components Loosely
 
-![](/report/images/Couple%20Architecture%20Components%20Loosely.png)
+![Output of `Couple Architecture Components
+Loosely`](images/CoupleArchitectureComponentsLoosely.png)
 
-**Couple Architecture Components Loosely**
 
-This mainly being that we are having a loose coupling between top-level
-components and that makes it easier to maintain components in isolation. Another
+This focuses on us having a loose coupling between top-level
+components, which makes it easier to maintain components in isolation. Another
 point is that independent components ease isolated maintenance.
 
 
-![](/report/images/Keep%20Architecture%20Components%20Balanced.png)
+#### Keep Architecture Components Balanced
 
-**Keep Architecture Components Balanced**
+![Output of `Keep Architecture Components Balanced`](images/KeepArchitectureComponentsBalanced.png)
 
-This one is about balancing the number and relative size of components makes it
+
+Balancing the number and relative size of components makes it
 easier to locate code. Even though that BetterCode states that we are doing
 fine, we have to keep the number of components between 2 and 12. By doing this,
 it should be easier to find the piece of code that we want to change.
 
 
-![](/report/images/Keep%20Your%20Codebase%20Small.png)
+#### Keep Your Codebase Small
 
-**Keep Your Codebase Small**
+![Output of `Keep Your Codebase Small`](images/KeepYourCodebaseSmall.png)
+
 
 If we keep our codebase small it will improve maintainability, as it takes less
 work to make structural changes in a smaller codebase.
@@ -494,47 +517,58 @@ BetterCode prefers that we use 3rd libraries and frameworks over reinventing the
 wheel. It measures us based on how many years it would take a person, with
 approximate effort, to rebuild our version of MiniTwit.
 
-![](/report/images/Automate%20Tests%20Better%20Code.png)
+#### Automate Tests
 
-**Automate Tests**
+![Output of `Automate Tests`](images/AutomateTestsBetterCode.png)
 
-Having automating tests for our codebase makes development less risky. Based on
+
+Having automating tests for our codebase makes development less risky - it
+reduces the chance of regression, and can also improve readability in that it
+provides clear simple examples of the usage of various components. Based on
 the numbers we could have done lot more of excessive testing. 80% had been more
 acceptable from our side. Another important point is that when we adjust code in
 our system, then the changes should be reflected in the tests as well.
 
-![](/report/images/Write%20Clean%20Code.png)
+#### Write Clean Code
 
-**Write Clean Code**
+![Output of `Write Clean Code`](/images/WriteCleanCode.png)
 
-BetterCode focuses on Code Smells that is coding patterns that hint that a
-problem is present. They state that it improves maintainability because clean
+
+BetterCode highlights Code Smells, which is various coding anti-patterns, that
+can hint at the existence of a problem. They state that it improves maintainability because clean
 code is maintainable code.
 
-Our results being that we have left some Todo comments behind in our code, and
+Our results being that we have left some `TODO` comments in our code, and
 they should be fix or removed if they are outdated.
 
-**Interesting aspects**
+### State Of MiniTwit 
 
-If we take a look at the overall state of our Minitwit, it is dependent on what
-we have chosen to define aspects of quality in which we are interested e.g
-maintainability. The assessment of software quality is a subjective process
-where we have to decide if an acceptable level of quality has been achieved.
-That is if we said we always would strive for having a score of 8/10 and thus
-calling it an acceptable level of quality then maintainability for us, will have
-been achieved.
+The assessment of software quality is a subjective process
+where we have to decide the quality, the metric and an acceptable level of
+quality. Assessing the quality of our system is no exception.
 
-State of the system can also be seen from a security point of view. From our
-security assessment, we realized that we are storing several passwords in our
-source code. The admin password to the database can be found in both our
-docker-compose file, as well as our source code. Additionally, passwords to our
-admin user are visible in the source code, as well as passwords to our logging
-tools. This would, in theory, be acceptable if these can be changed in
-deployment, and regarding the admin user password, if it is possible to change
-via the user interface. This, however, is not the case. That is a huge security
-flaw and can have severe consequences. We should have implemented a
-change-password functionality as well as store all external authorization
-credentials via environmental constants.
+BetterCode essentially focuses on maintainability, which is naturally something
+we deem very important in an agile development team, where we have to move
+quickly and have a high level of transparency. We had not formally agreed, prior
+to looking at these results, what an acceptable level would be. However we deem
+any value of 7 or above acceptable.
+
+The state of the system can also be seen from a security point of view. From our
+security assessment, which is detailed in the [postmortem](../POSTMORTEM.md), we
+realized that we are storing several passwords in our source code. The admin
+password to the database can be found in both our docker-compose file, as well
+as our source code. Additionally, passwords to our admin user are visible in the
+source code, as well as passwords to our logging tools. This would, in theory,
+be acceptable if these can be changed in deployment, and regarding the admin
+user password, if it is possible to change via the user interface. This,
+however, is not the case. That is a huge security flaw and can have severe
+consequences. We should have implemented a change-password functionality as well
+as store all external authorization credentials via environmental constants.
+
+Looking at the state of our system from a security perspective, highlights the
+fact that our system is inadequate. This is definitely the primary focus in any
+future development process had that been the case. We, however, are satisfied
+from a code quality per
                      
                    
 ## Conclusion and evaluation
