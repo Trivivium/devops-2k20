@@ -436,8 +436,8 @@ This mainly being that we are having a loose coupling between top-level componen
 
 **Other interesting aspects**
 
-If we take a look at the overall maintainability of our Minitwit, it is dependent on 
-We have chosen to define aspects of quality in which we are interested e.g maintainability. 
+If we take a look at the overall state of our Minitwit, it is dependent on 
+what we have chosen to define aspects of quality in which we are interested e.g maintainability. 
 The assessment of software quality is a subjective process where 
 we have to decide if an acceptable level of quality has been achieved.
 That is if we said we always would strive for having a score of 8/10 and thus calling it an acceptable
@@ -455,9 +455,8 @@ That is a huge security flaw and can have severe consequences. We should have
 implemented a change-password functionality as
 well as store all external authorization credentials via environmental
 constants.
-                                                                                     
-
-
+                     
+                   
 ## Conclusion and evaluation
 *TODO - biggest issues, major lessons we have learned, overall takeaways,
 fuckups etc. regarding:*
