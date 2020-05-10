@@ -648,8 +648,8 @@ had to move the database to a dedicated area and redo the backup process.
 As the number of requests and users from the simulator increased, we run out of
 space, thus we missed some data. As a quick fix, we did a docker system prune
 and successfully reclaimed more than 4GBs. After rescaling our system,
-everything worked fine but we should have planned this in advance. This could been anticipated with more
-excessive infrastructure monitoring.
+everything worked fine but we should have planned this in advance. This could been 
+anticipated with more excessive infrastructure monitoring.
 
 #### Continuous integration observations
 Due to the continuous integration stage of our pipeline running integration tests
@@ -676,4 +676,13 @@ based on structural team problems rather than the tool itself. Having the issues
 closely aligned with the pull-request flow was definitely a helpful feature.
 
 # Conclusion
-_TODO short text summarizing on the evaluation to bind the whole report together_
+ITU MiniTwit project gave us an excellent basis for learning and acquiring devops skills.
+From system refactoring at the very beginning to writing technical documentation it
+was challenging and very interesting experience. Working on it, we went through many
+real life problems, both in devops area and team organization. We would like to emphasize
+that this was a whole new experience to most of us. Regarding that, we gave our best efforts
+in order to fulfill all the requirements every week. Sometimes, solutions were ad hoc, but
+most of the time we approached systematically with clearly set procedures. We are aware that
+our solution is not perfect, but we learned from our mistakes and that gave us the biggest value.
+Last but not least, working in the environment like this, using cutting-edge tools and technology
+helped and provided us with broad knowledge that we can start using immediately.
