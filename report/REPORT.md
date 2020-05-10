@@ -495,17 +495,6 @@ management. As previously mentioned we generally tried limiting the number of
 different tools we used, and create a stack with as few different tools as
 possible.
 
-**Evaluation** We definitely had problems with our taskmanagement and ended up
-doing some of the tasks too late, so we definitely had to change our workflow,
-and would have if we could do it over. I think the main issue was that we didn't
-consult the issue list often enough, and possibly didn't put deadlines on, as
-well as not assigning people to issues. Ideally we should probably have improved
-our overall development process earlier on, but this is covered in the [Post
-Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
-important features by choosing another service, as the problems we had were
-based on structural team problems rather than the tool itself. Having the issues
-closely aligned with the pull-request flow was definitely a helpful feature.
-
 ## State of solution
 
 _TODO - current state of our system, results of static analysis and code quality
@@ -603,6 +592,18 @@ For the first month, we didn't implement any sort of great logging that would hi
 
 #### Losing the database volume when migrating to Docker Swarm
 When we went from normal docker to docker swarm mode, we somehow didn't use the same database volume. This is probably because the naming of volumes are prefixed with the context of which it is created in docker-compose, which we utilize. This meant that docker created a new volume, and we didn't really check this. Without active monitoring of our logging software we weren't fully aware that users were dropped and therefore didn't see the error. Also we didn't go through the system thoroughly after the migration, so we didn't realize that something was wrong until a few days later. We then had new users in the new database and old in the old. Naturally we should have created a backup, even though this wasn't an issue it would have been a good idea. Additionally we should have done some quick tests to validate that the production database wasn't empty (by checking whether the feed was empty on the website). This would have done a lot and made it easy to fix and mount the correct volume. An other thing that would have helped was setting up chatops. Having the error log not sent to a specific developer by email but rather in a chat we all had access too, would have helped. Additionally we could have monitored the monitoring and logs as well easily and created various triggers (the amount of 4XX errors presumably increased afterwards, which would have been nice to know, even those these are not normally errors we are concerned with as they are not uncaught exceptions).
+
+#### Github issues
+We definitely had problems with our taskmanagement and ended up
+doing some of the tasks too late, so we definitely had to change our workflow,
+and would have if we could do it over. I think the main issue was that we didn't
+consult the issue list often enough, and possibly didn't put deadlines on, as
+well as not assigning people to issues. Ideally we should probably have improved
+our overall development process earlier on, but this is covered in the [Post
+Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
+important features by choosing another service, as the problems we had were
+based on structural team problems rather than the tool itself. Having the issues
+closely aligned with the pull-request flow was definitely a helpful feature.
 
 ### 3. Maintenance
 
