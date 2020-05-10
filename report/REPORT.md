@@ -384,8 +384,78 @@ based on structural team problems rather than the tool itself. Having the issues
 closely aligned with the pull-request flow was definitely a helpful feature.
 
 ## State of solution
-*TODO - current state of our system, results of static analysis and code quality
-assessment, add security assessment too*
+
+We have chosen [BetterCode](https://bettercodehub.com) as our Software Quality Assessment Tool and to include in 
+our CI/CD pipeline.
+With this tool, we can measure the characteristics of system components and then aggregating these measurements. The measurements can
+be used to assess system quality attributes, such as maintainability, and system components whose 
+characteristics deviate from that.
+
+Other than scoring our quality it also prioritizes the code that we need to work on first. 
+BetterCode gave us an 8/10 compliance score. 
+
+![](/report/images/WriteShortsUnitOfCode.png)
+
+**Write Shorts Unit Of Code**
+
+To get a higher score BetterCode recommends that we take a look at the lines of code in each method.
+The reason being that small methods are easier to understand, reuse and test.
+The picture shows a list of files in which there is a method that violates the guideline.
+It can be also used as a software metric and a high amount of lines of code are interesting as it either shows importance or not being maintained in a long time.
+The .sh file is used in our integration test to ensure that all components are successfully running.
+Other than that it is mostly files where the configuration is happening or important parts in our system.
+The guideline from BetterCode is at most 15 lines of code in a method.
+
+![](/report/images/WriteSimpleUnitsOfCode.png)
+
+**Write Simple Units of Code**
+
+The guideline explanation is mainly keeping the number of branch points (if, for, while, etc) low. The reason being that it makes units easier
+to modify and test.
+
+Once again it is the same '.sh' that is a rather complex unit. ApiController is the that draw the most of our attention
+as it is part of a component in our system. The method in ApiController does not that high of severity which is fine.
+
+![](/report/images/Separate%20Concerns%20In%20Modules.png)
+
+**Separate Concerns in Modules**
+
+It is mainly concerning keeping the codebase loosely coupled, as it makes it easier to minimize the consequences of changes.
+
+Identify and extract the responsibilities of large modules to separate modules and hide implementation details behind interfaces.
+
+BetterCode is giving us full points for this. 
+
+
+![](/report/images/Couple%20Architecture%20Components%20Loosely.png)
+
+**Couple Architecture Components Loosely**
+
+This mainly being that we are having a loose coupling between top-level components and that makes it easier to maintain components in isolation.
+
+
+**Other interesting aspects**
+
+If we take a look at the overall maintainability of our Minitwit, it is dependent on 
+We have chosen to define aspects of quality in which we are interested e.g maintainability. 
+The assessment of software quality is a subjective process where 
+we have to decide if an acceptable level of quality has been achieved.
+That is if we said we always would strive for having a score of 8/10 and thus calling it an acceptable
+level of quality then maintainability for us, will have been achieved.
+
+State of the system can also be seen from a security point of view. From our security assessment,
+we realized that we are storing several passwords in our source code. The admin
+password to the database can be found in both our docker-compose file, as well
+as our source code. Additionally, passwords to our admin user are visible in the
+source code, as well as passwords to our logging tools. 
+This would, in theory, be acceptable if these can be changed in deployment, and
+regarding the admin user password, if it is possible to change via the user
+interface. This, however, is not the case.
+That is a huge security flaw and can have severe consequences. We should have 
+implemented a change-password functionality as
+well as store all external authorization credentials via environmental
+constants.
+                                                                                     
 
 
 ## Conclusion and evaluation
