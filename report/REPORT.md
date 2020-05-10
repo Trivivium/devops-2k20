@@ -416,6 +416,30 @@ to modify and test.
 Once again it is the same '.sh' that is a rather complex unit. ApiController is the that draw the most of our attention
 as it is part of a component in our system. The method in ApiController does not that high of severity which is fine.
 
+
+![](/report/images/Write%20Code%20Once.png)
+
+**Write Code Once**
+
+This is basically the Don't Repeat yourself principal.
+
+When code is copied, bugs need to fixed in multiple places. Also avoid duplication by never copy/pasting blocks of code.
+Instead, do reduce duplication by extracting shared code into a new method or class.
+
+At this point we only have two duplicates which BetterCode indicated as being fine. This is also one of the more easier things to fix.
+
+![](/report/images/Keep%20Unit%20Interfaces%20Small.png)
+
+**Keep Unit Interfaces Small**
+
+This states that keeping the number of parameters low makes methods easier to understand and reuse.
+
+One way to improve this is that the number of parameters can be reduced by grouping related parameters into objects.
+
+Our most severe is a constructor that creates a TimelineMessage. If we wanted to reduce this even further, we can make a
+new Message class and group related parameters in that class.
+
+
 ![](/report/images/Separate%20Concerns%20In%20Modules.png)
 
 **Separate Concerns in Modules**
@@ -432,9 +456,47 @@ BetterCode is giving us full points for this.
 **Couple Architecture Components Loosely**
 
 This mainly being that we are having a loose coupling between top-level components and that makes it easier to maintain components in isolation.
+Another point is that independent components ease isolated maintenance. 
 
 
-**Other interesting aspects**
+![](/report/images/Keep%20Architecture%20Components%20Balanced.png)
+
+**Keep Architecture Components Balanced**
+
+This one is about balancing the number and relative size of components makes it easier to locate code. 
+Even though that BetterCode states that we are doing fine, we have to keep the number of components between 2 and 12.
+By doing this, it should be easier to find the piece of code that we want to change.
+
+
+![](/report/images/Keep%20Your%20Codebase%20Small.png)
+
+**Keep Your Codebase Small**
+
+If we keep our codebase small it will improve maintainability, as it takes less work to make 
+structural changes in a smaller codebase.
+
+BetterCode prefers that we use 3rd libraries and frameworks over reinventing the wheel.
+It measures us based on how many years it would take a person, with approximate effort, to rebuild our version of MiniTwit.
+
+![](/report/images/Automate%20Tests%20Better%20Code.png)
+
+**Automate Tests**
+
+Having automating tests for our codebase makes development less risky. 
+Based on the numbers we could have done lot more of excessive testing. 80% had been more acceptable from our side.
+Another important point is that when we adjust code in our system, then the changes should be reflected in the tests as well.
+
+![](/report/images/Write%20Clean%20Code.png)
+
+**Write Clean Code**
+
+BetterCode focuses on Code Smells that is coding patterns that hint that a problem is present.
+They state that it improves maintainability because clean code is maintainable code.
+
+Our results being that we have left some Todo comments behind in our code, and they should be fix or removed if they are
+outdated.
+
+**Interesting aspects**
 
 If we take a look at the overall state of our Minitwit, it is dependent on 
 what we have chosen to define aspects of quality in which we are interested e.g maintainability. 
