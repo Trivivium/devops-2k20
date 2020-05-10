@@ -264,23 +264,6 @@ The use of containers does add some constraints on the architecture of the
 application with regards to scaling (e.g., horizontal scaling requires
 statelessness).
 
-## System Description
-
-_TODO - design and architecture of our ITU-MiniTwit system_
-
-### Monitoring
-
-_TODO - What do we monitor in our system_
-
-### Logging
-
-_TODO - what do we log and how we aggregate it_
-
-### Scaling and load balancing
-
-_TODO - Which strategy did we use for scaling and load balancing (ie. vertical
-vs. horizontal scaling)_
-
 ## CI/CD Pipeline
 
 Having a strong CI/CD pipeline is a crucial development step in an agile
