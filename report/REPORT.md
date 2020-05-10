@@ -869,5 +869,10 @@ that this was a whole new experience to most of us. Regarding that, we gave our 
 in order to fulfill all the requirements every week. Sometimes, solutions were ad hoc, but
 most of the time we approached systematically with clearly set procedures. We are aware that
 our solution is not perfect, but we learned from our mistakes and that gave us the biggest value.
+Utilizing the various tools gave us an adequate understanding of them to be able to consider 
+their relevance in future projects. We probably won't be setting up the tools to this extend in
+our future projects, rather we would probably use some out-of-the-box solutions, depending
+on the project at hand, however it was an interesting experience, and gave us an 
+understanding of their inner workings and intentions.
 Last but not least, working in the environment like this, using cutting-edge tools and technology
 helped and provided us with broad knowledge that we can start using immediately.
