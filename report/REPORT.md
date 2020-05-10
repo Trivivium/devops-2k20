@@ -118,10 +118,9 @@ possibilities regarding web application frameworks.
 
 We ended up using [.NET Core][prog-1] with C# as it was argued that it was the
 language that most of the group members would be able to write from the start.
-As mentioned a couple of times in previous sections we wanted to focus less on
-the development of the application and more on setting up the DevOps tools and
-processing related to it, so chosing a completely new, and thus challenging
-language wasn't a priority.
+We wanted to focus less on the development of the application and more on
+setting up the DevOps tools and processing related to it, so chosing a
+completely new, and thus challenging language wasn't a priority.
 
 The choice of the C# naturally led us to the usage of the [ASPNET Core][prog-2]
 web framework.This framework provides us with good documentation on authoring
@@ -145,7 +144,7 @@ database system in a production environment. On top of this we had a variety of
 limitations regarding SQLite regarding query efficiency under load and lack of
 features for scaling and backups.
 
-We decided on the user of [Microsoft SQL Server][db-2]. This choice was
+We decided on the use of [Microsoft SQL Server][db-2]. This choice was
 motivated by our prior investment into the .NET ecosystem, and the choice of
 Entity Framework as our ORM solution. The ORM provided a freedom of storage
 solution, however the ORM still sees the SQL Server a first-class supported
@@ -188,7 +187,7 @@ with first-class support for [.NET based integration][mon-4] from Prometheus
 themselves.
 
 To ensure stability it was also important for us that Prometheus uses a
-pull-based model when scraping metrics from the servers. The opporsite solution
+pull-based model when scraping metrics from the servers. The opposite solution
 of a push-based solution could prove problematic as the amount of data could
 overload the monitoring servers.
 
@@ -340,7 +339,7 @@ user, adding a message, etc.).
 
 The unit tests are focused around the service classes, which implements the
 business logic related to the functionality of the system. These tests aims to
-check the "happy-path" where the function succeeds as well as the expec- ted
+check the "happy-path" where the function succeeds as well as the expected
 error paths (i.e., adding a message to an unknown user). The tests are executed
 using the built-in tooling of the dotnet CLI included in the .NET Core SDK.
 
@@ -350,14 +349,14 @@ PR is merged into the master branch.
 #### Integration tests
 
 We wanted to test the API used by the simulator to make sure that this would
-continue to work - Also as this surface is a API it is easier to test than a
+continue to work - Also as this surface is an API it is easier to test than a
 graphical user interface, so we would be able to test all backend functionality
 relatively easy.
 
 The simulator that had to interface with our service was already written in
 python3, so testing if the simulator would be able to work, would, in theory, be
 as simple as running the simulator on a clean database, and see if the simulator
-failed. It would still have to be rewritten a bit though
+failed. It would still have to be rewritten a bit though.
 
 As a member of our team has worked with python professionally for multiple years
 he proposed he would convert it into unit tests. This made it somewhat easy to
@@ -365,7 +364,7 @@ isolate where errors occurred if something failed within this tester.
 
 ### Continuous Delivery
 
-When new commits enters the master branch, we needs to update the production
+When new commits enter the master branch, we needs to update the production
 server. The alternative would be to manually connect to the production
 environment and pull the newest version of the system. This takes time and is
 error prone, therefore this flow is automated. This is, in our case, done by
@@ -438,8 +437,8 @@ As Covid-19 progressed, ITU closed down, and gatherings became rightfully
 frowned upon which forced us to settle for the suboptimal approach of talking
 over Zoom. While the content of these meetings were almost identical to that of
 our physical meetings, the overhead of technical issues involving subpar
-microphones and a internet connections made these meetings far less efficient.
-These meetings over Zoom took place approximately once every week. Meetings over
+microphones and internet connections made these meetings far less efficient.
+These meetings over Zoom took place approximately once per week. Meetings over
 Zoom weren’t always necessary, which is why we also used Slack to keep each
 other updated on progress on issues as well as to ask for consent to make
 changes to the system or to ask for help.
@@ -491,14 +490,14 @@ inconveniences.
 
 ### Application Development
 During the development of the application we encountered a couple of issues that should
-have been migitated as researched beforehand, and a couple of noticeable features could
+have been mitigated as researched beforehand, and a couple of noticeable features could
 use some improvements to increase ease of development.
 
 #### Use of SQLite during development
 The first issue encounted was the use of SQLite for local development. Due to the overhead
 of building and orchestrating containers every time the developer wanted to debug the
 application we had intially decided to use SQLite. This choice worked well for the intended
-purpose, but did prove to be a source of error. The issue stems from the fact that SQLite
+purpose, but did prove to be a source of errors. The issue stems from the fact that SQLite
 lacks some of the features related to constraints which the fully-fletched database server 
 had. Thus when the developer tested any changes made the SQLite provider would be more
 permissive than the production environment. We encountered this exact issue early on and
@@ -532,8 +531,8 @@ more involved than a managed solution in terms of manual work, than many of the
 managed alternatives, but it provided us with invaluable learning opportunities.
 The setup process was interesting and we were able to learn various things about
 the inner workings of docker, however it did leave space for the potential for
-errors in critical components of the application; some of which we encountered
-(TODO link to database deletion fuckup).
+errors in critical components of the application, such as
+[database deletion](https://github.com/Trivivium/devops-2k20/issues/50).
 
 In accordance with our prior interest in Docker the choice of Docker Swarm was a
 natural extension of this. The main hurdles encountered is the isolated knowledge
@@ -549,7 +548,7 @@ which Docker Swarm simplifies greatly.
 
 Due to hurdles and errors encountered, we would probably use a service provider
 for this instead, in other cases. Be it Heroku, AWS or Azure, they all provide a
-great ecosystem for these things, and reduce the risk of errors, and reduces
+great ecosystem for these things, and reduce the risk of errors, and reduce
 configuration time. This is naturally a tradeoff, and depends on the context in
 which the development is taking place - having full control of your stack does
 have it's advantages, however in projects of this size and type, it provides a
@@ -572,7 +571,7 @@ Windows.
 #### Exceptions
 We didn't have exception logging from when the application intially launched.
 This meant that we had a couple of days with downtime once in a while, without 
-realizing it till it was too late. As mentioned previously ended we up utilizing 
+realizing it till it was too late. As mentioned previously we ended up utilizing 
 Sentry.io to solve this problem. However we had already missed a lot of user
 registrations when the simulator started. This had the consequence of us 
 receiving many more errors due to the simulator attempting to create messages for
@@ -599,8 +598,8 @@ containers, and testing the authentication works after deployment when we are wo
 with stateless sessions (which ASPNET Core is per default).
 
 #### Storing database data inside containers
-Much like the previous issue did we have an issue with the persistence of database data. 
-The SQL Server image we used stored the data files of the database inside the container
+Much like the previous issue, we had an issue with the persistence of database data. 
+The SQL Server image we used, store the data files of the database inside the container
 per default. This wasn't an issue as long as the container wasn't removed since it was 
 configured to persist during restarts. However, this did become an issue when moving to
 Docker Swarm as that would provision a new container. 
@@ -628,7 +627,7 @@ didn't have any automated testing in place for this scenario. An other measure t
 have helped was setting up chatops. Having the error log not being sent to a specific 
 developer by email but rather in a chat we all had access too, would have helped. 
 Additionally we could have monitored the monitoring and logs as well easily and created
-various triggers. An exampel of a trigger would be monitoring the the amount of 4xx 
+various triggers. An example of a trigger would be monitoring the amount of 4xx 
 HTTP responses that presumably would have increased afterwards.
 
 #### Database Backups
