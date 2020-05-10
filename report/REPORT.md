@@ -627,7 +627,7 @@ our system, then the changes should be reflected in the tests as well.
 
 #### Write Clean Code
 
-![Output of `Write Clean Code`](/images/WriteCleanCode.png)
+![Output of `Write Clean Code`](images/WriteCleanCode.png)
 
 
 BetterCode highlights Code Smells, which is various coding anti-patterns, that
