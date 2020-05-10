@@ -495,9 +495,9 @@ have been migitated as researched beforehand, and a couple of noticeable feature
 use some improvements to increase ease of development.
 
 #### Use of SQLite during development
-The first issue encounted was the use of SQLite for local development. Due to the overhead
+The first issue encountered was the use of SQLite for local development. Due to the overhead
 of building and orchestrating containers every time the developer wanted to debug the
-application we had intially decided to use SQLite. This choice worked well for the intended
+application we had initially decided to use SQLite. This choice worked well for the intended
 purpose, but did prove to be a source of error. The issue stems from the fact that SQLite
 lacks some of the features related to constraints which the fully-fletched database server 
 had. Thus when the developer tested any changes made the SQLite provider would be more
@@ -570,7 +570,7 @@ proved to be a comfortable environment for the group members used to working in
 Windows.
 
 #### Exceptions
-We didn't have exception logging from when the application intially launched.
+We didn't have exception logging from when the application initially launched.
 This meant that we had a couple of days with downtime once in a while, without 
 realizing it till it was too late. As mentioned previously ended we up utilizing 
 Sentry.io to solve this problem. However we had already missed a lot of user
@@ -606,7 +606,7 @@ configured to persist during restarts. However, this did become an issue when mo
 Docker Swarm as that would provision a new container. 
 
 The group solved this by moving the data files and transaction logs to a mounted Docker
-volume as described in the offical documentation for the image. The key learning here is
+volume as described in the official documentation for the image. The key learning here is
 the importance of knowing how the database data is persisted, and options available to
 handle this.
 
@@ -628,7 +628,7 @@ didn't have any automated testing in place for this scenario. An other measure t
 have helped was setting up chatops. Having the error log not being sent to a specific 
 developer by email but rather in a chat we all had access too, would have helped. 
 Additionally we could have monitored the monitoring and logs as well easily and created
-various triggers. An exampel of a trigger would be monitoring the the amount of 4xx 
+various triggers. An example of a trigger would be monitoring the the amount of 4xx 
 HTTP responses that presumably would have increased afterwards.
 
 #### Database Backups
@@ -649,7 +649,8 @@ had to move the database to a dedicated area and redo the backup process.
 As the number of requests and users from the simulator increased, we run out of
 space, thus we missed some data. As a quick fix, we did a docker system prune
 and successfully reclaimed more than 4GBs. After rescaling our system,
-everything worked fine but we should have planned this in advance.
+everything worked fine but we should have planned this in advance. This could been anticipated with more
+excessive infrastructure monitoring.
 
 #### Continuous integration observations
 Due to the continuous integration stage of our pipeline running integration tests
