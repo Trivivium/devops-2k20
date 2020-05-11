@@ -316,14 +316,15 @@ aspects of the MinitTwit application.
 
 ![Class Diagram](./images/class_diagram.png)
 
-Looking at the diagram some noticeable classes include the controllers _ApiController_ 
+Looking at the diagram some noticeable classes include the controllers: _ApiController_ 
 and _TimelineController_. The former handles all interaction with the simulator, while 
 the latter handles the primary functions of the server-rendered HTML pages. The diagram
-also include services classes responsible for the users and the timeline. These implement
-the business logic, and communicates with the _DatabaseContext_ class to persist data
-to the database. Another interesting the _ActionLoggerAttribute_ defined in the
-_Extensions_ namespace. This classes is instrumental in collecting usage metrics and
-information logged to Kibana through the structured logging library Serilog.
+also include service classes responsible for the user related features (e.g., creating
+and followers) and the timeline service related to message creation and flagging. These 
+services implement the business logic, and communicates with the _DatabaseContext_ class 
+to persist data to the database. Another interesting class is the _ActionLoggerAttribute_
+defined in the _Extensions_ namespace. This classes is instrumental in collecting usage
+metrics and information logged to Kibana through the structured logging library Serilog.
 
 ## Monitoring & Logging Strategies
 
