@@ -2,24 +2,31 @@
 
 This document is the final report of Group b (2k20 MSc) for the _DevOps,
 Software Evolution and Software Maintenance_ course at IT University of
-Copenhagen, held in spring 2020. It will detail the process of migrating the
-Minitwit platform (a really simple social network similar to Twitter),
-refactoring of its system, major devops tasks we have done throughout the
-course, our team and repository organization and strategies. Report is divided
-by sections, not by the timeline, so the reader can get better overview of our
-work. We also argued for the choice of technologies and decisions we had made.
-At the end of the document, we give a summary of what were our biggest issues
-and challenges, what we have learned out of that and what could have done
-better.
+Copenhagen, held in spring 2020. The course revolved around a simple social
+network inspired by Twitter, called MiniTwit, written in the
+[flask](https://flask.palletsprojects.com/en/1.1.x/) framework in python. This
+process comprised of migrating and refactoring of the system as well as the
+implementation and configuration of various DevOps tools. This report focuses on
+the tools used and the reason for this, as well as the development practices
+undertaken. It is expected that the reader knows the basic expectation of the
+course and the goals - this report focuses not on the timeline nor overall order
+of actions, but rather the specific choices and the reason for those choices -
+additionally we will reflect on the choices, both regarding the effects it had
+on this project as well as the takeaways we were left with regarding future projects.
+The report first presents the technical stack, i.e the tools and services
+utilized, whereafter it goes through our development practices and the concrete
+way these tools fitted into this context. Lastly we evaluate on all these
+choices and tie it all together in a conclusion that, in broad terms, paints a
+picture of the takeaways we were left with as a result of this course.
 
 ## Technology Stack
 
-The MiniTwit solution is only a small part of the system, which consists of
-various tools and utilities that improve the development flow, monitoring,
-logging and performance of the MiniTwit application. The following diagram, and
-sections shows how these services fit together and form the architecture
-surrounding the solution. The diagram shows the type of connections, as well as
-any relevant comment to that connection.
+The MiniTwit solution is only a small part of the developed system, which
+consists of various tools and utilities that improve the development flow,
+monitoring, logging and performance of the MiniTwit application. The following
+diagram, and sections shows how these services fit together and form the
+architecture surrounding the solution. The diagram shows the type of
+connections, as well as any relevant comment to that connection.
 
 ![Deployment Diagram](./images/deployment_diagram.png)
 
@@ -177,7 +184,7 @@ group members comfortable with relational databases.
 
 The database itself, is mounted in a docker volume, to provide persistence even
 upon a crash or restart, which normally would not be the case as containers are
-non persistant.
+non persistant by design.
 
 [db-1]: https://www.sqlite.org/index.html
 [db-2]: https://www.microsoft.com/en-us/sql-server/sql-server-2019
@@ -265,9 +272,8 @@ Having been through all the technologies used in the application we end the
 chapter with an overview of how these tools fit together.
 
 The software solution had a variety of dependencies, both on various packages
-and libraries, but also on external services that, would they crash, would crash
-our service. The following diagram shows the relations between them and any
-external services they rely on.
+and libraries, but also on external services that our system relied on. The
+following diagram shows these relations.
 
 ![Dependency Diagram](./images/dependency_graph.png)
 
@@ -275,13 +281,11 @@ A noticeable omission from the diagram is the technologies related to
 containerization and the technologies supporting that (i.e., the operating
 system). These has been omitted since they're a prerequisite of the entire
 application, but doesn't play a role in the functionality of the application.
-The use of containers does add some constraints on the architecture of the
-application with regards to scaling (e.g., horizontal scaling requires
-statelessness).
 
-## Monitoring & Logging Strategies 
+## Monitoring & Logging Strategies
+
 There is a large variety of ways to utilize both monitoring and logging. This
-section will focus on how we did this.
+section will focus on how we did this, and for what reasons.
 
 ### Monitoring
 
@@ -289,31 +293,37 @@ section will focus on how we did this.
 
 Our way of monitoring was proactive with Prometheus collecting metrics and
 Grafana for the overview through a dashboard. It was more application-centric
-where we measured response times, the number of HTTP requests in total and
-whether the application was up. Primarily, the focus was on the SLA and
-maintaining the requirements.
+where we measured:
+
+- response times
+- the number of HTTP requests in total
+- whether the application was up.
+
+Primarily, the focus was on the [SLA](../SLA.md) and comply with the
+requirements we set forth.
 
 Whitebox monitoring was also useful to us as it enabled us to focus on what's
-inside the system. We exposed the metrics that we wanted to and then Prometheus
-would pull the metrics to our monitoring/logging server. We made an extra metric
-that would count requests for each endpoint and return which method that had
-been called. In a real-life system, it is proven useful to know which page or
-part of the system that gets visited the most. We used active monitoring to
-determine whether our system was up or down. Active monitoring also enabled us
-to actively validate the SLA that we had set.
-
-Retrospectively, an approach that combined both passive and active monitoring
-would have offered the highest degree of quality assurance because issues would
-then be detected in real-time. Furthermore, another thing we deemed we should
-have done more in-depth was infrastructure monitoring, as we experienced
-problems concerning disk space on our server. Consequently, we experienced fatal
-errors.
+inside the system. We exposed the metrics that we wanted, and utilized
+Prometheus to pull these metrics into our monitoring/logging system. We made an
+extra metric that would count requests for each endpoint and return which method
+that had been called. In a real-life system, it is proven useful to know which
+page or part of the system that gets visited the most for a variety of reasons.
+It can give insight in how the system is used, but also potential bottlenecks
+and areas where performance improvements are of higher importance. We used
+active monitoring to determine whether our system was up or down. Active
+monitoring also enabled us to actively validate our SLA compliance.
 
 ### Logging
 
+The following image show a screenshot of the available information exposed by Kibana.
+On the top we can see the total amount of requests over time, where each block
+symbolizes a 3 hour timeslot. Below we can see a live timeline of events logged
+in the system. Worth noting is the powerful querying engine that is accessible
+in the left side of the screen. This makes it easy to find specific entries
+throughout recorded history.
+
 ![Kibana Monitoring](./images/Kibana_Logging.png)
 
-The image illustrates the view of what our logging looks like in Kibana.
 
 The logs were sent from our application to ElasticSearch that is on our other
 server.
@@ -334,22 +344,19 @@ We made the minimum level for log event processing to
 which means it describes things that happened in the system which corresponded
 to its responsibilities and function.
 
-Our experience was that we did not quite the amount of help needed to go
-in-depth and reasoning for each error.
-
-We then used Sentry.io for more focused error logging and would receive an
-e-mail if an error did occur.
+The exposed information, however, was insufficient to do error logging, and find
+fully understand both stacktraces and extract the required information to
+reproduce and solve errors. This could presumably be configured, however we chose
+to use [Sentry.io](https://sentry.io/welcome/) for error logging. Sentry.io
+provides a great level of information and provides an easily viewable
+stacktrace. Additionally we had various things like email notification
+out-of-the-box. This provided a large set of capabilities without spending too
+much time on setup.
 
 ![Sentry Logging](./images/Sentryio_logging.png)
 
-We ended up having Kibana for event logging and Sentry.io for error logging.
+We ended up utilizing Kibana for event logging and Sentry.io for error logging.
 
-Retrospectively, if we wanted to have gotten more insight in understanding what
-was happening we could have set the minimum level for log event processing to
-Debug which would reveal internal system events that are not necessarily
-observable from the outside, but useful when determining how something happened.
-Consequently, our logs would then be noisier, but eventually we would have
-uncovered relevant data regarding the system.
 
 ## Development practices
 
@@ -750,8 +757,6 @@ Looking at the state of our system from a security perspective, highlights the
 fact that our system is inadequate. This is definitely the primary focus in any
 future development process had that been the case. We, however, are satisfied
 from a code quality perspective.
-  
-
 
 ## Evaluation
 
@@ -802,6 +807,11 @@ secrets (for production) and ASPNET Core secrets (for development) would provide
 means to store these separately from the code.
 
 ### Operation
+This section focuses on the operational level of the system, and what we learned
+from this. This entails the production environment and monitoring/logging of
+these things, as well as the setup of these things. Overall, these are the
+things we had the lowest level of prior understanding of, making it one of the
+most interesting learning experiences.
 
 #### Containerization
 
@@ -952,6 +962,23 @@ The CI pipeline also currently creates a Github release before the solution has
 been built and tested. This has introduced the chance of a release with errors
 being available. The key learning opportunity here is the importance of ensure
 the different steps of the pipeline runs in the correct logical order.
+
+#### Monitoring
+
+Retrospectively, an approach that combined both passive and active monitoring
+would have offered the highest degree of quality assurance because issues would
+then be detected in real-time. Furthermore, another thing we deemed we should
+have done more in-depth was infrastructure monitoring, as we experienced
+problems concerning disk space on our server. Consequently, we experienced fatal
+errors.
+
+#### Logging
+Retrospectively, if we wanted to have gotten more insight in understanding what
+was happening we could have set the minimum level for log event processing to
+Debug which would reveal internal system events that are not necessarily
+observable from the outside, but useful when determining how something happened.
+Consequently, our logs would then be noisier, but eventually we would have
+uncovered relevant data regarding the system.
 
 #### Github issues
 
