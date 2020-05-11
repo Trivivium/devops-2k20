@@ -2,40 +2,47 @@
 
 This document is the final report of Group b (2k20 MSc) for the _DevOps,
 Software Evolution and Software Maintenance_ course at IT University of
-Copenhagen, held in spring 2020. It will detail the process of migrating the
-Minitwit platform (a really simple social network similar to Twitter),
-refactoring of its system, major devops tasks we have done throughout the
-course, our team and repository organization and strategies. Report is divided
-by sections, not by the timeline, so the reader can get better overview of our
-work. We also argued for the choice of technologies and decisions we had made.
-At the end of the document, we give a summary of what were our biggest issues
-and challenges, what we have learned out of that and what could have done
-better.
+Copenhagen, held in spring 2020. The course revolved around a simple social
+network inspired by Twitter, called MiniTwit, written in the
+[flask](https://flask.palletsprojects.com/en/1.1.x/) framework in python. This
+process comprised of migrating and refactoring of the system as well as the
+implementation and configuration of various DevOps tools. This report focuses on
+the tools used and the reason for this, as well as the development practices
+undertaken. It is expected that the reader knows the basic expectation of the
+course and the goals - this report focuses not on the timeline nor overall order
+of actions, but rather the specific choices and the reason for those choices -
+additionally we will reflect on the choices, both regarding the effects it had
+on this project as well as the takeaways we were left with regarding future projects.
+The report first presents the technical stack, i.e the tools and services
+utilized, whereafter it goes through our development practices and the concrete
+way these tools fitted into this context. Lastly we evaluate on all these
+choices and tie it all together in a conclusion that, in broad terms, paints a
+picture of the takeaways we were left with as a result of this course.
 
 ## Technology Stack
 
-The MiniTwit solution is only a small part of the system, which consists of
-various tools and utilities that improve the development flow, monitoring,
-logging and performance of the MiniTwit application. The following diagram, and
-sections shows how these services fit together and form the architecture
-surrounding the solution. The diagram shows the type of connections, as well as
-any relevant comment to that connection.
+The MiniTwit solution is only a small part of the developed system, which
+consists of various tools and utilities that improve the development flow,
+monitoring, logging and performance of the MiniTwit application. The following
+diagram, and sections shows how these services fit together and form the
+architecture surrounding the solution. The diagram shows the type of
+connections, as well as any relevant comment to that connection.
 
 ![Deployment Diagram](./images/deployment_diagram.png)
 
 The following sections seek describe what each of these do, with reasoning for
 the inclusion. The chapter ends with an overview of the dependencies during
 design-time, and how they relate to each other and external services implicitly
-required for them to function. The chapter is structured in way that seeks to
+required for them to function. The chapter is structured in a way that seeks to
 describe the foundation of all our technologies and ending with external tools
 used in the production environment of the application.
 
 ### Hosting
 
-The application is required to have a publically available IP address. Therefore
+The application is required to have a publicly available IP address. Therefore
 we needed a hosting provider for the production environment. The course
 presented [Digital Ocean][host-1] as an option, and as a couple of us had prior
-experience with the service we choose this solution. The prior experience, along
+experience with this service we choose this solution. The prior experience, along
 with the option to utilize the [Github Student Developer Pack][host-2] for free
 credits, meant we had confidence in that decision.
 
@@ -67,10 +74,10 @@ requires us to incur some downtime when the droplet is upgraded.
 For the operating system of the application droplet we decided on Ubuntu 18.04.3
 LTS. It was important for us to use a version with long-term support (LTS) as it
 helps us ensure stability and reliability as well as active support should bugs
-or security vulnerabilties surfaced during the course.
+or security vulnerabilities surfaced during the course.
 
 We wanted to use a Linux based distribution as it seemed to provide the greatest
-level of learning. Using Windows based virtual machine could provide us a
+level of learning. Using a Windows based virtual machine could provide us a
 graphical user interface and tools, and it would definitely yield some valuable
 learning as well, however it seemed to be a less attractive choice in the
 context of this course and the tools we aimed to utilize. The choice of Ubuntu
@@ -90,7 +97,7 @@ which has broad applicability in other similar technologies, for instance
 Kubernetes.
 
 There are other alternatives to Docker, but it is the primary technology
-supporting containerization and thus an unoffical standard in the business. An
+supporting containerization and thus an unofficial standard in the business. An
 example of an alternative is [Vagrant][container-2] used to provision the
 servers, but we deemed it less attractive as it is a rather heavy-weight
 solution (i.e., entire operating system) in order to gain the same isolation
@@ -105,15 +112,15 @@ didn't invest much time looking into alternatives as Docker Swarm provided all
 the tools necessary with less technical fragmentation, whereas an alternative
 would require new configuration.
 
-As mentioned the aim to horizontally scale the application. We deemed this to be
+As mentioned the aim is to horizontally scale the application. We deemed this to be
 the best solution as the application is more focused on serving multiple clients
 with rather. Each operation doesn't require much CPU time thus the argument for
-increased resources on each nodes seems mute. The use of multiple servers in
+increased resources on each nodes seems moot. The use of multiple servers in
 turn would mean a higher limit to the number simultaneous connections from
 clients.
 
 Using Docker Swarm simplifies the load-balancing aspect of this strategy as
-swarm mode as a built-in balancer for ingress connections, and automatically
+swarm mode has a built-in balancer for ingress connections, and automatically
 distributes the connections between the nodes available using a round-robin
 fashion.
 
@@ -131,10 +138,10 @@ possibilities regarding web application frameworks.
 We ended up using [.NET Core][prog-1] with C# as it was argued that it was the
 language that most of the group members would be able to write from the start.
 We wanted to focus less on the development of the application and more on
-setting up the DevOps tools and processing related to it, so chosing a
+setting up the DevOps tools and processing related to it, so choosing a
 completely new, and thus challenging language wasn't a priority.
 
-The choice of the C# naturally led us to the usage of the [ASPNET Core][prog-2]
+The choice of C# naturally led us to the usage of the [ASPNET Core][prog-2]
 web framework.This framework provides us with good documentation on authoring
 both server-rendered pages and REST APIs. For interaction with the database we
 decided to use an ORM rather than handwritten SQL statements for reasons
@@ -151,7 +158,7 @@ storage solution.
 
 Initially the system utilized [SQLite][db-1], which was the original choice of
 the application before refactoring. However, we wanted to use a more
-full-fletched database in our production environment. This was motivated
+fully-fledged database in our production environment. This was motivated
 primarily by the learning opportunity regarding the operation of a complex
 database system in a production environment. On top of this we had a variety of
 limitations regarding SQLite regarding query efficiency under load and lack of
@@ -160,7 +167,7 @@ features for scaling and backups.
 We decided on the use of [Microsoft SQL Server][db-2]. This choice was motivated
 by our prior investment into the .NET ecosystem, and the choice of Entity
 Framework as our ORM solution. The ORM provided a freedom of storage solution,
-however the ORM still sees the SQL Server a first-class supported database as it
+however the ORM still sees the SQL Server as a first-class supported database as it
 also originates from Microsoft. The column data-types used in T-SQL (which is
 the SQL dialect used in SQL Server) has direct translation to C# types, which
 provides us with confidence in the reliability during materialization of
@@ -168,16 +175,16 @@ database record (e.g., not losing date-time or decimal precision).
 
 We did consider other alternatives of relational databases, but ended up
 deciding on the solution we had most confidence in. Alternatives like
-[PostgreSQL][db-3] and [MySQL][db-4] were very similar, had similiar hardware
+[PostgreSQL][db-3] and [MySQL][db-4] were very similar, had similar hardware
 requirements, and provided no extra relevant functionality. We didn't spend time
-looking into NoSQL solution as we wanted an easy approach when migrating data
+looking into a NoSQL solution as we wanted an easy approach when migrating data
 from the existing SQLite database thus avoiding an ETL process of translating
 the database schema into a NoSQL database. Lastly was the motivation that most
-group members comfortable with relational databases.
+group members were comfortable with relational databases.
 
 The database itself, is mounted in a docker volume, to provide persistence even
 upon a crash or restart, which normally would not be the case as containers are
-non persistant.
+non persistent by design.
 
 [db-1]: https://www.sqlite.org/index.html
 [db-2]: https://www.microsoft.com/en-us/sql-server/sql-server-2019
@@ -193,7 +200,7 @@ a look at [Prometheus's own comparison to alternatives][mon-2] (granted that it
 has a conflict of interests) made us comfortable that it would fit into the
 setup we had planned. Primarily, Prometheus being designed to monitor metrics
 over time, whereas some of the alternatives (e.g., [InfluxDB][mon-3]) is more
-focused towards event logging, or has a less feature complete query languages.
+focused towards event logging, or has less feature complete query languages.
 
 Another aspect, which motivated this decision, was good community support along
 with first-class support for [.NET based integration][mon-4] from Prometheus
@@ -236,7 +243,7 @@ using. The integration story with .NET is also another negative for this
 solution. We found a Github repository for a
 [RedBear.LogDNA](https://github.com/RedBearSys/RedBear.LogDNA) library, but upon
 further study it seemed to not be actively supported with few issues and pull
-requests. And the issues there was mentioned deal-breaking issues related to
+requests. And the issues there were mentioned deal-breaking issues related to
 crashes of the application utilizing the library.
 
 To send structured logs to Elasticsearch we used the .NET based library
@@ -259,29 +266,70 @@ accidentally introduce in our production environment. We could potentially
 extract these from the ELK stack, but this was easy to setup and extract data
 from, making it an ideal choice.
 
-### Dependency Diagram
+### Solution Implementation
 
-Having been through all the technologies used in the application we end the
-chapter with an overview of how these tools fit together.
+Having been through all the technologies used it is still important to see how
+these relate to the solution itself - the MiniTwit application. On top of this,
+it is also important to highlight and explicitly state the structure of the
+created solution.
 
-The software solution had a variety of dependencies, both on various packages
-and libraries, but also on external services that, would they crash, would crash
-our service. The following diagram shows the relations between them and any
-external services they rely on.
+#### Components
+
+The following diagram shows the various internal components of the system. The
+component diagram does not follow UML syntax, however the arrows symbolize an
+dependency relation. The diagram is simple in nature, which is caused by the
+simplicity of the problem as well as the solution to that problem. The system
+didn't have a large level of modularity, so we have a low component count.
+
+![Initial Component Diagram](images/component_diagram.png)
+
+The concerns of the components are as follows:
+
+**API** focuses on the handling of API requests and is the external interface to
+the system. **Views** handles rendering of the website and the various webpages
+through HTML - it is also concerned with any form request made on the website.
+**Authentication** handled user types signup and login functionality. We created
+two user types; administrator and user, where administrator had the possibility
+to flag various messages. **Timeline** handled everything message related - the
+creation and viewing of messages.
+
+#### Dependencies
+
+This, however, only looks at the internal view of the solution. The end solution
+depended on a variety of different external frameworks, packages and services.
+The following diagram shows these relations.
 
 ![Dependency Diagram](./images/dependency_graph.png)
 
 A noticeable omission from the diagram is the technologies related to
 containerization and the technologies supporting that (i.e., the operating
-system). These has been omitted since they're a prerequisite of the entire
-application, but doesn't play a role in the functionality of the application.
-The use of containers does add some constraints on the architecture of the
-application with regards to scaling (e.g., horizontal scaling requires
-statelessness).
+system). These have been omitted since they're a prerequisite of the entire
+application, but don't play a role in the functionality of the application.
+These, however, should be obvious by viewing the Deployment diagram.
 
-## Monitoring & Logging Strategies 
+#### Classes
+
+The concrete implementation is constructed in C# - it being a an object-oriented
+language, means that it makes sense to look at the class diagram, as it shows
+the software implementation itself and how it fits into the different
+aspects of the MinitTwit application.
+
+![Class Diagram](./images/class_diagram.png)
+
+Looking at the diagram some noticeable classes include the controllers: _ApiController_ 
+and _TimelineController_. The former handles all interaction with the simulator, while 
+the latter handles the primary functions of the server-rendered HTML pages. The diagram
+also include service classes responsible for the user related features (e.g., creating
+and followers) and the timeline service related to message creation and flagging. These 
+services implement the business logic, and communicates with the _DatabaseContext_ class 
+to persist data to the database. Another interesting class is the _ActionLoggerAttribute_
+defined in the _Extensions_ namespace. This classes is instrumental in collecting usage
+metrics and information logged to Kibana through the structured logging library Serilog.
+
+## Monitoring & Logging Strategies
+
 There is a large variety of ways to utilize both monitoring and logging. This
-section will focus on how we did this.
+section will focus on how we did this, and for what reasons.
 
 ### Monitoring
 
@@ -289,31 +337,36 @@ section will focus on how we did this.
 
 Our way of monitoring was proactive with Prometheus collecting metrics and
 Grafana for the overview through a dashboard. It was more application-centric
-where we measured response times, the number of HTTP requests in total and
-whether the application was up. Primarily, the focus was on the SLA and
-maintaining the requirements.
+where we measured:
+
+- response times
+- the number of HTTP requests in total
+- whether the application was up.
+
+Primarily, the focus was on the [SLA](../SLA.md) and comply with the
+requirements we set forth.
 
 Whitebox monitoring was also useful to us as it enabled us to focus on what's
-inside the system. We exposed the metrics that we wanted to and then Prometheus
-would pull the metrics to our monitoring/logging server. We made an extra metric
-that would count requests for each endpoint and return which method that had
-been called. In a real-life system, it is proven useful to know which page or
-part of the system that gets visited the most. We used active monitoring to
-determine whether our system was up or down. Active monitoring also enabled us
-to actively validate the SLA that we had set.
-
-Retrospectively, an approach that combined both passive and active monitoring
-would have offered the highest degree of quality assurance because issues would
-then be detected in real-time. Furthermore, another thing we deemed we should
-have done more in-depth was infrastructure monitoring, as we experienced
-problems concerning disk space on our server. Consequently, we experienced fatal
-errors.
+inside the system. We exposed the metrics that we wanted, and utilized
+Prometheus to pull these metrics into our monitoring/logging system. We made an
+extra metric that would count requests for each endpoint and return which method
+that had been called. In a real-life system, it is proven useful to know which
+page or part of the system that gets visited the most for a variety of reasons.
+It can give insight in how the system is used, but also potential bottlenecks
+and areas where performance improvements are of higher importance. We used
+active monitoring to determine whether our system was up or down. Active
+monitoring also enabled us to actively validate our SLA compliance.
 
 ### Logging
 
-![Kibana Monitoring](./images/Kibana_Logging.png)
+The following image shows a screenshot of the available information exposed by Kibana.
+On the top we can see the total amount of requests over time, where each block
+symbolizes a 3 hour timeslot. Below we can see a live timeline of events logged
+in the system. Worth noting is the powerful querying engine that is accessible
+in the left side of the screen. This makes it easy to find specific entries
+throughout recorded history.
 
-The image illustrates the view of what our logging looks like in Kibana.
+![Kibana Monitoring](./images/Kibana_Logging.png)
 
 The logs were sent from our application to ElasticSearch that is on our other
 server.
@@ -334,22 +387,18 @@ We made the minimum level for log event processing to
 which means it describes things that happened in the system which corresponded
 to its responsibilities and function.
 
-Our experience was that we did not quite the amount of help needed to go
-in-depth and reasoning for each error.
-
-We then used Sentry.io for more focused error logging and would receive an
-e-mail if an error did occur.
+The exposed information, however, was insufficient to do error logging, and find
+fully understand both stacktraces and extract the required information to
+reproduce and solve errors. This could presumably be configured, however we chose
+to use [Sentry.io](https://sentry.io/welcome/) for error logging. Sentry.io
+provides a great level of information and provides an easily viewable
+stacktrace. Additionally we had various things like email notification
+out-of-the-box. This provided a large set of capabilities without spending too
+much time on setup.
 
 ![Sentry Logging](./images/Sentryio_logging.png)
 
-We ended up having Kibana for event logging and Sentry.io for error logging.
-
-Retrospectively, if we wanted to have gotten more insight in understanding what
-was happening we could have set the minimum level for log event processing to
-Debug which would reveal internal system events that are not necessarily
-observable from the outside, but useful when determining how something happened.
-Consequently, our logs would then be noisier, but eventually we would have
-uncovered relevant data regarding the system.
+We ended up utilizing Kibana for event logging and Sentry.io for error logging.
 
 ## Development practices
 
@@ -363,7 +412,7 @@ As Covid-19 progressed, ITU closed down, and gatherings became rightfully
 frowned upon which forced us to settle for the suboptimal approach of talking
 over Zoom. While the content of these meetings were almost identical to that of
 our physical meetings, the overhead of technical issues involving subpar
-microphones and a internet connections made these meetings far less efficient.
+microphones and internet connections made these meetings far less efficient.
 These meetings over Zoom took place approximately once every week. Meetings over
 Zoom weren’t always necessary, which is why we also used Slack to keep each
 other updated on progress on issues as well as to ask for consent to make
@@ -395,7 +444,8 @@ new branch to work on it in a separate environment. Once the issue was deemed
 complete, a pull request was made to finally merge the new feature into the
 master branch. This branching strategy is very much in line with the ‘Topic
 Branches’ model where branches are short-lived and become merged with the master
-branch once the feature is working as intended.
+branch once the feature is working as intended. The exact reasoning for this model
+was somewhat coincidental, and happened as a result of the way we used issues.
 
 ### Issue tracking / Kanban: Github
 
@@ -426,7 +476,7 @@ Here is the development diagram with the CI/CD steps highlighted.
 ![Development Flow](./images/development_diagram_ci_highlight.png)
 
 The pipeline is only a small part of the development flow, however, done
-correct, it increases the effectiveness ten-fold.
+correctly, it increases the effectiveness many-fold.
 
 ### Continuous Integration
 
@@ -440,7 +490,7 @@ leaving room for developing features and operations.
 #### Github Actions
 
 Continuous integration required the ability to run a variety of scripts,
-essentially, when ever a new commit enters the repository. We initially looked
+essentially, whenever a new commit enters the repository. We initially looked
 at a variety of different CI possibilities, and considered Jenkins for one,
 however we randomly looked at github and a group member asked if any of us have
 every tried using Github Actions, their CI solution, and we realized that
@@ -482,7 +532,7 @@ tests. The unit-tests are written in C# using the XUnit test framework, which is
 used to test functionality as implemented in web application (e.g., creating a
 user, adding a message, etc.).
 
-The unit tests are focused around the service classes, which implements the
+The unit tests are focused around the service classes, which implement the
 business logic related to the functionality of the system. These tests aims to
 check the "happy-path" where the function succeeds as well as the expected error
 paths (i.e., adding a message to an unknown user). The tests are executed using
@@ -509,7 +559,7 @@ isolate where errors occurred if something failed within this tester.
 
 ### Continuous Delivery
 
-When new commits enter the master branch, we needs to update the production
+When new commits enter the master branch, we need to update the production
 server. The alternative would be to manually connect to the production
 environment and pull the newest version of the system. This takes time and is
 error prone, therefore this flow is automated. This is, in our case, done by
@@ -542,7 +592,7 @@ containers, which can be found [here](https://github.com/containrrr/watchtower).
 There are a few different tools for this, and this is something Jenkins does
 provide, however installing Jenkins for this feature alone, seemed overkill and
 would use a magnitude more CPU power than we wanted. We wanted to utilize a
-minimal tool that provides what was needed, and nothing else. This is what
+minimal amount of tools that provides what was needed, and nothing else. This is what
 watchtower did. It checks your package host with a consistant interval checks
 whether the remote image has been updated - if it has, it updates the running
 container. The setup was really simple, here showing the full configuration in
@@ -608,7 +658,7 @@ To get a higher score BetterCode recommends that we take a look at LOC(Lines of
 Code) in our methods. [LOC](https://en.wikipedia.org/wiki/Source_lines_of_code)
 is sometimes used as a metric for software complexity, as small methods are
 easier to understand, reuse and test. A large LOC can be an indication of
-importance or complexity, but also methods that have not been mainted for a long
+importance or complexity, but also methods that have not been maintained for a long
 time.
 
 The picture shows a list of files in which there is a method that violates the
@@ -626,7 +676,7 @@ for, while, etc) low. The reason being that it makes units easier to modify and
 test.
 
 Once again it is the same `.sh` that is a rather complex unit. `ApiController`
-is the class that draw the most of our attention as it is part of a component in
+is the class that draws the most of our attention as it is part of a component in
 our MiniTwit solution. The highlighted method in `ApiController` does not have
 that high of severity which is fine.
 
@@ -636,7 +686,7 @@ that high of severity which is fine.
 
 This is basically the _Don't Repeat yourself_ principal.
 
-When code is copied, bugs need to fixed in multiple places. Avoid duplication by
+When code is copied, bugs need to be fixed in multiple places. Avoid duplication by
 never copy/pasting blocks of code. Instead, do reduce duplication by extracting
 shared code into a new method or class.
 
@@ -685,7 +735,7 @@ independent components ease isolated maintenance.
 Balanced`](images/KeepArchitectureComponentsBalanced.png)
 
 Balancing the number and relative size of components makes it easier to locate
-code. Even though that BetterCode states that we are doing fine, we have to keep
+code. Even though BetterCode states that we are doing fine, we have to keep
 the number of components between 2 and 12. By doing this, it should be easier to
 find the piece of code that we want to change.
 
@@ -696,7 +746,7 @@ find the piece of code that we want to change.
 If we keep our codebase small it will improve maintainability, as it takes less
 work to make structural changes in a smaller codebase.
 
-BetterCode prefers that we use 3rd libraries and frameworks over reinventing the
+BetterCode prefers that we use 3rd party libraries and frameworks over reinventing the
 wheel. It measures us based on how many years it would take a person, with
 approximate effort, to rebuild our version of MiniTwit.
 
@@ -704,7 +754,7 @@ approximate effort, to rebuild our version of MiniTwit.
 
 ![Output of `Automate Tests`](images/AutomateTestsBetterCode.png)
 
-Having automating tests for our codebase makes development less risky - it
+Having automated tests for our codebase makes development less risky - it
 reduces the chance of regression, and can also improve readability in that it
 provides clear simple examples of the usage of various components. Based on the
 numbers we could have done lot more of excessive testing. 80% had been more
@@ -750,8 +800,6 @@ Looking at the state of our system from a security perspective, highlights the
 fact that our system is inadequate. This is definitely the primary focus in any
 future development process had that been the case. We, however, are satisfied
 from a code quality perspective.
-  
-
 
 ## Evaluation
 
@@ -769,7 +817,7 @@ features could use some improvements to increase ease of development.
 
 The first issue encountered was the use of SQLite for local development. Due to
 the overhead of building and orchestrating containers every time the developer
-wanted to debug the application we had intially decided to use SQLite. This
+wanted to debug the application we had initially decided to use SQLite. This
 choice worked well for the intended purpose, but did prove to be a source of
 errors. The issue stems from the fact that SQLite lacks some of the features
 related to constraints which the fully-fletched database server had. Thus when
@@ -780,7 +828,7 @@ Server Docker image for local development.
 
 #### Database Migrations
 
-The second issue we encounted was also related to the database. Using Entity
+The second issue we encountered was also related to the database. Using Entity
 Framework Core provides us with the option of using Database Migrations to
 deploy database changes automatically during start-up of the application.
 However, this requires us to opt-in to this technology from the start, which we
@@ -802,6 +850,12 @@ secrets (for production) and ASPNET Core secrets (for development) would provide
 means to store these separately from the code.
 
 ### Operation
+
+This section focuses on the operational level of the system, and what we learned
+from this. This entails the production environment and monitoring/logging of
+these things, as well as the setup of these things. Overall, these are the
+things we had the lowest level of prior understanding of, making it one of the
+most interesting learning experiences.
 
 #### Containerization
 
@@ -862,7 +916,7 @@ The bulk of these exceptions occurred before the introduction of a service level
 agreement (SLA). However, considering the points in the SLA being important at
 any stage in the process the exception did have the consequence of us breaking
 the terms we defined. More specifically is the average number of errors pr. hour
-violated a few times, and the mean recovery time is challanged too. This
+violated a few times, and the mean recovery time is challenged too. This
 emphasizes the importance of logging all errors from the start and tracking the
 rate of them.
 
@@ -882,7 +936,7 @@ are working with stateless sessions (which ASPNET Core is per default).
 #### Storing database data inside containers
 
 Much like the previous issue, we had an issue with the persistence of database
-data. The SQL Server image we used, store the data files of the database inside
+data. The SQL Server image we used, stores the data files of the database inside
 the container per default. This wasn't an issue as long as the container wasn't
 removed since it was configured to persist during restarts. However, this did
 become an issue when moving to Docker Swarm as that would provision a new
@@ -937,14 +991,14 @@ dedicated area and redo the backup process.
 As the number of requests and users from the simulator increased, we run out of
 space, thus we missed some data. As a quick fix, we did a docker system prune
 and successfully reclaimed more than 4GBs. After rescaling our system,
-everything worked fine but we should have planned this in advance. This could
+everything worked fine but we should have planned this in advance. This could have
 been anticipated with more excessive infrastructure monitoring.
 
 #### Continuous integration observations
 
 Due to the continuous integration stage of our pipeline running integration
 tests using an entire production environment (provisioned using Docker Compose)
-this process is time consuming. It's important to emphasize this hasn't been an
+this process is time consuming. It's important to emphasize that this hasn't been an
 issue, but it should be seen as an observation of where to speed up the feedback
 to developers when pushing changes to their pull requests.
 
@@ -952,6 +1006,24 @@ The CI pipeline also currently creates a Github release before the solution has
 been built and tested. This has introduced the chance of a release with errors
 being available. The key learning opportunity here is the importance of ensure
 the different steps of the pipeline runs in the correct logical order.
+
+#### Monitoring
+
+Retrospectively, an approach that combined both passive and active monitoring
+would have offered the highest degree of quality assurance because issues would
+then be detected in real-time. Furthermore, another thing we deemed we should
+have done more in-depth was infrastructure monitoring, as we experienced
+problems concerning disk space on our server. Consequently, we experienced fatal
+errors.
+
+#### Logging
+
+Retrospectively, if we wanted to have gotten more insight in understanding what
+was happening we could have set the minimum level for log event processing to
+Debug which would reveal internal system events that are not necessarily
+observable from the outside, but useful when determining how something happened.
+Consequently, our logs would then be noisier, but eventually we would have
+uncovered relevant data regarding the system.
 
 #### Github issues
 
@@ -969,7 +1041,7 @@ closely aligned with the pull-request flow was definitely a helpful feature.
 # Conclusion
 
 ITU MiniTwit project gave us an excellent basis for learning and acquiring
-devops skills. From system refactoring at the very beginning to writing
+DevOps skills. From system refactoring at the very beginning to writing
 technical documentation it was challenging and very interesting experience.
 Working on it, we went through many real life problems, both in devops area and
 team organization. We would like to emphasize that this was a whole new
