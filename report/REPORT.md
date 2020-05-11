@@ -322,7 +322,7 @@ also include service classes responsible for the user related features (e.g., cr
 and followers) and the timeline service related to message creation and flagging. These 
 services implement the business logic, and communicates with the _DatabaseContext_ class 
 to persist data to the database. Another interesting class is the _ActionLoggerAttribute_
-defined in the _Extensions_ namespace. This classes is instrumental in collecting usage
+defined in the _Extensions_ namespace. This class is instrumental in collecting usage
 metrics and information logged to Kibana through the structured logging library Serilog.
 
 ## Monitoring & Logging Strategies
