@@ -113,10 +113,11 @@ the tools necessary with less technical fragmentation, whereas an alternative
 would require new configuration.
 
 As mentioned the aim is to horizontally scale the application. We deemed this to be
-the best solution as the application is rather focused on serving multiple clients.
-Each operation doesn't require much CPU time thus the argument for increased
-resources on each nodes seems moot. The use of multiple servers in turn would mean
-a higher limit to the number simultaneous connections from clients.
+the best solution as the application is focused on serving multiple clients with rather
+inexpensive CPU and memory requirements. Because each request doesn't require 
+as many resources to be available is the argument for vertical scaling on each node
+rather moot. The use of multiple nodes in turn would mean a higher limit to the
+number concurrent connections from clients.
 
 Using Docker Swarm simplifies the load-balancing aspect of this strategy as
 swarm mode has a built-in balancer for ingress connections, and automatically
