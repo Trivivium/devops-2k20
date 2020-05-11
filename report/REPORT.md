@@ -188,7 +188,7 @@ with first-class support for [.NET based integration][mon-4] from Prometheus
 themselves.
 
 To ensure stability it was also important for us that Prometheus uses a
-pull-based model when scraping metrics from the servers. The opporsite solution
+pull-based model when scraping metrics from the servers. The opposite solution
 of a push-based solution could prove problematic as the amount of data could
 overload the monitoring servers.
 
@@ -270,11 +270,59 @@ _TODO - design and architecture of our ITU-MiniTwit system_
 
 ### Monitoring
 
-_TODO - What do we monitor in our system_
+
+![Grafana Monitoring](./images/Grafana_Monitoring.png)
+
+Our way of monitoring was proactive with Prometheus collecting metrics and Grafana for the overview through a dashboard. It was more
+application-centric where we measured response times, the number of HTTP requests in total and whether the application was up. Primarily, 
+the focus was on the SLA and maintaining the requirements.
+
+Whitebox monitoring was also useful to us as it enabled us to focus on what's inside the system.
+We exposed the metrics that we wanted to and then Prometheus would pull the metrics to our monitoring/logging server.
+We made an extra metric that would count requests for each endpoint and return which method that had been called.
+In a real-life system, it is proven useful to know which page or part of the system that gets visited the most.
+We used active monitoring to determine whether our system was up or down. Active monitoring also enabled us to actively
+validate the SLA that we had set.
+
+Retrospectively, an approach that combined both passive and active monitoring would have offered the highest degree
+of quality assurance because issues would then be detected in real-time.
+Furthermore, another thing we deemed we should have done more in-depth was infrastructure monitoring, as we experienced problems concerning disk space on our server.
+Consequently, we experienced fatal errors.
+
 
 ### Logging
 
-_TODO - what do we log and how we aggregate it_
+
+![Kibana Monitoring](./images/Kibana_Logging.png)
+
+The image illustrates the view of what our logging looks like in Kibana.
+
+The logs were sent from our application to ElasticSearch that is on our other server. 
+
+The different log levels that we include are:
+* Debug
+* Information
+* Warning
+* Error
+* Fatal
+
+We logged IPAddress, ControllerName, ActionName, and the ErrorMessage if there had been an error.
+
+We made the minimum level for log event processing to [Information](https://github.com/serilog/serilog/wiki/Configuration-Basics) which means it describes things
+that happened in the system which corresponded to its responsibilities and function.
+
+Our experience was that we did not quite the amount of help needed to go in-depth and reasoning for each error.
+
+We then used Sentry.io for more focused error logging and would receive an e-mail if an error did occur.
+
+![Sentry Logging](./images/Sentryio_logging.png)
+
+We ended up having Kibana for event logging and Sentry.io for error logging.
+
+Retrospectively, if we wanted to have gotten more insight in understanding what was happening we could have set the minimum level for log event processing
+to Debug which would reveal internal system events that are not necessarily observable from the outside,
+but useful when determining how something happened. Consequently, our logs would then be noisier, but eventually we would have uncovered
+relevant data regarding the system.
 
 ### Scaling and load balancing
 
