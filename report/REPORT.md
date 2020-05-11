@@ -266,14 +266,38 @@ accidentally introduce in our production environment. We could potentially
 extract these from the ELK stack, but this was easy to setup and extract data
 from, making it an ideal choice.
 
-### Dependency Diagram
+### Solution Implementation
 
-Having been through all the technologies used in the application we end the
-chapter with an overview of how these tools fit together.
+Having been through all the technologies used it is still important to see how
+these relate to the solution itself - the MiniTwit application. On top of this,
+it is also important to highlight and explicitly state the structure of the
+created solution.
 
-The software solution had a variety of dependencies, both on various packages
-and libraries, but also on external services that our system relied on. The
-following diagram shows these relations.
+#### Components
+
+The following diagram shows the various internal components of the system. The
+component diagram does not follow UML syntax, however the arrows symbolize an
+dependency relation. The diagram is simple in nature, which is caused by the
+simplicity of the problem as well as the solution to that problem. The system
+didn't have a large level of modularity, so we have a low component count.
+
+![Initial Component Diagram](images/component_diagram.png)
+
+The concerns of the components are as follows:
+
+**API** focuses on the handling of API requests and is the external interface to
+the system. **Views** handles rendering of the website and the various webpages
+through HTML - it is also concerned with any form request made on the website.
+**Authentication** handled user types signup and login functionality. We created
+two user types; administrator and user, where administrator had the possibility
+to flag various messages. **Timeline** handled everything message related - the
+creation and viewing of messages.
+
+#### Dependencies
+
+This, however, only looks at the internal view of the solution. The end solution
+depended on a variety of different external frameworks, packages and services.
+The following diagram shows these relations.
 
 ![Dependency Diagram](./images/dependency_graph.png)
 
@@ -281,6 +305,26 @@ A noticeable omission from the diagram is the technologies related to
 containerization and the technologies supporting that (i.e., the operating
 system). These have been omitted since they're a prerequisite of the entire
 application, but don't play a role in the functionality of the application.
+These, however, should be obvious by viewing the Deployment diagram.
+
+#### Classes
+
+The concrete implementation is constructed in C# - it being a an object-oriented
+language, means that it makes sense to look at the class diagram, as it shows
+the software implementation itself and how it fits into the different
+aspects of the MinitTwit application.
+
+![Class Diagram](./images/class_diagram.png)
+
+Looking at the diagram some noticeable classes include the controllers: _ApiController_ 
+and _TimelineController_. The former handles all interaction with the simulator, while 
+the latter handles the primary functions of the server-rendered HTML pages. The diagram
+also include service classes responsible for the user related features (e.g., creating
+and followers) and the timeline service related to message creation and flagging. These 
+services implement the business logic, and communicates with the _DatabaseContext_ class 
+to persist data to the database. Another interesting class is the _ActionLoggerAttribute_
+defined in the _Extensions_ namespace. This classes is instrumental in collecting usage
+metrics and information logged to Kibana through the structured logging library Serilog.
 
 ## Monitoring & Logging Strategies
 
@@ -324,7 +368,6 @@ throughout recorded history.
 
 ![Kibana Monitoring](./images/Kibana_Logging.png)
 
-
 The logs were sent from our application to ElasticSearch that is on our other
 server.
 
@@ -356,7 +399,6 @@ much time on setup.
 ![Sentry Logging](./images/Sentryio_logging.png)
 
 We ended up utilizing Kibana for event logging and Sentry.io for error logging.
-
 
 ## Development practices
 
@@ -808,6 +850,7 @@ secrets (for production) and ASPNET Core secrets (for development) would provide
 means to store these separately from the code.
 
 ### Operation
+
 This section focuses on the operational level of the system, and what we learned
 from this. This entails the production environment and monitoring/logging of
 these things, as well as the setup of these things. Overall, these are the
@@ -974,6 +1017,7 @@ problems concerning disk space on our server. Consequently, we experienced fatal
 errors.
 
 #### Logging
+
 Retrospectively, if we wanted to have gotten more insight in understanding what
 was happening we could have set the minimum level for log event processing to
 Debug which would reveal internal system events that are not necessarily
