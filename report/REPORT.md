@@ -275,10 +275,10 @@ quality of the tests and the various tools utilized.
 This section will go through the choices we made relating to the pipeline, and
 how it integrated in our workflow.
 
-To understand the pipeline, it is first important to understand the context. The
-following diagram illustrates a generic development flow.
+To understand the pipeline, it is first important to understand the context. 
+Here is the development diagram with the CI/CD steps highlighted.
 
-![Development Flow](./images/development_diagram.png)
+![Development Flow](./images/development_diagram_ci_highlight.png)
 
 The pipeline is only a small part of the development flow, however, done
 correct, it increases the effectiveness ten-fold.
@@ -664,7 +664,7 @@ as store all external authorization credentials via environmental constants.
 Looking at the state of our system from a security perspective, highlights the
 fact that our system is inadequate. This is definitely the primary focus in any
 future development process had that been the case. We, however, are satisfied
-from a code quality per
+from a code quality perspective.
                      
                    
 ## Evaluation
