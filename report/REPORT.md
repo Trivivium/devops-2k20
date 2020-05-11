@@ -127,10 +127,9 @@ possibilities regarding web application frameworks.
 
 We ended up using [.NET Core][prog-1] with C# as it was argued that it was the
 language that most of the group members would be able to write from the start.
-As mentioned a couple of times in previous sections we wanted to focus less on
-the development of the application and more on setting up the DevOps tools and
-processing related to it, so chosing a completely new, and thus challenging
-language wasn't a priority.
+We wanted to focus less on the development of the application and more on
+setting up the DevOps tools and processing related to it, so chosing a
+completely new, and thus challenging language wasn't a priority.
 
 The choice of the C# naturally led us to the usage of the [ASPNET Core][prog-2]
 web framework.This framework provides us with good documentation on authoring
@@ -154,7 +153,7 @@ database system in a production environment. On top of this we had a variety of
 limitations regarding SQLite regarding query efficiency under load and lack of
 features for scaling and backups.
 
-We decided on the user of [Microsoft SQL Server][db-2]. This choice was
+We decided on the use of [Microsoft SQL Server][db-2]. This choice was
 motivated by our prior investment into the .NET ecosystem, and the choice of
 Entity Framework as our ORM solution. The ORM provided a freedom of storage
 solution, however the ORM still sees the SQL Server a first-class supported
@@ -479,7 +478,7 @@ user, adding a message, etc.).
 
 The unit tests are focused around the service classes, which implements the
 business logic related to the functionality of the system. These tests aims to
-check the "happy-path" where the function succeeds as well as the expec- ted
+check the "happy-path" where the function succeeds as well as the expected
 error paths (i.e., adding a message to an unknown user). The tests are executed
 using the built-in tooling of the dotnet CLI included in the .NET Core SDK.
 
@@ -489,14 +488,14 @@ PR is merged into the master branch.
 #### Integration tests
 
 We wanted to test the API used by the simulator to make sure that this would
-continue to work - Also as this surface is a API it is easier to test than a
+continue to work - Also as this surface is an API it is easier to test than a
 graphical user interface, so we would be able to test all backend functionality
 relatively easy.
 
 The simulator that had to interface with our service was already written in
 python3, so testing if the simulator would be able to work, would, in theory, be
 as simple as running the simulator on a clean database, and see if the simulator
-failed. It would still have to be rewritten a bit though
+failed. It would still have to be rewritten a bit though.
 
 As a member of our team has worked with python professionally for multiple years
 he proposed he would convert it into unit tests. This made it somewhat easy to
@@ -504,7 +503,7 @@ isolate where errors occurred if something failed within this tester.
 
 ### Continuous Delivery
 
-When new commits enters the master branch, we needs to update the production
+When new commits enter the master branch, we needs to update the production
 server. The alternative would be to manually connect to the production
 environment and pull the newest version of the system. This takes time and is
 error prone, therefore this flow is automated. This is, in our case, done by
@@ -564,6 +563,7 @@ The push step is easily visualized on the repository, making it transparent
 whether the package creation was successful, however we have no way to monitor
 whether the production is updated, nor the version of the software is running,
 other than SSH'ing into the production server and checking.
+
 
 ## Quality Assessment 
 In an evolving IT system, it is important to consider technical debt and the
@@ -714,7 +714,7 @@ our system, then the changes should be reflected in the tests as well.
 
 #### Write Clean Code
 
-![Output of `Write Clean Code`](/images/WriteCleanCode.png)
+![Output of `Write Clean Code`](images/WriteCleanCode.png)
 
 
 BetterCode highlights Code Smells, which is various coding anti-patterns, that
@@ -754,52 +754,47 @@ future development process had that been the case. We, however, are satisfied
 from a code quality perspective.
                      
                    
-## Conclusion and evaluation
+## Evaluation
 
-_TODO - biggest issues, major lessons we have learned, overall takeaways,
-fuckups etc. regarding:_
+Here we list some of our biggest issues, lessons we have learned, overall
+takeaways as well as some minor mistakes we had made that caused us troubles and
+inconveniences.
 
-**Containerization (Docker) Evaluation** We would probably prefer having a more
-powerful host for the containers in the future. If we had to scale vertically it
-would presumably be difficult, and this is handled better in systems like Docker
-Swarm or Kubernetes. There are a large variety of different tools, which still
-builds on the Docker syntax, which has a more expansive set of features, that
-would presumably handle scalability challanges better, however it worked for the
-relatively small service that we had to provide - so in this context, it was
-probably an ideal choice.
+### Application Development
+During the development of the application we encountered a couple of issues that should
+have been mitigated as researched beforehand, and a couple of noticeable features could
+use some improvements to increase ease of development.
 
-If we didn't want to focus on an approach that would provide us with a good
-learning opportunity, we could have picked Azure and focus entirely on the
-application, as it integrates very well with the .NET environment supporting the
-application stack. Azure provides a lot of tools for a variety of requirements
-(e.g., logging). Whether using Azure is ideal, however, is a matter of
-discussion in the group, and is based on both political and personal bias and
-opinions.
+#### Use of SQLite during development
+The first issue encountered was the use of SQLite for local development. Due to the overhead
+of building and orchestrating containers every time the developer wanted to debug the
+application we had intially decided to use SQLite. This choice worked well for the intended
+purpose, but did prove to be a source of errors. The issue stems from the fact that SQLite
+lacks some of the features related to constraints which the fully-fletched database server 
+had. Thus when the developer tested any changes made the SQLite provider would be more
+permissive than the production environment. We encountered this exact issue early on and
+decided to move away from SQLite entirely by provisioning a MS SQL Server Docker image for
+local development.
 
-### 1. evolution and refactoring
+#### Database Migrations
+The second issue we encounted was also related to the database. Using Entity Framework Core
+provides us with the option of using Database Migrations to deploy database changes
+automatically during start-up of the application. However, this requires us to opt-in to this
+technology from the start, which we didn't. This had to consequence that database changes had
+to be considered carefully, and was often worked around, as they would require manual intervention.
+The key learning from this is the importance of having a plan for updates to the database
+structure before launching the application in a production environment.
 
-**C#/ASPNET Core Evaluation**
+#### Hardcoded sensitive information
+The third issue was reported as part of the security review of our system. The report pointed out
+that we had sensitive information such as usernames/passwords in cleartext in the source code. This
+involved components such as the database, logging etc. This was an embarrasing issue and the group
+was in agreement that this should have been considered from the start. We decided on the solution
+of storing the secrets using environment variables, where tools such as Docker secrets (for production)
+and ASPNET Core secrets (for development) would provide means to store these separately from the
+code.
 
-> TODO: The first line kind of contradicts some of the content in the
-> "Programming language" section. I was under the impression that the use of C#
-> worked out fairly well. However, if this isn't the case please elaborate on
-> this, and remember to change the programming language section to fit this.
-
-The team probably has varying opinions on the C# language, and some of use would
-probably have preferred somewhat that was more engaging or faster to write,
-however it got the job done, and it did make it easier to debug, leaving time
-for writing various tests.
-
-**Database Evaluation**
-The only problem we've had with this, was that a subset of our development team
-continued to use SQLite for local testing, and SQLite has a more relaxed
-relation to constraint, so some errors would occure in production that didn't
-locally. However we fixed this by making it easier to spin up a MSSQL database
-locally.
-However MSSQL in itself provided no problems - it had exactly the features that
-we were after, and worked like a charm. This seemed to have been a good choice.
-
-### 2. operation
+### Operation
 
 #### Containerization
 
@@ -808,8 +803,8 @@ more involved than a managed solution in terms of manual work, than many of the
 managed alternatives, but it provided us with invaluable learning opportunities.
 The setup process was interesting and we were able to learn various things about
 the inner workings of docker, however it did leave space for the potential for
-errors in critical components of the application; some of which we encountered (TODO link to database deletion
-fuckup).
+errors in critical components of the application, such as
+[database deletion](https://github.com/Trivivium/devops-2k20/issues/50).
 
 In accordance with our prior interest in Docker the choice of Docker Swarm was a
 natural extension of this. The main hurdles encountered is the isolated knowledge
@@ -825,7 +820,7 @@ which Docker Swarm simplifies greatly.
 
 Due to hurdles and errors encountered, we would probably use a service provider
 for this instead, in other cases. Be it Heroku, AWS or Azure, they all provide a
-great ecosystem for these things, and reduce the risk of errors, and reduces
+great ecosystem for these things, and reduce the risk of errors, and reduce
 configuration time. This is naturally a tradeoff, and depends on the context in
 which the development is taking place - having full control of your stack does
 have it's advantages, however in projects of this size and type, it provides a
@@ -836,9 +831,135 @@ With that being said, the choice was still great from a learning perspective.
 #### Operating System
 
 The operating system didn't seem to be crucial. The majority of our development
-was in config files, and the challenges we would have required
-only a low level Linux proficiency, however having an entry-level distribution
-did make it easier to debug the various issues we would come across. 
-### 3. maintenance
+was in config files, and the challenges we would have required only a low level
+Linux proficiency, however having an entry-level distribution did make it easier
+to debug the various issues we would come across. Due to the technologies we
+were planning on using (i.e., Docker) we weren't going to be working too much
+directly on the operating system level. This meant that we didn't require to
+have one of the group members focusing on the OS more than others. It also
+proved to be a comfortable environment for the group members used to working in
+Windows.
 
-- Link back to commit messages/issues to illustrate these. \*
+#### Exceptions
+We didn't have exception logging from when the application initially launched.
+This meant that we had a couple of days with downtime once in a while, without 
+realizing it till it was too late. As mentioned previously we ended up utilizing 
+Sentry.io to solve this problem. However we had already missed a lot of user
+registrations when the simulator started. This had the consequence of us 
+receiving many more errors due to the simulator attempting to create messages for
+non-existing users. The key learning opportunity here is the importance of logging
+unhandled exception in production environments.
+
+The bulk of these exceptions occurred before the introduction of a service level 
+agreement (SLA). However, considering the points in the SLA being important at any
+stage in the process the exception did have the consequence of us breaking the terms
+we defined. More specifically is the average number of errors pr. hour violated a few
+times, and the mean recovery time is challanged too. This emphasizes the importance of
+logging all errors from the start and tracking the rate of them.
+
+#### Storing authentication signing keys inside containers
+Due to the continuous delivery aspect of our deployment pipeline the running container
+image was replaced often. This however had the side effect of wiping out any current
+authenticated user sessions. The cause of this issue was due to the fact that signing
+key used for authentication tokens was persisted in a directory inside the container. We
+discovered this quite late in the process, but managed to solve this by moving the 
+directory to a mounted Docker volume. 
+
+The key learning here is the importance of knowing exactly what is stored inside the
+containers, and testing the authentication works after deployment when we are working
+with stateless sessions (which ASPNET Core is per default).
+
+#### Storing database data inside containers
+Much like the previous issue, we had an issue with the persistence of database data. 
+The SQL Server image we used, store the data files of the database inside the container
+per default. This wasn't an issue as long as the container wasn't removed since it was 
+configured to persist during restarts. However, this did become an issue when moving to
+Docker Swarm as that would provision a new container. 
+
+The group solved this by moving the data files and transaction logs to a mounted Docker
+volume as described in the official documentation for the image. The key learning here is
+the importance of knowing how the database data is persisted, and options available to
+handle this.
+
+#### Losing the database volume when migrating to Docker Swarm
+When we switched from normal Docker to Docker swarm mode the Docker engine didn't use the
+same database volume as described above. This is due to the naming of volumes being
+prefixed with the environment the container is run within (determined from the name of
+the Docker Compose file), which we used. This meant that Docker created a new volume
+with no data inside. Without active monitoring of our logging software we weren't fully 
+aware that users were dropped and therefore didn't see the error. Also we didn't go
+through the system thoroughly after the migration, so we didn't realize that
+something was wrong until a few days later. We then had new users in the new
+database, which meant that restoring from a backup would cause us to lose another
+set of data.
+
+The key learning here is the importance of creating database backups before large system
+changes, and manually verifying that everything works as intended; Especially since we
+didn't have any automated testing in place for this scenario. An other measure that would 
+have helped was setting up chatops. Having the error log not being sent to a specific 
+developer by email but rather in a chat we all had access too, would have helped. 
+Additionally we could have monitored the monitoring and logs as well easily and created
+various triggers. An example of a trigger would be monitoring the amount of 4xx 
+HTTP responses that presumably would have increased afterwards.
+
+#### Database Backups
+As mentioned in the previous issue a key counter measure would have been the usage of
+database backups. This is a persistence issue throughout the lifetime of the project
+as backups had been manual, and only when we remembered to do it. The key learning 
+opportunity here is the importance of the backup strategy before going into production.
+This strategy would preferably being automatic, and be persisted at another host should
+it crash with corruption of the storage.
+
+Much related to this is the importance of the strategy actually testing the functionality
+of the backups themselves before moving them to persistent storage. The initial database
+created was located in the _master_ database of SQL Server, which is a system area not
+able to backed up. This meant the first manual backup taken didn't work, and the group
+had to move the database to a dedicated area and redo the backup process.
+
+#### Disk space on server
+As the number of requests and users from the simulator increased, we run out of
+space, thus we missed some data. As a quick fix, we did a docker system prune
+and successfully reclaimed more than 4GBs. After rescaling our system,
+everything worked fine but we should have planned this in advance. This could been 
+anticipated with more excessive infrastructure monitoring.
+
+#### Continuous integration observations
+Due to the continuous integration stage of our pipeline running integration tests
+using an entire production environment (provisioned using Docker Compose) this 
+process is time consuming. It's important to emphasize this hasn't been an issue,
+but it should be seen as an observation of where to speed up the feedback to developers
+when pushing changes to their pull requests.
+
+The CI pipeline also currently creates a Github release before the solution has been built
+and tested. This has introduced the chance of a release with errors being available. The
+key learning opportunity here is the importance of ensure the different steps of the
+pipeline runs in the correct logical order.
+
+#### Github issues
+We definitely had problems with our task-management and ended up doing some of
+the tasks too late, so we definitely had to change our workflow, and would have
+if we could do it over. I think the main issue was that we didn't consult the
+issue list often enough, and possibly didn't put deadlines on, as well as not
+assigning people to issues. Ideally we should probably have improved our overall
+development process earlier on, but this is covered in the [Post
+Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
+important features by choosing another service, as the problems we had were
+based on structural team problems rather than the tool itself. Having the issues
+closely aligned with the pull-request flow was definitely a helpful feature.
+
+# Conclusion
+ITU MiniTwit project gave us an excellent basis for learning and acquiring devops skills.
+From system refactoring at the very beginning to writing technical documentation it
+was challenging and very interesting experience. Working on it, we went through many
+real life problems, both in devops area and team organization. We would like to emphasize
+that this was a whole new experience to most of us. Regarding that, we gave our best efforts
+in order to fulfill all the requirements every week. Sometimes, solutions were ad hoc, but
+most of the time we approached systematically with clearly set procedures. We are aware that
+our solution is not perfect, but we learned from our mistakes and that gave us the biggest value.
+Utilizing the various tools gave us an adequate understanding of them to be able to consider 
+their relevance in future projects. We probably won't be setting up the tools to this extend in
+our future projects, rather we would probably use some out-of-the-box solutions, depending
+on the project at hand, however it was an interesting experience, and gave us an 
+understanding of their inner workings and intentions.
+Last but not least, working in the environment like this, using cutting-edge tools and technology
+helped and provided us with broad knowledge that we can start using immediately.
