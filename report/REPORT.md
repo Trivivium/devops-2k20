@@ -281,7 +281,7 @@ dependency relation. The diagram is simple in nature, which is caused by the
 simplicity of the problem as well as the solution to that problem. The system
 didn't have a large level of modularity, so we have a low component count.
 
-![Initial Component Diagram](images/old_component_view.png)
+![Initial Component Diagram](images/component_diagram.png)
 
 The concerns of the components are as follows:
 
