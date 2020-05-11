@@ -311,9 +311,8 @@ These, however, should be obvious by viewing the Deployment diagram.
 
 The concrete implementation is constructed in C# - it being a an object-oriented
 language, means that it makes sense to look at the class diagram, as it shows
-the software implementation itself and how it not only fits into the different
-aspects of the MinitTwit application, but also in a very concrete way shows how
-it integrates with the external services.
+the software implementation itself and how it fits into the different
+aspects of the MinitTwit application.
 
 ![Class Diagram](./images/class_diagram.png)
 
