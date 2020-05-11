@@ -104,6 +104,15 @@ didn't invest much time looking into alternatives as Docker Swarm provided all
 the tools necessary with less technical fragmentation, whereas an alternative
 would require new configuration.
 
+As mentioned the aim to horizontally scale the application. We deemed this to be
+the best solution as the application is more focused on serving multiple clients
+with rather. Each operation doesn't require much CPU time thus the argument for
+increased resources on each nodes seems mute. The use of multiple servers in turn
+would mean a higher limit to the number simultaneous connections from clients.
+
+Using Docker Swarm simplifies the load-balancing aspect of this strategy as swarm
+mode as a built-in balancer for ingress connections, and automatically distributes
+the connections between the nodes available using a round-robin fashion.
 
 [container-1]: https://www.docker.com/
 [container-2]: https://www.vagrantup.com/
@@ -262,6 +271,136 @@ application, but doesn't play a role in the functionality of the application.
 The use of containers does add some constraints on the architecture of the
 application with regards to scaling (e.g., horizontal scaling requires
 statelessness).
+
+## System Description
+
+_TODO - design and architecture of our ITU-MiniTwit system_
+
+### Monitoring
+
+
+![Grafana Monitoring](./images/Grafana_Monitoring.png)
+
+Our way of monitoring was proactive with Prometheus collecting metrics and Grafana for the overview through a dashboard. It was more
+application-centric where we measured response times, the number of HTTP requests in total and whether the application was up. Primarily, 
+the focus was on the SLA and maintaining the requirements.
+
+Whitebox monitoring was also useful to us as it enabled us to focus on what's inside the system.
+We exposed the metrics that we wanted to and then Prometheus would pull the metrics to our monitoring/logging server.
+We made an extra metric that would count requests for each endpoint and return which method that had been called.
+In a real-life system, it is proven useful to know which page or part of the system that gets visited the most.
+We used active monitoring to determine whether our system was up or down. Active monitoring also enabled us to actively
+validate the SLA that we had set.
+
+Retrospectively, an approach that combined both passive and active monitoring would have offered the highest degree
+of quality assurance because issues would then be detected in real-time.
+Furthermore, another thing we deemed we should have done more in-depth was infrastructure monitoring, as we experienced problems concerning disk space on our server.
+Consequently, we experienced fatal errors.
+
+
+### Logging
+
+
+![Kibana Monitoring](./images/Kibana_Logging.png)
+
+The image illustrates the view of what our logging looks like in Kibana.
+
+The logs were sent from our application to ElasticSearch that is on our other server. 
+
+The different log levels that we include are:
+* Debug
+* Information
+* Warning
+* Error
+* Fatal
+
+We logged IPAddress, ControllerName, ActionName, and the ErrorMessage if there had been an error.
+
+We made the minimum level for log event processing to [Information](https://github.com/serilog/serilog/wiki/Configuration-Basics) which means it describes things
+that happened in the system which corresponded to its responsibilities and function.
+
+Our experience was that we did not quite the amount of help needed to go in-depth and reasoning for each error.
+
+We then used Sentry.io for more focused error logging and would receive an e-mail if an error did occur.
+
+![Sentry Logging](./images/Sentryio_logging.png)
+
+We ended up having Kibana for event logging and Sentry.io for error logging.
+
+Retrospectively, if we wanted to have gotten more insight in understanding what was happening we could have set the minimum level for log event processing
+to Debug which would reveal internal system events that are not necessarily observable from the outside,
+but useful when determining how something happened. Consequently, our logs would then be noisier, but eventually we would have uncovered
+relevant data regarding the system.
+
+
+## Development practices
+
+With the Covid-19 epidemic emerging approximately half-way through the course,
+the interaction amongst us inevitably changed as it was unwise to meet
+physically. Initially when the course started, we would hold a meeting after the
+lecture to plan the steps which needed to be accomplished for the following
+weeks release.
+
+As Covid-19 progressed, ITU closed down, and gatherings became rightfully
+frowned upon which forced us to settle for the suboptimal approach of talking
+over Zoom. While the content of these meetings were almost identical to that of
+our physical meetings, the overhead of technical issues involving subpar
+microphones and a internet connections made these meetings far less efficient.
+These meetings over Zoom took place approximately once every week. Meetings over
+Zoom weren’t always necessary, which is why we also used Slack to keep each
+other updated on progress on issues as well as to ask for consent to make
+changes to the system or to ask for help.
+
+The typical output of the meetings was an understanding of what tasks needed to
+be carried out and by whom. These tasks would be posted as issues on Github,
+where a group member would assign themselves to it. Using Github issues rather
+than other tools, was an easy choice for us as it provided the functionality we
+needed while also minimizing the spread of tools we used, seeing as we also used
+Github for version control.
+
+The vast majority of the issues were handled independently without pair
+programming, which is definitely something we should have done in hindsight, as
+mistakes could have been avoided and knowledge of more intricate details in our
+program could be shared more conveniently. Although we didn’t define any clear
+roles for the group members, the lack of pair programming resulted in some
+intrinsic roles when the issues were perhaps larger than they should have been.
+Being more consistent with creating smaller issues, could have solved this
+problem, as multiple people would then have the opportunity of working on the
+same subsystem.
+
+
+The following diagram shows our development flow.
+
+![Development Flow](./images/development_diagram.png)
+
+When working on an issue that is some new feature in the project, we created a
+new branch to work on it in a separate environment. Once the issue was deemed
+complete, a pull request was made to finally merge the new feature into the
+master branch. This branching strategy is very much in line with the ‘Topic
+Branches’ model where branches are short-lived and become merged with the master
+branch once the feature is working as intended. 
+ 
+### Issue tracking / Kanban: Github
+Generally speaking we never really put much
+thought into how we would track issues and how we would separate the tasks at
+hand. As we already had Github open, we simply created all our tasks on the
+issue board there and never thought about alternatives. Alternatively we could
+have created a Trello board or a Jira project, however with the limited scope of
+the project it seemed extensive to include a whole other system just for task
+management. As previously mentioned we generally tried limiting the number of
+different tools we used, and create a stack with as few different tools as
+possible. 
+
+**Evaluation** We definitely had problems with our taskmanagement and ended up
+doing some of the tasks too late, so we definitely had to change our workflow,
+and would have if we could do it over. I think the main issue was that we didn't
+consult the issue list often enough, and possibly didn't put deadlines on, as
+well as not assigning people to issues. Ideally we should probably have improved
+our overall development process earlier on, but this is covered in the [Post
+Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
+important features by choosing another service, as the problems we had were
+based on structural team problems rather than the tool itself. Having the issues
+closely aligned with the pull-request flow was definitely a helpful feature.
 
 ## CI/CD Pipeline
 
