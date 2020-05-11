@@ -22,4 +22,4 @@ docker, docker-compose.
 2. run `docker-compose -f docker-compose.yml -f production.yml up -d`
 
 # Is it testable?
-lol no. (not yet)
+Yes!
