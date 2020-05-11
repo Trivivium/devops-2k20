@@ -625,16 +625,16 @@ In an evolving IT system, it is important to consider technical debt and the
 quality of the work, as this can inhibit the development speed massively.
 Various automated tools can assess the quality of your software solution, which
 will catch a variety of a generic code-quality problems, as well as suggest
-improvements. Certain problems naturally exist with automated tools - at times
-they will be over sensitive and report errors that are acceptable in context,
-however they will also have miss some structural issues that can be difficult to
-automatically detect.
+improvements. Certain problems naturally exist with automated tools - every
+once in a while they will be over sensitive and report errors that are
+acceptable in context, however they will also miss some structural issues
+that can be difficult to automatically detect.
 
 This chapter will go through how we can assess the quality of our system, both
-automatically but also manually.
+automatically and manually.
 
 We have chosen [BetterCode](https://bettercodehub.com) as our Software Quality
-Assessment Tool and included it in our CI/CD pipeline. With this tool, we can
+Assessment Tool and included it into our CI/CD pipeline. With this tool, we can
 measure the characteristics of system components and then aggregating these
 measurements. The measurements can be used to assess system quality attributes,
 such as maintainability, and system components whose characteristics deviate
@@ -677,7 +677,7 @@ test.
 Once again it is the same `.sh` that is a rather complex unit. `ApiController`
 is the class that draws the most of our attention as it is part of a component in
 our MiniTwit solution. The highlighted method in `ApiController` does not have
-that high of severity which is fine.
+that high severity which is fine.
 
 #### Write Code Once
 
@@ -756,7 +756,7 @@ approximate effort, to rebuild our version of MiniTwit.
 Having automated tests for our codebase makes development less risky - it
 reduces the chance of regression, and can also improve readability in that it
 provides clear simple examples of the usage of various components. Based on the
-numbers we could have done lot more of excessive testing. 80% had been more
+numbers we could have done a lot more of excessive testing. 80% had been more
 acceptable from our side. Another important point is that when we adjust code in
 our system, then the changes should be reflected in the tests as well.
 
@@ -880,7 +880,7 @@ which Docker Swarm simplifies greatly.
 
 Due to hurdles and errors encountered, we would probably use a service provider
 for this instead, in other cases. Be it Heroku, AWS or Azure, they all provide a
-great ecosystem for these things, and reduce the risk of errors, and reduce
+great ecosystem for these things, reduce the risk of errors, and reduce
 configuration time. This is naturally a tradeoff, and depends on the context in
 which the development is taking place - having full control of your stack does
 have it's advantages, however in projects of this size and type, it provides a
@@ -909,7 +909,7 @@ Sentry.io to solve this problem. However we had already missed a lot of user
 registrations when the simulator started. This had the consequence of us
 receiving many more errors due to the simulator attempting to create messages
 for non-existing users. The key learning opportunity here is the importance of
-logging unhandled exception in production environments.
+logging unhandled exceptions in production environments.
 
 The bulk of these exceptions occurred before the introduction of a service level
 agreement (SLA). However, considering the points in the SLA being important at
@@ -962,9 +962,9 @@ that restoring from a backup would cause us to lose another set of data.
 The key learning here is the importance of creating database backups before
 large system changes, and manually verifying that everything works as intended;
 Especially since we didn't have any automated testing in place for this
-scenario. An other measure that would have helped was setting up chatops. Having
-the error log not being sent to a specific developer by email but rather in a
-chat we all had access too, would have helped. Additionally we could have
+scenario. Another measure that would have helped us was setting up chatops.
+Having the error log not being sent to a specific developer by email but rather
+in a chat we all had access too, would have helped. Additionally we could have
 monitored the monitoring and logs as well easily and created various triggers.
 An example of a trigger would be monitoring the amount of 4xx HTTP responses
 that presumably would have increased afterwards.
@@ -998,12 +998,12 @@ been anticipated with more excessive infrastructure monitoring.
 Due to the continuous integration stage of our pipeline running integration
 tests using an entire production environment (provisioned using Docker Compose)
 this process is time consuming. It's important to emphasize that this hasn't been an
-issue, but it should be seen as an observation of where to speed up the feedback
+issue, but it should have be seen as an observation of where to speed up the feedback
 to developers when pushing changes to their pull requests.
 
 The CI pipeline also currently creates a Github release before the solution has
 been built and tested. This has introduced the chance of a release with errors
-being available. The key learning opportunity here is the importance of ensure
+being available. The key learning opportunity here is the importance to ensure
 the different steps of the pipeline runs in the correct logical order.
 
 #### Monitoring
@@ -1028,7 +1028,7 @@ uncovered relevant data regarding the system.
 
 We definitely had problems with our task-management and ended up doing some of
 the tasks too late, so we definitely had to change our workflow, and would have
-if we could do it over. I think the main issue was that we didn't consult the
+if we could do it over. We think the main issue was that we didn't consult the
 issue list often enough, and possibly didn't put deadlines on, as well as not
 assigning people to issues. Ideally we should probably have improved our overall
 development process earlier on, but this is covered in the [Post
