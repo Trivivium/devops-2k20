@@ -13,7 +13,7 @@ course and the goals - this report focuses not on the timeline nor overall order
 of actions, but rather the specific choices and the reason for those choices -
 additionally we will reflect on the choices, both regarding the effects it had
 on this project as well as the takeaways we were left with regarding future projects.
-The report first presents the technical stack, i.e the tools and services
+The report first presents the technical stack, i.e. the tools and services
 utilized, whereafter it goes through our development practices and the concrete
 way these tools fitted into this context. Lastly we evaluate on all these
 choices and tie it all together in a conclusion that, in broad terms, paints a
