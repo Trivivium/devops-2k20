@@ -197,7 +197,7 @@ with first-class support for [.NET based integration][mon-4] from Prometheus
 themselves.
 
 To ensure stability it was also important for us that Prometheus uses a
-pull-based model when scraping metrics from the servers. The opporsite solution
+pull-based model when scraping metrics from the servers. The opposite solution
 of a push-based solution could prove problematic as the amount of data could
 overload the monitoring servers.
 
@@ -279,11 +279,129 @@ _TODO - design and architecture of our ITU-MiniTwit system_
 
 ### Monitoring
 
-_TODO - What do we monitor in our system_
+
+![Grafana Monitoring](./images/Grafana_Monitoring.png)
+
+Our way of monitoring was proactive with Prometheus collecting metrics and Grafana for the overview through a dashboard. It was more
+application-centric where we measured response times, the number of HTTP requests in total and whether the application was up. Primarily, 
+the focus was on the SLA and maintaining the requirements.
+
+Whitebox monitoring was also useful to us as it enabled us to focus on what's inside the system.
+We exposed the metrics that we wanted to and then Prometheus would pull the metrics to our monitoring/logging server.
+We made an extra metric that would count requests for each endpoint and return which method that had been called.
+In a real-life system, it is proven useful to know which page or part of the system that gets visited the most.
+We used active monitoring to determine whether our system was up or down. Active monitoring also enabled us to actively
+validate the SLA that we had set.
+
+Retrospectively, an approach that combined both passive and active monitoring would have offered the highest degree
+of quality assurance because issues would then be detected in real-time.
+Furthermore, another thing we deemed we should have done more in-depth was infrastructure monitoring, as we experienced problems concerning disk space on our server.
+Consequently, we experienced fatal errors.
+
 
 ### Logging
 
-_TODO - what do we log and how we aggregate it_
+
+![Kibana Monitoring](./images/Kibana_Logging.png)
+
+The image illustrates the view of what our logging looks like in Kibana.
+
+The logs were sent from our application to ElasticSearch that is on our other server. 
+
+The different log levels that we include are:
+* Debug
+* Information
+* Warning
+* Error
+* Fatal
+
+We logged IPAddress, ControllerName, ActionName, and the ErrorMessage if there had been an error.
+
+We made the minimum level for log event processing to [Information](https://github.com/serilog/serilog/wiki/Configuration-Basics) which means it describes things
+that happened in the system which corresponded to its responsibilities and function.
+
+Our experience was that we did not quite the amount of help needed to go in-depth and reasoning for each error.
+
+We then used Sentry.io for more focused error logging and would receive an e-mail if an error did occur.
+
+![Sentry Logging](./images/Sentryio_logging.png)
+
+We ended up having Kibana for event logging and Sentry.io for error logging.
+
+Retrospectively, if we wanted to have gotten more insight in understanding what was happening we could have set the minimum level for log event processing
+to Debug which would reveal internal system events that are not necessarily observable from the outside,
+but useful when determining how something happened. Consequently, our logs would then be noisier, but eventually we would have uncovered
+relevant data regarding the system.
+
+
+## Development practices
+
+With the Covid-19 epidemic emerging approximately half-way through the course,
+the interaction amongst us inevitably changed as it was unwise to meet
+physically. Initially when the course started, we would hold a meeting after the
+lecture to plan the steps which needed to be accomplished for the following
+weeks release.
+
+As Covid-19 progressed, ITU closed down, and gatherings became rightfully
+frowned upon which forced us to settle for the suboptimal approach of talking
+over Zoom. While the content of these meetings were almost identical to that of
+our physical meetings, the overhead of technical issues involving subpar
+microphones and a internet connections made these meetings far less efficient.
+These meetings over Zoom took place approximately once every week. Meetings over
+Zoom weren’t always necessary, which is why we also used Slack to keep each
+other updated on progress on issues as well as to ask for consent to make
+changes to the system or to ask for help.
+
+The typical output of the meetings was an understanding of what tasks needed to
+be carried out and by whom. These tasks would be posted as issues on Github,
+where a group member would assign themselves to it. Using Github issues rather
+than other tools, was an easy choice for us as it provided the functionality we
+needed while also minimizing the spread of tools we used, seeing as we also used
+Github for version control.
+
+The vast majority of the issues were handled independently without pair
+programming, which is definitely something we should have done in hindsight, as
+mistakes could have been avoided and knowledge of more intricate details in our
+program could be shared more conveniently. Although we didn’t define any clear
+roles for the group members, the lack of pair programming resulted in some
+intrinsic roles when the issues were perhaps larger than they should have been.
+Being more consistent with creating smaller issues, could have solved this
+problem, as multiple people would then have the opportunity of working on the
+same subsystem.
+
+
+The following diagram shows our development flow.
+
+![Development Flow](./images/development_diagram.png)
+
+When working on an issue that is some new feature in the project, we created a
+new branch to work on it in a separate environment. Once the issue was deemed
+complete, a pull request was made to finally merge the new feature into the
+master branch. This branching strategy is very much in line with the ‘Topic
+Branches’ model where branches are short-lived and become merged with the master
+branch once the feature is working as intended. 
+ 
+### Issue tracking / Kanban: Github
+Generally speaking we never really put much
+thought into how we would track issues and how we would separate the tasks at
+hand. As we already had Github open, we simply created all our tasks on the
+issue board there and never thought about alternatives. Alternatively we could
+have created a Trello board or a Jira project, however with the limited scope of
+the project it seemed extensive to include a whole other system just for task
+management. As previously mentioned we generally tried limiting the number of
+different tools we used, and create a stack with as few different tools as
+possible. 
+
+**Evaluation** We definitely had problems with our taskmanagement and ended up
+doing some of the tasks too late, so we definitely had to change our workflow,
+and would have if we could do it over. I think the main issue was that we didn't
+consult the issue list often enough, and possibly didn't put deadlines on, as
+well as not assigning people to issues. Ideally we should probably have improved
+our overall development process earlier on, but this is covered in the [Post
+Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
+important features by choosing another service, as the problems we had were
+based on structural team problems rather than the tool itself. Having the issues
+closely aligned with the pull-request flow was definitely a helpful feature.
 
 ## CI/CD Pipeline
 
@@ -297,10 +415,10 @@ quality of the tests and the various tools utilized.
 This section will go through the choices we made relating to the pipeline, and
 how it integrated in our workflow.
 
-To understand the pipeline, it is first important to understand the context. The
-following diagram illustrates a generic development flow.
+To understand the pipeline, it is first important to understand the context. 
+Here is the development diagram with the CI/CD steps highlighted.
 
-![Development Flow](./images/development_diagram.png)
+![Development Flow](./images/development_diagram_ci_highlight.png)
 
 The pipeline is only a small part of the development flow, however, done
 correct, it increases the effectiveness ten-fold.
@@ -447,74 +565,195 @@ whether the package creation was successful, however we have no way to monitor
 whether the production is updated, nor the version of the software is running,
 other than SSH'ing into the production server and checking.
 
-## Development practices
+## Quality Assessment 
+In an evolving IT system, it is important to consider technical debt and the
+quality of the work, as this can inhibit the development speed massively.
+Various automated tools can assess the quality of your software solution, which
+will catch a variety of a generic code-quality problems, as well as suggest
+improvements. Certain problems naturally exist with automated tools - at times
+they will be over sensitive and report errors that are acceptable in context,
+however they will also have miss some structural issues that can be difficult to
+automatically detect.
 
-With the Covid-19 epidemic emerging approximately half-way through the course,
-the interaction amongst us inevitably changed as it was unwise to meet
-physically. Initially when the course started, we would hold a meeting after the
-lecture to plan the steps which needed to be accomplished for the following
-weeks release.
+This chapter will go through how we can assess the quality of our system, both
+automatically but also manually.
 
-As Covid-19 progressed, ITU closed down, and gatherings became rightfully
-frowned upon which forced us to settle for the suboptimal approach of talking
-over Zoom. While the content of these meetings were almost identical to that of
-our physical meetings, the overhead of technical issues involving subpar
-microphones and a internet connections made these meetings far less efficient.
-These meetings over Zoom took place approximately once every week. Meetings over
-Zoom weren’t always necessary, which is why we also used Slack to keep each
-other updated on progress on issues as well as to ask for consent to make
-changes to the system or to ask for help.
 
-The typical output of the meetings was an understanding of what tasks needed to
-be carried out and by whom. These tasks would be posted as issues on Github,
-where a group member would assign themselves to it. Using Github issues rather
-than other tools, was an easy choice for us as it provided the functionality we
-needed while also minimizing the spread of tools we used, seeing as we also used
-Github for version control.
+We have chosen [BetterCode](https://bettercodehub.com) as our Software Quality
+Assessment Tool and included it in our CI/CD pipeline. With this tool, we can
+measure the characteristics of system components and then aggregating these
+measurements. The measurements can be used to assess system quality attributes,
+such as maintainability, and system components whose characteristics deviate
+from that.
 
-The vast majority of the issues were handled independently without pair
-programming, which is definitely something we should have done in hindsight, as
-mistakes could have been avoided and knowledge of more intricate details in our
-program could be shared more conveniently. Although we didn’t define any clear
-roles for the group members, the lack of pair programming resulted in some
-intrinsic roles when the issues were perhaps larger than they should have been.
-Being more consistent with creating smaller issues, could have solved this
-problem, as multiple people would then have the opportunity of working on the
-same subsystem.
+Other than scoring our quality it also prioritizes the code that we need to work
+on first. BetterCode gave us an 8/10 compliance score, which is good, however
+far from perfect, and signals areas in which improvement should be considered.
 
-When working on an issue that is some new feature in the project, we created a
-new branch to work on it in a separate environment. Once the issue was deemed
-complete, a pull request was made to finally merge the new feature into the
-master branch. This branching strategy is very much in line with the ‘Topic
-Branches’ model where branches are short-lived and become merged with the master
-branch once the feature is working as intended. 
- 
-**Issue tracking / Kanban: Github** Generally speaking we never really put much
-thought into how we would track issues and how we would separate the tasks at
-hand. As we already had Github open, we simply created all our tasks on the
-issue board there and never thought about alternatives. Alternatively we could
-have created a Trello board or a Jira project, however with the limited scope of
-the project it seemed extensive to include a whole other system just for task
-management. As previously mentioned we generally tried limiting the number of
-different tools we used, and create a stack with as few different tools as
-possible.
+### BetterCode assessments
+The following section goes through the reasoning for the 8/10 score, and covers
+the considerations to be made in relation to our system.
 
-**Evaluation** We definitely had problems with our taskmanagement and ended up
-doing some of the tasks too late, so we definitely had to change our workflow,
-and would have if we could do it over. I think the main issue was that we didn't
-consult the issue list often enough, and possibly didn't put deadlines on, as
-well as not assigning people to issues. Ideally we should probably have improved
-our overall development process earlier on, but this is covered in the [Post
-Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
-important features by choosing another service, as the problems we had were
-based on structural team problems rather than the tool itself. Having the issues
-closely aligned with the pull-request flow was definitely a helpful feature.
 
-## State of solution
+#### Write Short Units Of Code
 
-_TODO - current state of our system, results of static analysis and code quality
-assessment, add security assessment too_
+![Output of `write short units of code`](images/WriteShortsUnitOfCode.png)
 
+To get a higher score BetterCode recommends that we take a look at LOC(Lines of
+Code) in our methods. [LOC](https://en.wikipedia.org/wiki/Source_lines_of_code)
+is sometimes used as a metric for software complexity, as small methods are
+easier to understand, reuse and test. A large LOC can be an indication of
+importance or complexity, but also methods that have not been mainted for a long
+time.
+
+The picture shows a list of files in which there is a method that violates the
+guideline. The `.sh` file is used in our docker-compose files, to ensure that
+all components are successfully running. The other methods mainly consist of
+configuration methods or important parts in our system. The guideline from
+BetterCode is at most 15 lines of code in a method.
+
+#### Write Simple Units of Code
+![Output of `Write Simple Units of  Once`](images/WriteSimpleUnitsOfCode.png)
+
+The guideline explanation is mainly keeping the number of branch points (if,
+for, while, etc) low. The reason being that it makes units easier to modify and
+test.
+
+Once again it is the same `.sh` that is a rather complex unit. `ApiController`
+is the class that draw the most of our attention as it is part of a component in
+our MiniTwit solution. The highlighted method in `ApiController` does not have
+that high of severity which is fine.
+
+#### Write Code Once
+
+![Output of `Write Code Once`](images/WriteCodeOnce.png)
+
+
+This is basically the _Don't Repeat yourself_ principal.
+
+When code is copied, bugs need to fixed in multiple places. Avoid
+duplication by never copy/pasting blocks of code. Instead, do reduce duplication
+by extracting shared code into a new method or class.
+
+At this point we only have two cases of duplication - this amount is indicated
+to be acceptable by BetterCode. This is also one of the easiest problems to fix.
+
+#### Keep Unit Interfaces Small
+
+![Output of `Keep Unit Interfaces Small`](images/KeepUnitInterfaceSmall.png)
+
+This states that keeping the number of parameters low, makes methods easier to
+understand and reuse.
+
+One way to improve this is that the number of parameters can be reduced by
+grouping related parameters into objects.
+
+Our most severe is a constructor that creates a TimelineMessage. If we wanted to
+reduce this even further, we can make a new Message class and group related
+parameters in that class.
+
+#### Separate Concerns in Modules
+
+![Output of `Separate Concerns in
+Modules`](images/SeparateConcernsInModules.png)
+
+
+It is mainly concerned with keeping the codebase loosely coupled, as it makes it
+easier to minimize the consequences of changes.
+
+Identify and extract the responsibilities of large modules to separate modules
+and hide implementation details behind interfaces.
+
+BetterCode is giving us full points for this.
+
+#### Couple Architecture Components Loosely
+
+![Output of `Couple Architecture Components
+Loosely`](images/CoupleArchitectureComponentsLoosely.png)
+
+
+This focuses on us having a loose coupling between top-level
+components, which makes it easier to maintain components in isolation. Another
+point is that independent components ease isolated maintenance.
+
+
+#### Keep Architecture Components Balanced
+
+![Output of `Keep Architecture Components Balanced`](images/KeepArchitectureComponentsBalanced.png)
+
+
+Balancing the number and relative size of components makes it
+easier to locate code. Even though that BetterCode states that we are doing
+fine, we have to keep the number of components between 2 and 12. By doing this,
+it should be easier to find the piece of code that we want to change.
+
+
+#### Keep Your Codebase Small
+
+![Output of `Keep Your Codebase Small`](images/KeepYourCodebaseSmall.png)
+
+
+If we keep our codebase small it will improve maintainability, as it takes less
+work to make structural changes in a smaller codebase.
+
+BetterCode prefers that we use 3rd libraries and frameworks over reinventing the
+wheel. It measures us based on how many years it would take a person, with
+approximate effort, to rebuild our version of MiniTwit.
+
+#### Automate Tests
+
+![Output of `Automate Tests`](images/AutomateTestsBetterCode.png)
+
+
+Having automating tests for our codebase makes development less risky - it
+reduces the chance of regression, and can also improve readability in that it
+provides clear simple examples of the usage of various components. Based on
+the numbers we could have done lot more of excessive testing. 80% had been more
+acceptable from our side. Another important point is that when we adjust code in
+our system, then the changes should be reflected in the tests as well.
+
+#### Write Clean Code
+
+![Output of `Write Clean Code`](/images/WriteCleanCode.png)
+
+
+BetterCode highlights Code Smells, which is various coding anti-patterns, that
+can hint at the existence of a problem. They state that it improves maintainability because clean
+code is maintainable code.
+
+Our results being that we have left some `TODO` comments in our code, and
+they should be fix or removed if they are outdated.
+
+### State Of MiniTwit 
+
+The assessment of software quality is a subjective process
+where we have to decide the quality, the metric and an acceptable level of
+quality. Assessing the quality of our system is no exception.
+
+BetterCode essentially focuses on maintainability, which is naturally something
+we deem very important in an agile development team, where we have to move
+quickly and have a high level of transparency. We had not formally agreed, prior
+to looking at these results, what an acceptable level would be. However we deem
+any value of 7 or above acceptable.
+
+The state of the system can also be seen from a security point of view. From our
+security assessment, which is detailed in the [postmortem](../POSTMORTEM.md), we
+realized that we are storing several passwords in our source code. The admin
+password to the database can be found in both our docker-compose file, as well
+as our source code. Additionally, passwords to our admin user are visible in the
+source code, as well as passwords to our logging tools. This would, in theory,
+be acceptable if these can be changed in deployment, and regarding the admin
+user password, if it is possible to change via the user interface. This,
+however, is not the case. That is a huge security flaw and can have severe
+consequences. We should have implemented a change-password functionality as well
+as store all external authorization credentials via environmental constants.
+
+Looking at the state of our system from a security perspective, highlights the
+fact that our system is inadequate. This is definitely the primary focus in any
+future development process had that been the case. We, however, are satisfied
+from a code quality perspective.
+                     
+                   
 ## Conclusion and evaluation
 
 _TODO - biggest issues, major lessons we have learned, overall takeaways,
