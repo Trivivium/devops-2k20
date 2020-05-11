@@ -104,6 +104,15 @@ didn't invest much time looking into alternatives as Docker Swarm provided all
 the tools necessary with less technical fragmentation, whereas an alternative
 would require new configuration.
 
+As mentioned the aim to horizontally scale the application. We deemed this to be
+the best solution as the application is more focused on serving multiple clients
+with rather. Each operation doesn't require much CPU time thus the argument for
+increased resources on each nodes seems mute. The use of multiple servers in turn
+would mean a higher limit to the number simultaneous connections from clients.
+
+Using Docker Swarm simplifies the load-balancing aspect of this strategy as swarm
+mode as a built-in balancer for ingress connections, and automatically distributes
+the connections between the nodes available using a round-robin fashion.
 
 [container-1]: https://www.docker.com/
 [container-2]: https://www.vagrantup.com/
@@ -324,10 +333,6 @@ to Debug which would reveal internal system events that are not necessarily obse
 but useful when determining how something happened. Consequently, our logs would then be noisier, but eventually we would have uncovered
 relevant data regarding the system.
 
-### Scaling and load balancing
-
-_TODO - Which strategy did we use for scaling and load balancing (ie. vertical
-vs. horizontal scaling)_
 
 ## Development practices
 
@@ -397,7 +402,6 @@ Mortem](../postmortem.md). We probably wouldn't have gotten any alternative
 important features by choosing another service, as the problems we had were
 based on structural team problems rather than the tool itself. Having the issues
 closely aligned with the pull-request flow was definitely a helpful feature.
-
 
 ## CI/CD Pipeline
 
