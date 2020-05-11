@@ -238,8 +238,7 @@ the ELK stack did deliver in that area. However, we did research other
 alternatives. This led us to looking more closely into
 [LogDNA](https://logdna.com), which is Elasticsearch and Kibana combined. They
 also support containerization, but suggests using Kubernetes, which we aren't
-using. The integration story with .NET is also another negative for this
-solution. We found a Github repository for a
+using. The integration story with .NET is also another reason against using this solution. We found a Github repository for a
 [RedBear.LogDNA](https://github.com/RedBearSys/RedBear.LogDNA) library, but upon
 further study it seemed to not be actively supported with few issues and pull
 requests. And the issues there were mentioned deal-breaking issues related to
@@ -253,7 +252,7 @@ configuration.
 
 #### Exception Logging
 
-As mentioned in the start we also sought to gather exception from the production
+As mentioned in the start we also sought to gather exceptions from the production
 environment. For this we ended up using [Sentry.io](https://sentry.io/welcome/).
 This was motivated primarily from their ability to aggregate the exceptions, and
 provide metrics with regards to the number of users affected by the exception,
