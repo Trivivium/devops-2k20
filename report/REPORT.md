@@ -280,7 +280,7 @@ the focus was on the SLA and maintaining the requirements.
 Whitebox monitoring was also useful to us as it enabled us to focus on what's inside the system.
 We exposed the metrics that we wanted to and then Prometheus would pull the metrics to our monitoring/logging server.
 We made an extra metric that would count requests for each endpoint and return which method that had been called.
-In a real-life system, it is proven useful to know which page or part of the system that gets visited the most. (review plz).
+In a real-life system, it is proven useful to know which page or part of the system that gets visited the most.
 We used active monitoring to determine whether our system was up or down. Active monitoring also enabled us to actively
 validate the SLA that we had set.
 
