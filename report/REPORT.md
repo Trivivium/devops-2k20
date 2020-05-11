@@ -277,7 +277,7 @@ Our way of monitoring was proactive with Prometheus collecting metrics and Grafa
 application-centric where we measured response times, the number of HTTP requests in total and whether the application was up. Primarily, 
 the focus was on the SLA and maintaining the requirements.
 
-Whitebox monitoring was also useful to us as it enabled us to focus on what's inside the system. (Should we even mention Whitebox?)
+Whitebox monitoring was also useful to us as it enabled us to focus on what's inside the system.
 We exposed the metrics that we wanted to and then Prometheus would pull the metrics to our monitoring/logging server.
 We made an extra metric that would count requests for each endpoint and return which method that had been called.
 In a real-life system, it is proven useful to know which page or part of the system that gets visited the most. (review plz).
